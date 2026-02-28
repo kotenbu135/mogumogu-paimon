@@ -1,5 +1,5 @@
 import type { RankedArtifact, ScoreTypeName } from '@/lib/types'
-import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS } from '@/lib/constants'
+import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, getMainStatValue } from '@/lib/constants'
 import { decomposeRolls } from '@/lib/scoring'
 
 interface ArtifactCardProps {
@@ -42,10 +42,12 @@ function formatSubstat(
 
 export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
-  const { setKey, slotKey, level, location, substats } = artifact
+  const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
 
   const setName = ARTIFACT_SET_NAMES[setKey] ?? setKey
   const slotName = SLOT_NAMES[slotKey] ?? slotKey
+  const mainStatName = MAIN_STAT_NAMES[mainStatKey] ?? mainStatKey
+  const mainStatValue = getMainStatValue(level, rarity, mainStatKey)
 
   const artifactImgSrc = `/artifacts/${setKey}/${slotKey}.png`
   const charImgSrc = location ? `/chars/${location}.png` : null
@@ -75,7 +77,12 @@ export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardPro
         {/* セット名・部位・レベル */}
         <div className="artifact-info">
           <p className="set-name">{setName}</p>
-          <p className="slot-name">{slotName}</p>
+          <p className="slot-name">
+            {slotName}
+            {mainStatValue && (
+              <span className="main-stat-inline"> · {mainStatName} {mainStatValue}</span>
+            )}
+          </p>
           <p className="level">+{level}</p>
         </div>
 

@@ -94,3 +94,90 @@ export const PERCENT_STATS = new Set<StatKey>([
   'critRate_',
   'critDMG_',
 ])
+
+/** メインステータス表示名（サブステ外のキー含む） */
+export const MAIN_STAT_NAMES: Record<string, string> = {
+  ...STAT_NAMES,
+  heal_: '治癒ボーナス',
+  anemo_dmg_: '風元素ダメージ',
+  cryo_dmg_: '氷元素ダメージ',
+  dendro_dmg_: '草元素ダメージ',
+  electro_dmg_: '雷元素ダメージ',
+  geo_dmg_: '岩元素ダメージ',
+  hydro_dmg_: '水元素ダメージ',
+  pyro_dmg_: '炎元素ダメージ',
+  physical_dmg_: '物理ダメージ',
+}
+
+/**
+ * 5星聖遺物HP(花)の各レベル値（Lv0-20）
+ * 他の聖遺物ステータスの中間値計算に使用するスケール基準
+ */
+const HP5_LEVELS = [
+  717, 919, 1120, 1321, 1523,
+  1758, 1994, 2229, 2464, 2700,
+  2891, 3083, 3275, 3467, 3659,
+  3818, 3977, 4137, 4296, 4455, 4780,
+]
+
+/** メインステータスの最大値（レアリティ別） */
+const MAIN_STAT_MAX: Record<number, Record<string, number>> = {
+  5: {
+    hp: 4780, atk: 311,
+    hp_: 46.6, atk_: 46.6, def_: 58.3,
+    enerRech_: 51.8, eleMas: 187,
+    critRate_: 31.1, critDMG_: 62.2,
+    heal_: 35.9,
+    anemo_dmg_: 46.6, cryo_dmg_: 46.6, dendro_dmg_: 46.6,
+    electro_dmg_: 46.6, geo_dmg_: 46.6, hydro_dmg_: 46.6,
+    pyro_dmg_: 46.6, physical_dmg_: 58.3,
+  },
+  4: {
+    hp: 3571, atk: 232,
+    hp_: 35.2, atk_: 35.2, def_: 44.1,
+    enerRech_: 39.0, eleMas: 141,
+    critRate_: 23.4, critDMG_: 46.9,
+    heal_: 27.2,
+    anemo_dmg_: 35.2, cryo_dmg_: 35.2, dendro_dmg_: 35.2,
+    electro_dmg_: 35.2, geo_dmg_: 35.2, hydro_dmg_: 35.2,
+    pyro_dmg_: 35.2, physical_dmg_: 44.1,
+  },
+  3: {
+    hp: 2342, atk: 152,
+    hp_: 23.1, atk_: 23.1, def_: 28.8,
+    enerRech_: 25.6, eleMas: 92,
+    critRate_: 15.4, critDMG_: 30.8,
+    heal_: 17.8,
+    anemo_dmg_: 23.1, cryo_dmg_: 23.1, dendro_dmg_: 23.1,
+    electro_dmg_: 23.1, geo_dmg_: 23.1, hydro_dmg_: 23.1,
+    pyro_dmg_: 23.1, physical_dmg_: 28.8,
+  },
+}
+
+/** パーセント表記のメインステータスキーセット */
+const MAIN_STAT_PERCENT_KEYS = new Set([
+  'hp_', 'atk_', 'def_', 'enerRech_', 'critRate_', 'critDMG_', 'heal_',
+  'anemo_dmg_', 'cryo_dmg_', 'dendro_dmg_', 'electro_dmg_',
+  'geo_dmg_', 'hydro_dmg_', 'pyro_dmg_', 'physical_dmg_',
+])
+
+/**
+ * 指定レベル・レアリティ・メインステータスキーの表示用値を返す
+ * @returns フォーマット済み文字列（%表記 or 整数）。未知キーは空文字
+ */
+export function getMainStatValue(level: number, rarity: number, key: string): string {
+  const rarityTable = MAIN_STAT_MAX[rarity]
+  if (!rarityTable) return ''
+  const maxVal = rarityTable[key]
+  if (maxVal === undefined) return ''
+
+  // 5星HP基準のスケール比率を適用
+  const scale = HP5_LEVELS[level] / 4780
+
+  if (MAIN_STAT_PERCENT_KEYS.has(key)) {
+    const val = Math.round(maxVal * scale * 10) / 10
+    return `${val.toFixed(1)}%`
+  } else {
+    return String(Math.round(maxVal * scale))
+  }
+}
