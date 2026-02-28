@@ -287,6 +287,54 @@ body {
   white-space: nowrap;
 }
 
+/* ── スコア計算式パネル ──────────────────── */
+.score-formulas {
+  width: 380px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.score-formulas-title {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+
+.score-formulas-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.score-formulas-item {
+  display: grid;
+  grid-template-columns: 5.5em 1em 1fr;
+  align-items: baseline;
+  font-size: 0.78rem;
+  gap: 0.25rem;
+}
+
+.score-formulas-label {
+  color: var(--gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.score-formulas-eq {
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.score-formulas-formula {
+  color: var(--text-main);
+}
+
 /* ── ファイルアップロードゾーン ─────────── */
 .upload-zone {
   width: 380px;

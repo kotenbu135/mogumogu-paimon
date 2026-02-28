@@ -1,6 +1,16 @@
 /** 日本語マッピング定数（score_artifacts.py より移植） */
 
-import type { ArtifactSlotKey, StatKey } from './types'
+import type { ArtifactSlotKey, ScoreTypeName, StatKey } from './types'
+
+/** 各スコアタイプの表示ラベルと計算式 */
+export const SCORE_TYPE_FORMULAS: Record<ScoreTypeName, { label: string; formula: string }> = {
+  CV: { label: 'CVスコア', formula: '会心率×2 + 会心ダメージ' },
+  HP型: { label: 'HP型', formula: 'CV + HP%×1.0' },
+  攻撃型: { label: '攻撃型', formula: 'CV + 攻撃力%×1.0' },
+  防御型: { label: '防御型', formula: 'CV + 防御力%×0.8' },
+  熟知型: { label: '熟知型', formula: 'CV + 元素熟知×0.25' },
+  チャージ型: { label: 'チャージ型', formula: 'CV + 元素チャージ×0.9' },
+}
 
 export const ARTIFACT_SET_NAMES: Record<string, string> = {
   ADayCarvedFromRisingWinds: '風立ちの日',
