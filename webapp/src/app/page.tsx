@@ -5,7 +5,7 @@ import FileUpload from '@/components/FileUpload'
 import ArtifactCard from '@/components/ArtifactCard'
 import type { ArtifactSlotKey, GoodFile, RankedArtifact, ScoreTypeName } from '@/lib/types'
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
-import { ARTIFACT_SET_NAMES, SLOT_NAMES } from '@/lib/constants'
+import { ARTIFACT_SET_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES } from '@/lib/constants'
 
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型',
@@ -74,6 +74,19 @@ export default function HomePage() {
         <div className="hero-section">
           <img src="/hero.png" alt="" className="hero-img" />
           <FileUpload onLoad={handleLoad} />
+          {/* スコア計算式の説明 */}
+          <div className="score-formulas">
+            <p className="score-formulas-title">スコア計算方式</p>
+            <ul className="score-formulas-list">
+              {SCORE_TYPE_OPTIONS.map((type) => (
+                <li key={type} className="score-formulas-item">
+                  <span className="score-formulas-label">{SCORE_TYPE_FORMULAS[type].label}</span>
+                  <span className="score-formulas-eq">=</span>
+                  <span className="score-formulas-formula">{SCORE_TYPE_FORMULAS[type].formula}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : (
         <>
