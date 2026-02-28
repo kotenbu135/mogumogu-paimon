@@ -320,3 +320,45 @@ body {
   font-size: 0.8rem;
   color: var(--text-sub);
 }
+
+/* ── 聖遺物画像クリック可能スタイル ─────── */
+.artifact-img-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.artifact-img-clickable:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(200, 163, 90, 0.4);
+}
+
+/* ── コンテキストメニュー ────────────────── */
+.context-menu {
+  position: fixed;
+  z-index: 1000;
+  background: var(--bg-ctrl);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  min-width: 12rem;
+  overflow: hidden;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.context-menu-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--gold-light);
+}
