@@ -1,0 +1,316 @@
+@import "tailwindcss";
+
+/* ── カラー変数 ─────────────────────────── */
+:root {
+  --bg-main: #0d0e1a;
+  --bg-card: #1a1b2e;
+  --bg-card-hover: #22243a;
+  --bg-ctrl: #13142a;
+  --gold: #c8a35a;
+  --gold-light: #e8c880;
+  --text-main: #e8e0d0;
+  --text-sub: #9a9080;
+  --border: #2e3050;
+}
+
+/* ── ベーススタイル ─────────────────────── */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── レイアウト ────────────────────────── */
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--gold);
+  margin-bottom: 2rem;
+  letter-spacing: 0.08em;
+}
+
+/* ── ヒーロー画像（空状態） ─────────────── */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.hero-img {
+  width: 260px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(200, 163, 90, 0.2);
+}
+
+/* ── コントロールバー ───────────────────── */
+.controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-ctrl);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ctrl-end {
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.ctrl-label {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  letter-spacing: 0.05em;
+}
+
+.ctrl-select {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-width: 7rem;
+  outline: none;
+  appearance: auto;
+}
+
+.ctrl-select:focus {
+  border-color: var(--gold);
+}
+
+.ctrl-reupload {
+  background: var(--bg-card);
+  color: var(--text-sub);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ctrl-reupload:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.result-count {
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  margin-bottom: 0.25rem;
+}
+
+/* ── カードグリッド ─────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+/* ── 聖遺物カード ──────────────────────── */
+.artifact-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.artifact-card:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+/* ランクバッジ */
+.rank-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+
+/* ── カードヘッダー ─────────────────────── */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.artifact-img-wrap {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  background: #111320;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.artifact-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.artifact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.set-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-name {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-top: 0.1rem;
+}
+
+.level {
+  font-size: 0.75rem;
+  color: #6ea8ff;
+  margin-top: 0.1rem;
+}
+
+.char-wrap {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #111320;
+}
+
+.char-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+/* ── スコア表示 ─────────────────────────── */
+.score-section {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* メインスコア（選択型 — 大きく） */
+.main-score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+/* CVサブ（選択型が CV 以外の場合） */
+.cv-sub {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}
+
+/* ── サブステ一覧 ────────────────────────── */
+.substats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.substat-row {
+  display: grid;
+  /* 元素チャージ効率（8文字）に対応するため 9em に拡張 */
+  grid-template-columns: 9em 4.5em 1fr;
+  align-items: baseline;
+  font-size: 0.78rem;
+  gap: 0.25rem;
+}
+
+.substat-name {
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.substat-value {
+  text-align: right;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.substat-rolls {
+  color: #555870;
+  font-size: 0.7rem;
+  padding-left: 0.25rem;
+  white-space: nowrap;
+}
+
+/* ── ファイルアップロードゾーン ─────────── */
+.upload-zone {
+  width: 380px;
+  padding: 2.5rem 2rem;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--bg-card);
+}
+
+.upload-zone:hover,
+.upload-zone.dragging {
+  border-color: var(--gold);
+  background: var(--bg-card-hover);
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-title {
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.upload-sub {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}

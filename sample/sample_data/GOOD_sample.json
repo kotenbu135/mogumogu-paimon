@@ -1,0 +1,174 @@
+{
+  "format": "GOOD",
+  "version": 3,
+  "source": "Irminsul",
+  "characters": [
+    {
+      "key": "Traveler",
+      "level": 80,
+      "constellation": 6,
+      "ascension": 6,
+      "talent": {
+        "auto": 1,
+        "skill": 5,
+        "burst": 5
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "setKey": "Thundersoother",
+      "slotKey": "goblet",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "def_",
+      "location": "Xilonen",
+      "lock": true,
+      "substats": [
+        {
+          "key": "atk",
+          "value": 18.0,
+          "initialValue": 18.0
+        },
+        {
+          "key": "def",
+          "value": 74.0,
+          "initialValue": 21.0
+        },
+        {
+          "key": "enerRech_",
+          "value": 9.1,
+          "initialValue": 4.5
+        },
+        {
+          "key": "critRate_",
+          "value": 3.1,
+          "initialValue": 3.1
+        }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    },
+    {
+      "setKey": "NoblesseOblige",
+      "slotKey": "goblet",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "electro_dmg_",
+      "location": "KujouSara",
+      "lock": true,
+      "substats": [
+        {
+          "key": "atk_",
+          "value": 9.3,
+          "initialValue": 5.3
+        },
+        {
+          "key": "atk",
+          "value": 33.0,
+          "initialValue": 18.0
+        },
+        {
+          "key": "def",
+          "value": 39.0,
+          "initialValue": 21.0
+        },
+        {
+          "key": "critDMG_",
+          "value": 10.9,
+          "initialValue": 5.4
+        }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    },
+    {
+      "setKey": "GladiatorsFinale",
+      "slotKey": "circlet",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "critRate_",
+      "location": "",
+      "lock": true,
+      "substats": [
+        {
+          "key": "atk",
+          "value": 53.0,
+          "initialValue": 16.0
+        },
+        {
+          "key": "critDMG_",
+          "value": 5.4,
+          "initialValue": 5.4
+        },
+        {
+          "key": "atk_",
+          "value": 13.4,
+          "initialValue": 4.1
+        },
+        {
+          "key": "eleMas",
+          "value": 21.0,
+          "initialValue": 21.0
+        }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    },
+    {
+      "setKey": "ThunderingFury",
+      "slotKey": "circlet",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "atk_",
+      "location": "Keqing",
+      "lock": true,
+      "substats": [
+        {
+          "key": "hp",
+          "value": 807.0,
+          "initialValue": 209.0
+        },
+        {
+          "key": "def_",
+          "value": 12.4,
+          "initialValue": 5.8
+        },
+        {
+          "key": "critDMG_",
+          "value": 14.0,
+          "initialValue": 6.2
+        },
+        {
+          "key": "critRate_",
+          "value": 3.5,
+          "initialValue": 3.5
+        }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    }
+  ],
+  "weapons": [
+    {
+      "key": "SkyriderSword",
+      "level": 20,
+      "ascension": 0,
+      "refinement": 5,
+      "location": "",
+      "lock": true
+    }
+  ],
+  "materials": {
+    "SentrysWoodenWhistle": 1242,
+    "TheLittleWitchsDictionary": 1
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(npx create-next-app@latest webapp --typescript --tailwind --app --no-eslint --src-dir --no-turbopack --yes)",
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(bash -i -c \"which node && node --version && which npm && npm --version\")",
+      "Bash(bash -i -c \"node scripts/copy-assets.mjs 2>&1\")",
+      "Bash(bash -i -c \"npm run build 2>&1\")",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run tsc:*)",
+      "Bash(npm exec:*)",
+      "Bash(npx:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm ls:*)",
+      "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npm run build 2>&1\")"
+    ]
+  }
+}
