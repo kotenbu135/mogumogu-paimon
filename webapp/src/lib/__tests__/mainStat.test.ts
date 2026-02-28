@@ -93,22 +93,40 @@ describe('getMainStatValue', () => {
   })
 
   describe('4星聖遺物', () => {
-    it('HP(花) Lv20 の値は 3571', () => {
-      expect(getMainStatValue(20, 4, 'hp')).toBe('3571')
+    it('HP(花) Lv16（最大）の値は 3571', () => {
+      expect(getMainStatValue(16, 4, 'hp')).toBe('3571')
     })
 
-    it('攻撃力(羽) Lv20 の値は 232', () => {
-      expect(getMainStatValue(20, 4, 'atk')).toBe('232')
+    it('攻撃力(羽) Lv16（最大）の値は 232', () => {
+      expect(getMainStatValue(16, 4, 'atk')).toBe('232')
     })
 
-    it('HP% Lv20 の値は 35.2%', () => {
-      expect(getMainStatValue(20, 4, 'hp_')).toBe('35.2%')
+    it('HP% Lv16（最大）の値は 35.2%', () => {
+      expect(getMainStatValue(16, 4, 'hp_')).toBe('35.2%')
     })
   })
 
   describe('不明なキー', () => {
     it('未知のキーは空文字を返す', () => {
       expect(getMainStatValue(20, 5, 'unknown_key')).toBe('')
+    })
+  })
+
+  describe('境界条件', () => {
+    it('level=-1 は空文字を返す', () => {
+      expect(getMainStatValue(-1, 5, 'hp')).toBe('')
+    })
+
+    it('level=21 (5星) は空文字を返す', () => {
+      expect(getMainStatValue(21, 5, 'hp')).toBe('')
+    })
+
+    it('level=17 (4星最大=16超え) は空文字を返す', () => {
+      expect(getMainStatValue(17, 4, 'hp')).toBe('')
+    })
+
+    it('level=13 (3星最大=12超え) は空文字を返す', () => {
+      expect(getMainStatValue(13, 3, 'hp')).toBe('')
     })
   })
 })

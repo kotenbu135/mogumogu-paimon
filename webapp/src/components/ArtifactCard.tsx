@@ -74,7 +74,7 @@ export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardPro
           />
         </div>
 
-        {/* セット名・部位・レベル */}
+        {/* セット名・部位・メインステータス・レベル */}
         <div className="artifact-info">
           <p className="set-name">{setName}</p>
           <p className="slot-name">

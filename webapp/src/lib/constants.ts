@@ -109,6 +109,13 @@ export const MAIN_STAT_NAMES: Record<string, string> = {
   physical_dmg_: '物理ダメージ',
 }
 
+/** レアリティ別最大強化レベル */
+const MAX_LEVEL_BY_RARITY: Record<number, number> = {
+  5: 20,
+  4: 16,
+  3: 12,
+}
+
 /**
  * 5星聖遺物HP(花)の各レベル値（Lv0-20）
  * 他の聖遺物ステータスの中間値計算に使用するスケール基準
@@ -171,8 +178,13 @@ export function getMainStatValue(level: number, rarity: number, key: string): st
   const maxVal = rarityTable[key]
   if (maxVal === undefined) return ''
 
-  // 5星HP基準のスケール比率を適用
-  const scale = HP5_LEVELS[level] / 4780
+  // レアリティ別最大レベルで範囲チェック
+  const maxLevel = MAX_LEVEL_BY_RARITY[rarity] ?? 20
+  if (level < 0 || level > maxLevel) return ''
+
+  // レアリティ別最大レベルで正規化し、5星HP基準のスケール比率を適用
+  const normalizedLevel = Math.round(level * 20 / maxLevel)
+  const scale = HP5_LEVELS[normalizedLevel] / 4780
 
   if (MAIN_STAT_PERCENT_KEYS.has(key)) {
     const val = Math.round(maxVal * scale * 10) / 10
