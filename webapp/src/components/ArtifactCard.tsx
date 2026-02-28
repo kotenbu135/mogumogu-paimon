@@ -1,11 +1,18 @@
-import type { RankedArtifact, ScoreTypeName } from '@/lib/types'
+'use client'
+
+import { useState } from 'react'
+import type { RankedArtifact, ScoreTypeName, ArtifactSlotKey } from '@/lib/types'
 import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, getMainStatValue } from '@/lib/constants'
 import { decomposeRolls } from '@/lib/scoring'
+import { getContextMenuItems } from '@/lib/contextMenu'
+import ContextMenu from './ContextMenu'
 
 interface ArtifactCardProps {
   rank: number
   entry: RankedArtifact
   scoreType: ScoreTypeName
+  onFilterBySet?: (setKey: string) => void
+  onFilterBySlot?: (slotKey: ArtifactSlotKey) => void
 }
 
 /** メインスコアの値に応じた色クラスを返す */
@@ -40,7 +47,13 @@ function formatSubstat(
   return { label, valueStr, rollDetail }
 }
 
-export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardProps) {
+/** コンテキストメニューの状態 */
+interface MenuState {
+  x: number
+  y: number
+}
+
+export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, onFilterBySlot }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
 
@@ -55,6 +68,21 @@ export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardPro
   const mainScore = allScores[scoreType]
   const showCvSub = scoreType !== 'CV'
 
+  const [menuState, setMenuState] = useState<MenuState | null>(null)
+
+  // フィルタコールバックが両方存在する場合のみコンテキストメニューを有効化
+  const canFilter = !!onFilterBySet && !!onFilterBySlot
+
+  function handleImageClick(e: React.MouseEvent) {
+    if (!canFilter) return
+    e.stopPropagation()
+    setMenuState({ x: e.clientX, y: e.clientY })
+  }
+
+  const menuItems = canFilter
+    ? getContextMenuItems(setKey, slotKey, onFilterBySet!, onFilterBySlot!)
+    : []
+
   return (
     <div className="artifact-card">
       {/* ランク番号 */}
@@ -62,8 +90,12 @@ export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardPro
 
       {/* 上部: 聖遺物画像 + セット情報 + キャラアイコン */}
       <div className="card-header">
-        {/* 聖遺物画像 */}
-        <div className="artifact-img-wrap">
+        {/* 聖遺物画像（クリックでフィルタメニュー） */}
+        <div
+          className={`artifact-img-wrap${canFilter ? ' artifact-img-clickable' : ''}`}
+          onClick={handleImageClick}
+          title={canFilter ? 'クリックしてフィルタ' : undefined}
+        >
           <img
             src={artifactImgSrc}
             alt={`${setName} ${slotName}`}
@@ -127,6 +159,16 @@ export default function ArtifactCard({ rank, entry, scoreType }: ArtifactCardPro
           )
         })}
       </div>
+
+      {/* コンテキストメニュー */}
+      {menuState && (
+        <ContextMenu
+          x={menuState.x}
+          y={menuState.y}
+          items={menuItems}
+          onClose={() => setMenuState(null)}
+        />
+      )}
     </div>
   )
 }

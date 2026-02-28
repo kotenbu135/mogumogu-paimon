@@ -137,7 +137,14 @@ export default function HomePage() {
           {/* ── カードグリッド ── */}
           <div className="card-grid">
             {displayed.map((entry, i) => (
-              <ArtifactCard key={i} rank={i + 1} entry={entry} scoreType={scoreType} />
+              <ArtifactCard
+                key={i}
+                rank={i + 1}
+                entry={entry}
+                scoreType={scoreType}
+                onFilterBySet={setFilterSet}
+                onFilterBySlot={setFilterSlot}
+              />
             ))}
           </div>
         </>
