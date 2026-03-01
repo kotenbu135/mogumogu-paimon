@@ -23,8 +23,69 @@ body {
 }
 
 /* ── レイアウト ────────────────────────── */
+
+/* アプリ全体の2カラムレイアウト */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* サイドバー */
+.sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  background: var(--bg-ctrl);
+  border-right: 1px solid var(--border);
+  padding: 2rem 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+}
+
+.sidebar-link-active {
+  color: var(--gold-light);
+  border-left-color: var(--gold);
+  background: var(--bg-card);
+}
+
+/* メインエリア（サイドバーの右側） */
+.main-area {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
 .main-container {
   max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+/* サイドメニューページ（スコアについて等）のコンテンツ */
+.page-container {
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
 }
@@ -36,6 +97,100 @@ body {
   color: var(--gold);
   margin-bottom: 2rem;
   letter-spacing: 0.08em;
+}
+
+/* ── サイドメニューページコンテンツ ────────── */
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.content-text {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.content-text-sub {
+  color: var(--text-sub);
+}
+
+.content-link {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.content-link:hover {
+  color: var(--gold-light);
+}
+
+.content-list {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.7;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.content-list li {
+  margin-bottom: 0.4rem;
+}
+
+/* スコア計算式（about-scoreページ用） */
+.about-formulas {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.about-formulas-item {
+  padding: 0.2rem 0;
+}
+
+/* スコアティア表示 */
+.score-tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+}
+
+.score-tier {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.score-tier-red { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.score-tier-orange { color: #f97316; background: rgba(249, 115, 22, 0.1); }
+.score-tier-yellow { color: #eab308; background: rgba(234, 179, 8, 0.1); }
+.score-tier-default { color: var(--text-main); background: var(--bg-card); }
+
+/* 計算式ブロック */
+.formula-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.formula-text {
+  font-size: 0.9rem;
+  color: var(--gold-light);
+  font-family: monospace;
 }
 
 /* ── ヒーロー画像（空状態） ─────────────── */

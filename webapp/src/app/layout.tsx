@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Sidebar from '@/components/Sidebar'
 
 export const metadata: Metadata = {
   title: '聖遺物スコアランキング',
@@ -13,7 +14,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        <div className="app-layout">
+          <Sidebar />
+          <div className="main-area">
+            {children}
+          </div>
+        </div>
+      </body>
     </html>
   )
 }
