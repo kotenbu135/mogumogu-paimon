@@ -55,6 +55,20 @@ export default function HomePage() {
     return keys
   }, [allRanked])
 
+  // キャラ名 → 装備セットキー配列のマップ
+  const equippedSetsMap = useMemo(() => {
+    if (!allRanked) return new Map<string, string[]>()
+    const map = new Map<string, string[]>()
+    for (const e of allRanked) {
+      const loc = e.artifact.location
+      if (!loc) continue
+      const sets = map.get(loc) ?? []
+      sets.push(e.artifact.setKey)
+      map.set(loc, sets)
+    }
+    return map
+  }, [allRanked])
+
   // フィルタ・ソート済みリスト
   const displayed = useMemo(() => {
     if (!allRanked) return []
@@ -157,6 +171,7 @@ export default function HomePage() {
                 scoreType={scoreType}
                 onFilterBySet={setFilterSet}
                 onFilterBySlot={setFilterSlot}
+                equippedSetKeys={equippedSetsMap.get(entry.artifact.location) ?? []}
               />
             ))}
           </div>

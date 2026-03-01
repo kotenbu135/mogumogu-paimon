@@ -19,7 +19,8 @@
       "Bash(npm run lint:*)",
       "Bash(npm run format:*)",
       "Bash(npm ls:*)",
-      "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npm run build 2>&1\")"
+      "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npm run build 2>&1\")",
+      "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npx next build\")"
     ]
   }
 }

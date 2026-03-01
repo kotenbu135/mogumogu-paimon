@@ -380,6 +380,17 @@ body {
   box-shadow: 0 0 8px rgba(200, 163, 90, 0.4);
 }
 
+/* ── キャラアイコンクリック可能スタイル ─────── */
+.char-wrap-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.char-wrap-clickable:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(200, 163, 90, 0.4);
+}
+
 /* ── コンテキストメニュー ────────────────── */
 .context-menu {
   position: fixed;

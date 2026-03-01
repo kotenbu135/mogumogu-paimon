@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { RankedArtifact, ScoreTypeName, ArtifactSlotKey } from '@/lib/types'
 import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, getMainStatValue } from '@/lib/constants'
 import { decomposeRolls } from '@/lib/scoring'
-import { getContextMenuItems } from '@/lib/contextMenu'
+import { getContextMenuItems, getCharContextMenuItems } from '@/lib/contextMenu'
 import ContextMenu from './ContextMenu'
 
 interface ArtifactCardProps {
@@ -13,6 +13,7 @@ interface ArtifactCardProps {
   scoreType: ScoreTypeName
   onFilterBySet?: (setKey: string) => void
   onFilterBySlot?: (slotKey: ArtifactSlotKey) => void
+  equippedSetKeys?: string[]
 }
 
 /** メインスコアの値に応じた色クラスを返す */
@@ -53,7 +54,7 @@ interface MenuState {
   y: number
 }
 
-export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, onFilterBySlot }: ArtifactCardProps) {
+export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
 
@@ -71,9 +72,11 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
   const showCvSub = scoreType !== 'CV' && !(scoreType === '最良型' && mainScore === cvScore)
 
   const [menuState, setMenuState] = useState<MenuState | null>(null)
+  const [charMenuState, setCharMenuState] = useState<MenuState | null>(null)
 
   // フィルタコールバックが両方存在する場合のみコンテキストメニューを有効化
   const canFilter = !!onFilterBySet && !!onFilterBySlot
+  const canCharFilter = !!onFilterBySet && !!equippedSetKeys && equippedSetKeys.length > 0
 
   function handleImageClick(e: React.MouseEvent) {
     if (!canFilter) return
@@ -81,8 +84,18 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
     setMenuState({ x: e.clientX, y: e.clientY })
   }
 
+  function handleCharClick(e: React.MouseEvent) {
+    if (!canCharFilter) return
+    e.stopPropagation()
+    setCharMenuState({ x: e.clientX, y: e.clientY })
+  }
+
   const menuItems = canFilter
     ? getContextMenuItems(setKey, slotKey, onFilterBySet!, onFilterBySlot!)
+    : []
+
+  const charMenuItems = canCharFilter
+    ? getCharContextMenuItems(equippedSetKeys!, onFilterBySet!)
     : []
 
   return (
@@ -120,9 +133,13 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
           <p className="level">+{level}</p>
         </div>
 
-        {/* キャラアイコン */}
+        {/* キャラアイコン（クリックで装備セットフィルタメニュー） */}
         {charImgSrc && (
-          <div className="char-wrap">
+          <div
+            className={`char-wrap${canCharFilter ? ' char-wrap-clickable' : ''}`}
+            onClick={handleCharClick}
+            title={canCharFilter ? 'クリックして装備セットでフィルタ' : undefined}
+          >
             <img
               src={charImgSrc}
               alt={location}
@@ -162,13 +179,23 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
         })}
       </div>
 
-      {/* コンテキストメニュー */}
+      {/* コンテキストメニュー（聖遺物画像） */}
       {menuState && (
         <ContextMenu
           x={menuState.x}
           y={menuState.y}
           items={menuItems}
           onClose={() => setMenuState(null)}
+        />
+      )}
+
+      {/* コンテキストメニュー（キャラアイコン） */}
+      {charMenuState && (
+        <ContextMenu
+          x={charMenuState.x}
+          y={charMenuState.y}
+          items={charMenuItems}
+          onClose={() => setCharMenuState(null)}
         />
       )}
     </div>
