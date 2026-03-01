@@ -8,7 +8,7 @@ import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/s
 import { ARTIFACT_SET_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES } from '@/lib/constants'
 
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
-  'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型',
+  'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
 ]
 
 const SLOT_OPTIONS: { value: ArtifactSlotKey | ''; label: string }[] = [

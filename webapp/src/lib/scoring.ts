@@ -189,7 +189,7 @@ export function calculateScores(artifact: Artifact): ScoreResult {
   const cv = critRate * 2 + critDmg
 
   let bestScore = cv
-  let bestType = 'CVスコア'
+  let bestType = 'CV'
 
   for (const [name, key, coeff] of SCORE_TYPE_DEFS) {
     const score = cv + (subMap[key] ?? 0) * coeff
@@ -211,13 +211,17 @@ export function calculateAllScores(artifact: Artifact): Record<ScoreTypeName, nu
 
   const cv = (subMap['critRate_'] ?? 0) * 2 + (subMap['critDMG_'] ?? 0)
 
-  const scores: Record<ScoreTypeName, number> = {
+  const baseScores = {
     'CV': cv,
     'HP型': cv + (subMap['hp_'] ?? 0) * 1.0,
     '攻撃型': cv + (subMap['atk_'] ?? 0) * 1.0,
     '防御型': cv + (subMap['def_'] ?? 0) * 0.8,
     '熟知型': cv + (subMap['eleMas'] ?? 0) * 0.25,
     'チャージ型': cv + (subMap['enerRech_'] ?? 0) * 0.9,
+  }
+  const scores: Record<ScoreTypeName, number> = {
+    ...baseScores,
+    '最良型': Math.max(...Object.values(baseScores)),
   }
   return scores
 }
