@@ -159,7 +159,7 @@ export default function HomePage() {
               </span>
               {(filterSet || filterSlot) && (
                 <button
-                  className="ctrl-clear"
+                  className="ctrl-btn ctrl-clear"
                   onClick={() => { setFilterSet(''); setFilterSlot('') }}
                 >
                   フィルタをクリア
