@@ -28,7 +28,7 @@ const SUBSTAT_TIERS: Record<StatKey, number[]> = {
 }
 
 // 平均強化幅
-const AVG_INCREMENT: Record<StatKey, number> = {
+export const AVG_INCREMENT: Record<StatKey, number> = {
   hp: 254,
   atk: 16.75,
   def: 19.75,

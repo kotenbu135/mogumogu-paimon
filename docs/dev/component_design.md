@@ -11,6 +11,9 @@
 聖遺物1件のカード表示。スコア・サブステ・ロール数を表示する。
 - 聖遺物画像クリック → `ContextMenu` でセット・部位フィルタ
 - キャラアイコンクリック → `ContextMenu` で装備セットフィルタ
+- `reconRate` prop: 再構築成功率（%）。指定時はカード右下に表示
+  - 70%以上 → 赤、50%以上 → オレンジ、50%未満 → グレー
+  - ★5 Lv.20以外・保証サブステ不在 → null で非表示
 
 ### FileUpload (`webapp/src/components/FileUpload.tsx`)
 GOOD JSON のドラッグ＆ドロップまたはファイル選択。`compact` prop で再アップロード用の小型表示に切替。
@@ -24,8 +27,9 @@ GOOD JSON のドラッグ＆ドロップまたはファイル選択。`compact` 
 ## メインページのデータフロー (`webapp/src/app/page.tsx`)
 1. `FileUpload` で GOOD JSON を読み込み
 2. `buildRankedList()` で★5聖遺物をスコア計算・ランク付け
-3. スコアタイプ・セット・部位でフィルタ＆ソート
-4. `ArtifactCard` グリッドで表示
+3. スコアタイプ・セット・部位・再構築種別でフィルタ＆ソート
+4. 再構築種別選択時は `calculateReconstructionRate()` で成功率を算出
+5. `ArtifactCard` グリッドで表示（成功率付き）
 
 ## スコア色分け
 `webapp/src/components/ArtifactCard.tsx:20-25` の `scoreColor()` を参照。
