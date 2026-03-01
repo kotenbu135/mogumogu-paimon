@@ -66,7 +66,9 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
   const charImgSrc = location ? `/chars/${location}.png` : null
 
   const mainScore = allScores[scoreType]
-  const showCvSub = scoreType !== 'CV'
+  // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う
+  const displayLabel = scoreType === '最良型' ? entry.bestType : scoreType === 'CV' ? 'CV' : scoreType
+  const showCvSub = scoreType !== 'CV' && !(scoreType === '最良型' && mainScore === cvScore)
 
   const [menuState, setMenuState] = useState<MenuState | null>(null)
 
@@ -137,7 +139,7 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
       <div className="score-section">
         {/* メイン: 選択型スコア（大きく） */}
         <div className={`main-score ${scoreColor(mainScore)}`}>
-          {scoreType === 'CV' ? 'CV' : scoreType} {mainScore.toFixed(1)}
+          {displayLabel} {mainScore.toFixed(1)}
         </div>
         {/* サブ: CV スコア（CVが選択中は非表示） */}
         {showCvSub && (

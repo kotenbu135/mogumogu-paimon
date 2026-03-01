@@ -10,6 +10,7 @@ export const SCORE_TYPE_FORMULAS: Record<ScoreTypeName, { label: string; formula
   防御型: { label: '防御型', formula: 'CV + 防御力%×0.8' },
   熟知型: { label: '熟知型', formula: 'CV + 元素熟知×0.25' },
   チャージ型: { label: 'チャージ型', formula: 'CV + 元素チャージ×0.9' },
+  最良型: { label: '最良型', formula: '全タイプのうち最高値' },
 }
 
 export const ARTIFACT_SET_NAMES: Record<string, string> = {

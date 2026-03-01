@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest'
 import { SCORE_TYPE_FORMULAS } from '@/lib/constants'
 
-const EXPECTED_SCORE_TYPES = ['CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型'] as const
+const EXPECTED_SCORE_TYPES = ['CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型'] as const
 
 describe('SCORE_TYPE_FORMULAS', () => {
   it('全スコアタイプのエントリが存在する', () => {
@@ -47,5 +47,11 @@ describe('SCORE_TYPE_FORMULAS', () => {
 
   it('チャージ型の計算式に元素チャージが含まれる', () => {
     expect(SCORE_TYPE_FORMULAS['チャージ型'].formula).toContain('元素チャージ')
+  })
+
+  it('最良型のエントリが存在する', () => {
+    expect(SCORE_TYPE_FORMULAS['最良型']).toBeDefined()
+    expect(SCORE_TYPE_FORMULAS['最良型'].label).toBeTruthy()
+    expect(SCORE_TYPE_FORMULAS['最良型'].formula).toBeTruthy()
   })
 })
