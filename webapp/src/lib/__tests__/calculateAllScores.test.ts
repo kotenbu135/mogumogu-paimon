@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { calculateAllScores } from '@/lib/scoring'
+import { calculateAllScores, calculateScores } from '@/lib/scoring'
 import type { Artifact } from '@/lib/types'
 
 /** テスト用ダミー聖遺物（攻撃型が最高になるよう設定） */
@@ -63,4 +63,67 @@ describe('calculateAllScores の最良型', () => {
     const scores = calculateAllScores(artifact)
     expect(scores['最良型']).toBeCloseTo(scores['攻撃型'], 5)
   })
+})
+
+describe('calculateScores と calculateAllScores の整合性', () => {
+  const PATTERNS: { name: string; substats: Artifact['substats'] }[] = [
+    {
+      name: 'CVが最高（会心偏重）',
+      substats: [
+        { key: 'critRate_', value: 20.0 },
+        { key: 'critDMG_', value: 40.0 },
+      ],
+    },
+    {
+      name: '攻撃型が最高',
+      substats: [
+        { key: 'critRate_', value: 5.0 },
+        { key: 'critDMG_', value: 10.0 },
+        { key: 'atk_', value: 30.0 },
+      ],
+    },
+    {
+      name: 'HP型が最高',
+      substats: [
+        { key: 'critRate_', value: 3.0 },
+        { key: 'critDMG_', value: 6.0 },
+        { key: 'hp_', value: 25.0 },
+      ],
+    },
+    {
+      name: 'チャージ型が最高',
+      substats: [
+        { key: 'critRate_', value: 3.0 },
+        { key: 'critDMG_', value: 6.0 },
+        { key: 'enerRech_', value: 30.0 },
+      ],
+    },
+  ]
+
+  function makeArtifactWith(substats: Artifact['substats']): Artifact {
+    return {
+      setKey: 'GladiatorsFinale',
+      slotKey: 'flower',
+      level: 20,
+      rarity: 5,
+      mainStatKey: 'hp',
+      location: '',
+      lock: false,
+      totalRolls: 9,
+      substats,
+    }
+  }
+
+  for (const pattern of PATTERNS) {
+    it(`calculateScores の bestType が示すスコアと calculateAllScores の最良型が一致する（${pattern.name}）`, () => {
+      const artifact = makeArtifactWith(pattern.substats)
+      const { bestType } = calculateScores(artifact)
+      const allScores = calculateAllScores(artifact)
+
+      // bestType は ScoreTypeName のキーである
+      expect(allScores[bestType as keyof typeof allScores]).toBeDefined()
+      // bestType のスコアが最良型スコアと一致する
+      expect(allScores[bestType as keyof typeof allScores]).toBeCloseTo(allScores['最良型'], 5)
+    })
+  }
 })

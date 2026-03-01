@@ -189,7 +189,7 @@ export function calculateScores(artifact: Artifact): ScoreResult {
   const cv = critRate * 2 + critDmg
 
   let bestScore = cv
-  let bestType = 'CVスコア'
+  let bestType = 'CV'
 
   for (const [name, key, coeff] of SCORE_TYPE_DEFS) {
     const score = cv + (subMap[key] ?? 0) * coeff
