@@ -3,6 +3,7 @@
 # 依存関係
 **/node_modules/
 **/vendor/
+**/*package-lock.json
 
 # ビルド成果物
 **/dist/

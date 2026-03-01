@@ -23,7 +23,8 @@
       "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npx next build\")",
       "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npx tsc --noEmit 2>&1 | head -20\")",
       "Bash(bash -i -c \"cd /home/sakis/genshin-artifacts/webapp && npx next build 2>&1 | tail -20\")",
-      "Bash(bash -i:*)"
+      "Bash(bash -i:*)",
+      "Bash(git remote get-url origin)"
     ]
   }
 }
