@@ -11,6 +11,7 @@
   --text-main: #e8e0d0;
   --text-sub: #9a9080;
   --border: #2e3050;
+  --danger: #ef4444;
 }
 
 /* ── ベーススタイル ─────────────────────── */
@@ -99,7 +100,7 @@ body {
   border-color: var(--gold);
 }
 
-.ctrl-reupload {
+.ctrl-btn {
   background: var(--bg-card);
   color: var(--text-sub);
   border: 1px solid var(--border);
@@ -114,6 +115,11 @@ body {
 .ctrl-reupload:hover {
   color: var(--gold);
   border-color: var(--gold);
+}
+
+.ctrl-clear:hover {
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .result-count {

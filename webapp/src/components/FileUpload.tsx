@@ -71,7 +71,7 @@ export default function FileUpload({ onLoad, compact = false }: FileUploadProps)
       <div>
         {input}
         <button
-          className="ctrl-reupload"
+          className="ctrl-btn ctrl-reupload"
           onClick={() => inputRef.current?.click()}
         >
           📂 再読み込み

@@ -151,12 +151,20 @@ export default function HomePage() {
               </select>
             </div>
 
-            {/* 件数 + 再アップロード */}
+            {/* 件数 + フィルタクリア + 再アップロード */}
             <div className="ctrl-group ctrl-end">
               <span className="result-count">
                 {displayed.length} 件
                 {(filterSet || filterSlot) && ` / ★5 ${allRanked.length} 件`}
               </span>
+              {(filterSet || filterSlot) && (
+                <button
+                  className="ctrl-btn ctrl-clear"
+                  onClick={() => { setFilterSet(''); setFilterSlot('') }}
+                >
+                  フィルタをクリア
+                </button>
+              )}
               <FileUpload onLoad={handleLoad} compact />
             </div>
           </div>
