@@ -21,6 +21,6 @@
 
 ## 使い方
 
-1. [Inventory Kamera](https://github.com/Andrewthe13th/Inventory_Kamera) 等で GOOD フォーマット JSON をエクスポート
+1. [Irminsul](https://github.com/konkers/irminsul) 等で GOOD フォーマット JSON をエクスポート
 2. ドロップ画面に JSON ファイルをドラッグ＆ドロップ（またはクリックして選択）
 3. スコアタイプ・セット・部位でフィルタしてランキングを確認

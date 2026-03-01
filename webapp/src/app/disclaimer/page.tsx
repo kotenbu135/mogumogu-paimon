@@ -18,6 +18,14 @@ export default function DisclaimerPage() {
           取られることがあります。
         </p>
       </section>
+
+      <section className="content-section">
+        <h2 className="section-title">免責</h2>
+        <p className="content-text">
+          当サイトの利用により生じたいかなる損害についても、当サイトは一切の責任を負いません。
+          GOODファイルの取得・利用を含むすべての操作は、ユーザーご自身の判断と責任のもとで行ってください。
+        </p>
+      </section>
     </div>
   )
 }

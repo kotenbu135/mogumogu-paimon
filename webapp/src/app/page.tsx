@@ -83,12 +83,11 @@ export default function HomePage() {
   return (
     <main className="main-container">
       {/* ── ヘッダー ── */}
-      <h1 className="page-title">聖遺物スコアランキング</h1>
+      <h1 className="page-title">もぐもぐパイモン - 聖遺物スコア -</h1>
 
       {/* ── 空状態: ヒーロー画像 + アップロード ── */}
       {allRanked === null ? (
         <div className="hero-section">
-          <img src={`${basePath}/hero.png`} alt="" className="hero-img" />
           <FileUpload onLoad={handleLoad} />
           {/* スコア計算式の説明 */}
           <div className="score-formulas">

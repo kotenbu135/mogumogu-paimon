@@ -3,7 +3,7 @@ import './globals.css'
 import Sidebar from '@/components/Sidebar'
 
 export const metadata: Metadata = {
-  title: '聖遺物スコアランキング',
+  title: 'もぐもぐパイモン - 聖遺物スコア -',
   description: 'GOODフォーマットの聖遺物データをスコア順に表示する',
 }
 

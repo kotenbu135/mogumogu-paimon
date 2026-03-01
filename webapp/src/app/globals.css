@@ -113,6 +113,14 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.subsection-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
 .content-text {
   font-size: 0.9rem;
   color: var(--text-main);

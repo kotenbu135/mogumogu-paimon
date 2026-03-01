@@ -14,13 +14,14 @@ export default function AboutScorePage() {
         <h2 className="section-title">スコアとは</h2>
         <p className="content-text">
           スコアは聖遺物のサブステータスの強さを数値で表したものです。
-          会心率・会心ダメージを基本とし、キャラクターのビルドに合わせて
-          加算するステータスを選べます。
+        </p>
+        <p className="content-text">
+          会心率・会心ダメージを基本とし、キャラクターのビルドに合わせて加算するステータスを選べます。
         </p>
       </section>
 
       <section className="content-section">
-        <h2 className="section-title">CVスコア</h2>
+        <h2 className="section-title">CVスコア（会心スコア）</h2>
         <p className="content-text">
           CVスコア（Crit Value）は、聖遺物の評価によく使われる基本的な指標です。
         </p>
