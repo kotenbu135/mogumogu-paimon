@@ -157,15 +157,17 @@ export default function HomePage() {
                 {displayed.length} 件
                 {(filterSet || filterSlot) && ` / ★5 ${allRanked.length} 件`}
               </span>
-              {(filterSet || filterSlot) && (
-                <button
-                  className="ctrl-btn ctrl-clear"
-                  onClick={() => { setFilterSet(''); setFilterSlot('') }}
-                >
-                  フィルタをクリア
-                </button>
-              )}
-              <FileUpload onLoad={handleLoad} compact />
+              <div className="ctrl-buttons">
+                {(filterSet || filterSlot) && (
+                  <button
+                    className="ctrl-btn ctrl-clear"
+                    onClick={() => { setFilterSet(''); setFilterSlot('') }}
+                  >
+                    フィルタをクリア
+                  </button>
+                )}
+                <FileUpload onLoad={handleLoad} compact />
+              </div>
             </div>
           </div>
 

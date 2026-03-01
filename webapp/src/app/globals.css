@@ -77,6 +77,13 @@ body {
   align-items: flex-end;
 }
 
+.ctrl-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .ctrl-label {
   font-size: 0.7rem;
   color: var(--text-sub);

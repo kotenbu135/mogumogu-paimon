@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import type { ContextMenuItem } from '@/lib/contextMenu'
 
 interface ContextMenuProps {
@@ -34,7 +35,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
-  return (
+  return createPortal(
     <div
       ref={menuRef}
       className="context-menu"
@@ -52,6 +53,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
           {item.label}
         </button>
       ))}
-    </div>
+    </div>,
+    document.body
   )
 }
