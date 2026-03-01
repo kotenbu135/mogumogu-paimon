@@ -465,7 +465,8 @@ body {
 
 /* ── スコア計算式パネル ──────────────────── */
 .score-formulas {
-  width: 380px;
+  width: 100%;
+  max-width: 800px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -513,7 +514,8 @@ body {
 
 /* ── ファイルアップロードゾーン ─────────── */
 .upload-zone {
-  width: 380px;
+  width: 100%;
+  max-width: 800px;
   padding: 2.5rem 2rem;
   border: 2px dashed var(--border);
   border-radius: 12px;

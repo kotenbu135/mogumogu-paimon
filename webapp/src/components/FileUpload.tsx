@@ -83,7 +83,7 @@ export default function FileUpload({ onLoad, compact = false }: FileUploadProps)
 
   // 通常: ドラッグ&ドロップゾーン
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 w-full max-w-[800px]">
       <div
         className={`upload-zone ${dragging ? 'dragging' : ''}`}
         onDrop={handleDrop}
