@@ -63,8 +63,9 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
   const mainStatName = MAIN_STAT_NAMES[mainStatKey] ?? mainStatKey
   const mainStatValue = getMainStatValue(level, rarity, mainStatKey)
 
-  const artifactImgSrc = `/artifacts/${setKey}/${slotKey}.png`
-  const charImgSrc = location ? `/chars/${location}.png` : null
+  const bp = process.env.BASE_PATH ?? ''
+  const artifactImgSrc = `${bp}/artifacts/${setKey}/${slotKey}.png`
+  const charImgSrc = location ? `${bp}/chars/${location}.png` : null
 
   const mainScore = allScores[scoreType]
   // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う

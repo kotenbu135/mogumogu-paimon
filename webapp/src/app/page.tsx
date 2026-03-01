@@ -7,6 +7,8 @@ import type { ArtifactSlotKey, GoodFile, RankedArtifact, ScoreTypeName } from '@
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
 import { ARTIFACT_SET_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES } from '@/lib/constants'
 
+const basePath = process.env.BASE_PATH ?? ''
+
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
 ]
@@ -86,7 +88,7 @@ export default function HomePage() {
       {/* ── 空状態: ヒーロー画像 + アップロード ── */}
       {allRanked === null ? (
         <div className="hero-section">
-          <img src="/hero.png" alt="" className="hero-img" />
+          <img src={`${basePath}/hero.png`} alt="" className="hero-img" />
           <FileUpload onLoad={handleLoad} />
           {/* スコア計算式の説明 */}
           <div className="score-formulas">
