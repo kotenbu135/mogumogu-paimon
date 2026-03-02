@@ -192,7 +192,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
       {reconRate != null && (
         <div className={`recon-rate ${reconColor(reconRate)}`}>
           <img
-            src={`${bp}/icons/dust-of-enlightenment.png`}
+            src={`${bp}/icons/Item_Dust_of_Enlightenment.webp`}
             alt="聖啓の塵"
             className="recon-icon"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}

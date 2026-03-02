@@ -99,8 +99,16 @@ export default function HomePage() {
       .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null }))
       .filter(({ entry: e }) => !filterSet || e.artifact.setKey === filterSet)
       .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
-      .sort((a, b) => b.entry.allScores[scoreType] - a.entry.allScores[scoreType])
-  }, [allRanked, filterSet, filterSlot, scoreType, reconRates])
+      .sort((a, b) => {
+        if (reconType) {
+          // 再構築表示時は成功率の高い順（nullは末尾）
+          const ra = a.reconRate ?? -1
+          const rb = b.reconRate ?? -1
+          if (ra !== rb) return rb - ra
+        }
+        return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
+      })
+  }, [allRanked, filterSet, filterSlot, scoreType, reconRates, reconType])
 
   return (
     <main className="main-container">
