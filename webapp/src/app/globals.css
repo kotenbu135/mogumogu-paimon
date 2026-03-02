@@ -78,7 +78,7 @@ body {
 }
 
 .main-container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
 }
@@ -571,15 +571,14 @@ body {
 
 /* ── 再構築成功率 ────────────────────────── */
 .recon-rate {
-  position: absolute;
-  bottom: 0.6rem;
-  right: 0.6rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  margin-top: 0.5rem;
+  justify-content: flex-end;
 }
 
 .recon-icon {
