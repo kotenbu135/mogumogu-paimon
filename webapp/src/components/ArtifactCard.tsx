@@ -11,6 +11,7 @@ interface ArtifactCardProps {
   rank: number
   entry: RankedArtifact
   scoreType: ScoreTypeName
+  reconRate?: number | null
   onFilterBySet?: (setKey: string) => void
   onFilterBySlot?: (slotKey: ArtifactSlotKey) => void
   equippedSetKeys?: string[]
@@ -48,13 +49,20 @@ function formatSubstat(
   return { label, valueStr, rollDetail }
 }
 
+/** 再構築成功率の色クラスを返す */
+function reconColor(rate: number): string {
+  if (rate >= 70) return 'recon-rate-red'
+  if (rate >= 50) return 'recon-rate-orange'
+  return 'recon-rate-grey'
+}
+
 /** コンテキストメニューの状態 */
 interface MenuState {
   x: number
   y: number
 }
 
-export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
+export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
 
@@ -179,6 +187,19 @@ export default function ArtifactCard({ rank, entry, scoreType, onFilterBySet, on
           )
         })}
       </div>
+
+      {/* 再構築成功率 */}
+      {reconRate != null && (
+        <div className={`recon-rate ${reconColor(reconRate)}`}>
+          <img
+            src={`${bp}/icons/dust-of-enlightenment.png`}
+            alt="聖啓の塵"
+            className="recon-icon"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+          {Math.round(reconRate)}%
+        </div>
+      )}
 
       {/* コンテキストメニュー（聖遺物画像） */}
       {menuState && (

@@ -569,6 +569,29 @@ body {
   box-shadow: 0 0 8px rgba(200, 163, 90, 0.4);
 }
 
+/* ── 再構築成功率 ────────────────────────── */
+.recon-rate {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.recon-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.recon-rate-red { color: #ef4444; }
+.recon-rate-orange { color: #f97316; }
+.recon-rate-grey { color: #6b7280; }
+
 /* ── コンテキストメニュー ────────────────── */
 .context-menu {
   position: fixed;

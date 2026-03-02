@@ -1,5 +1,8 @@
 /** GOOD フォーマットの型定義 */
 
+/** 再構築種別 */
+export type ReconstructionType = 'normal' | 'advanced' | 'absolute'
+
 export type ArtifactSlotKey = 'flower' | 'plume' | 'sands' | 'goblet' | 'circlet'
 
 export type StatKey =

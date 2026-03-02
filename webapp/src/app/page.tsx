@@ -3,14 +3,22 @@
 import { useMemo, useState } from 'react'
 import FileUpload from '@/components/FileUpload'
 import ArtifactCard from '@/components/ArtifactCard'
-import type { ArtifactSlotKey, GoodFile, RankedArtifact, ScoreTypeName } from '@/lib/types'
+import type { ArtifactSlotKey, GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName } from '@/lib/types'
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
+import { calculateReconstructionRate } from '@/lib/reconstruction'
 import { ARTIFACT_SET_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES } from '@/lib/constants'
 
 const basePath = process.env.BASE_PATH ?? ''
 
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
+]
+
+const RECON_OPTIONS: { value: ReconstructionType | ''; label: string }[] = [
+  { value: '', label: '表示しない' },
+  { value: 'normal', label: '通常再構築' },
+  { value: 'advanced', label: '上級再構築' },
+  { value: 'absolute', label: '絶対再構築' },
 ]
 
 const SLOT_OPTIONS: { value: ArtifactSlotKey | ''; label: string }[] = [
@@ -39,6 +47,7 @@ export default function HomePage() {
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
   const [filterSet, setFilterSet] = useState('')
   const [filterSlot, setFilterSlot] = useState<ArtifactSlotKey | ''>('')
+  const [reconType, setReconType] = useState<ReconstructionType | ''>('')
 
   function handleLoad(data: GoodFile) {
     setAllRanked(buildRankedList(data))
@@ -71,14 +80,27 @@ export default function HomePage() {
     return map
   }, [allRanked])
 
-  // フィルタ・ソート済みリスト
+  // 再構築成功率マップ（entry index → rate）
+  const reconRates = useMemo(() => {
+    if (!allRanked || !reconType) return new Map<number, number>()
+    const map = new Map<number, number>()
+    for (let i = 0; i < allRanked.length; i++) {
+      const e = allRanked[i]
+      const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
+      if (rate !== null) map.set(i, rate)
+    }
+    return map
+  }, [allRanked, scoreType, reconType])
+
+  // フィルタ・ソート済みリスト（再構築成功率付き）
   const displayed = useMemo(() => {
     if (!allRanked) return []
-    return [...allRanked]
-      .filter((e) => !filterSet || e.artifact.setKey === filterSet)
-      .filter((e) => !filterSlot || e.artifact.slotKey === filterSlot)
-      .sort((a, b) => b.allScores[scoreType] - a.allScores[scoreType])
-  }, [allRanked, filterSet, filterSlot, scoreType])
+    return allRanked
+      .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null }))
+      .filter(({ entry: e }) => !filterSet || e.artifact.setKey === filterSet)
+      .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
+      .sort((a, b) => b.entry.allScores[scoreType] - a.entry.allScores[scoreType])
+  }, [allRanked, filterSet, filterSlot, scoreType, reconRates])
 
   return (
     <main className="main-container">
@@ -152,6 +174,20 @@ export default function HomePage() {
               </select>
             </div>
 
+            {/* 再構築種別 */}
+            <div className="ctrl-group">
+              <label className="ctrl-label">再構築</label>
+              <select
+                className="ctrl-select"
+                value={reconType}
+                onChange={(e) => setReconType(e.target.value as ReconstructionType | '')}
+              >
+                {RECON_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
             {/* 件数 + フィルタクリア + 再アップロード */}
             <div className="ctrl-group ctrl-end">
               <span className="result-count">
@@ -174,12 +210,13 @@ export default function HomePage() {
 
           {/* ── カードグリッド ── */}
           <div className="card-grid">
-            {displayed.map((entry, i) => (
+            {displayed.map(({ entry, reconRate }, i) => (
               <ArtifactCard
                 key={i}
                 rank={i + 1}
                 entry={entry}
                 scoreType={scoreType}
+                reconRate={reconRate}
                 onFilterBySet={setFilterSet}
                 onFilterBySlot={setFilterSlot}
                 equippedSetKeys={equippedSetsMap.get(entry.artifact.location) ?? []}
