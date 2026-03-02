@@ -1,17 +1,18 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import FileUpload from '@/components/FileUpload'
 import ArtifactCard from '@/components/ArtifactCard'
-import type { ArtifactSlotKey, GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName } from '@/lib/types'
+import type { ArtifactSlotKey, GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
 import { calculateReconstructionRate } from '@/lib/reconstruction'
-import { ARTIFACT_SET_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES } from '@/lib/constants'
+import { ARTIFACT_SET_NAMES, MAIN_STAT_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES, STAT_NAMES, groupSetOptions } from '@/lib/constants'
 
 const basePath = process.env.BASE_PATH ?? ''
 
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
-  'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
+  'CV', '攻撃型', 'HP型', '防御型', '熟知型', 'チャージ型', '最良型',
 ]
 
 const RECON_OPTIONS: { value: ReconstructionType; label: string }[] = [
@@ -46,25 +47,77 @@ export default function HomePage() {
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
   const [filterSet, setFilterSet] = useState('')
   const [filterSlot, setFilterSlot] = useState<ArtifactSlotKey | ''>('')
+  const [filterMainStat, setFilterMainStat] = useState('')
+  const [filterSubStats, setFilterSubStats] = useState<StatKey[]>([])
+  const [subStatSort, setSubStatSort] = useState<StatKey | ''>('')
+  const [subStatOpen, setSubStatOpen] = useState(false)
+  const subStatBtnRef = useRef<HTMLButtonElement>(null)
+  const subStatPanelRef = useRef<HTMLDivElement>(null)
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
+
+  // サブステドロップダウンの外側クリック・Escキーで閉じる
+  useEffect(() => {
+    if (!subStatOpen) return
+    function handleClick(e: MouseEvent) {
+      const target = e.target as Node
+      if (
+        subStatBtnRef.current && !subStatBtnRef.current.contains(target) &&
+        subStatPanelRef.current && !subStatPanelRef.current.contains(target)
+      ) {
+        setSubStatOpen(false)
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setSubStatOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [subStatOpen])
 
   function handleLoad(data: GoodFile) {
     setAllRanked(buildRankedList(data))
     setFilterSet('')
     setFilterSlot('')
+    setFilterMainStat('')
+    setFilterSubStats([])
+    setSubStatSort('')
   }
 
-  // アップロードデータに含まれる setKey を日本語名でソートして列挙
-  const setOptions = useMemo(() => {
+  // アップロードデータに含まれる setKey をグループ化して列挙
+  const setOptionGroups = useMemo(() => {
     if (!allRanked) return []
-    const keys = [...new Set(allRanked.map((e) => e.artifact.setKey))].sort((a, b) => {
-      const na = ARTIFACT_SET_NAMES[a] ?? a
-      const nb = ARTIFACT_SET_NAMES[b] ?? b
-      return na.localeCompare(nb, 'ja')
-    })
-    return keys
+    const keys = [...new Set(allRanked.map((e) => e.artifact.setKey))]
+    return groupSetOptions(keys)
   }, [allRanked])
+
+  // アップロードデータに存在するメインステキーの一覧（固定順序）
+  const MAIN_STAT_ORDER: string[] = [
+    'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
+    'eleMas', 'enerRech_', 'heal_',
+    'anemo_dmg_', 'geo_dmg_', 'electro_dmg_', 'dendro_dmg_',
+    'hydro_dmg_', 'pyro_dmg_', 'cryo_dmg_',
+    'atk', 'hp', 'def',
+  ]
+  const mainStatOptions = useMemo(() => {
+    if (!allRanked) return []
+    const present = new Set(allRanked.map((e) => e.artifact.mainStatKey))
+    return MAIN_STAT_ORDER.filter((k) => present.has(k))
+  }, [allRanked])
+
+  // メインステフィルタが選択されている場合、同じキーをサブステ選択肢から除外
+  const ALL_SUBSTAT_KEYS: StatKey[] = [
+    'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
+    'eleMas', 'enerRech_', 'atk', 'hp', 'def',
+  ]
+  const availableSubStatKeys = useMemo((): StatKey[] => {
+    if (!filterMainStat) return ALL_SUBSTAT_KEYS
+    return ALL_SUBSTAT_KEYS.filter((k) => k !== filterMainStat)
+  }, [filterMainStat])
 
   // キャラ名 → 装備セットキー配列のマップ
   const equippedSetsMap = useMemo(() => {
@@ -99,6 +152,11 @@ export default function HomePage() {
       .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null }))
       .filter(({ entry: e }) => !filterSet || e.artifact.setKey === filterSet)
       .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
+      .filter(({ entry: e }) => !filterMainStat || e.artifact.mainStatKey === filterMainStat)
+      .filter(({ entry: e }) =>
+        filterSubStats.length === 0 ||
+        filterSubStats.every((k) => e.artifact.substats.some((s) => s.key === k)),
+      )
       .sort((a, b) => {
         if (reconSort) {
           // 再構築成功率ソートON: 成功率の高い順（nullは末尾）
@@ -106,9 +164,14 @@ export default function HomePage() {
           const rb = b.reconRate ?? -1
           if (ra !== rb) return rb - ra
         }
+        if (subStatSort) {
+          const va = a.entry.artifact.substats.find((s) => s.key === subStatSort)?.value ?? -Infinity
+          const vb = b.entry.artifact.substats.find((s) => s.key === subStatSort)?.value ?? -Infinity
+          if (va !== vb) return vb - va
+        }
         return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
       })
-  }, [allRanked, filterSet, filterSlot, scoreType, reconRates, reconSort])
+  }, [allRanked, filterSet, filterSlot, filterMainStat, filterSubStats, subStatSort, scoreType, reconRates, reconSort])
 
   return (
     <main className="main-container">
@@ -160,10 +223,14 @@ export default function HomePage() {
                 onChange={(e) => setFilterSet(e.target.value)}
               >
                 <option value="">すべてのセット</option>
-                {setOptions.map((key) => (
-                  <option key={key} value={key}>
-                    {ARTIFACT_SET_NAMES[key] ?? key}
-                  </option>
+                {setOptionGroups.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.keys.map((key) => (
+                      <option key={key} value={key}>
+                        {ARTIFACT_SET_NAMES[key] ?? key}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -178,6 +245,88 @@ export default function HomePage() {
               >
                 {SLOT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* メインステフィルタ */}
+            <div className="ctrl-group">
+              <label className="ctrl-label">メインステ</label>
+              <select
+                className="ctrl-select"
+                value={filterMainStat}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setFilterMainStat(val)
+                  setFilterSubStats((prev) => prev.filter((k) => k !== val))
+                }}
+              >
+                <option value="">すべて</option>
+                {mainStatOptions.map((key) => (
+                  <option key={key} value={key}>
+                    {MAIN_STAT_NAMES[key] ?? key}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* サブステフィルタ */}
+            <div className="ctrl-group">
+              <label className="ctrl-label">サブステ（AND）</label>
+              <button
+                ref={subStatBtnRef}
+                type="button"
+                className="substat-dropdown-btn"
+                onClick={() => setSubStatOpen((v) => !v)}
+              >
+                {filterSubStats.length > 0
+                  ? `サブステ(${filterSubStats.length})`
+                  : 'サブステ'}
+              </button>
+              {subStatOpen && createPortal(
+                <div
+                  ref={subStatPanelRef}
+                  className="substat-dropdown-panel"
+                  style={{
+                    top: (subStatBtnRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                    left: subStatBtnRef.current?.getBoundingClientRect().left ?? 0,
+                  }}
+                >
+                  {availableSubStatKeys.map((key) => (
+                    <label key={key} className="substat-dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="ctrl-checkbox"
+                        checked={filterSubStats.includes(key)}
+                        onChange={(e) => {
+                          setFilterSubStats((prev) =>
+                            e.target.checked
+                              ? [...prev, key]
+                              : prev.filter((k) => k !== key),
+                          )
+                        }}
+                      />
+                      {STAT_NAMES[key]}
+                    </label>
+                  ))}
+                </div>,
+                document.body,
+              )}
+            </div>
+
+            {/* サブステソート */}
+            <div className="ctrl-group">
+              <label className="ctrl-label">サブステソート</label>
+              <select
+                className="ctrl-select"
+                value={subStatSort}
+                onChange={(e) => setSubStatSort(e.target.value as StatKey | '')}
+              >
+                <option value="">スコア順</option>
+                {ALL_SUBSTAT_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {STAT_NAMES[key]}
+                  </option>
                 ))}
               </select>
             </div>
@@ -213,13 +362,13 @@ export default function HomePage() {
             <div className="ctrl-group ctrl-end">
               <span className="result-count">
                 {displayed.length} 件
-                {(filterSet || filterSlot) && ` / ★5 ${allRanked.length} 件`}
+                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ★5 ${allRanked.length} 件`}
               </span>
               <div className="ctrl-buttons">
-                {(filterSet || filterSlot) && (
+                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && (
                   <button
                     className="ctrl-btn ctrl-clear"
-                    onClick={() => { setFilterSet(''); setFilterSlot('') }}
+                    onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]) }}
                   >
                     フィルタをクリア
                   </button>

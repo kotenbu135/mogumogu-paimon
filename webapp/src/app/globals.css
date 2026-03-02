@@ -292,6 +292,59 @@ body {
   border-color: var(--gold);
 }
 
+/* ── サブステフィルタドロップダウン ───────── */
+.substat-dropdown {
+  position: relative;
+}
+
+.substat-dropdown-btn {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-width: 7rem;
+  text-align: left;
+  appearance: auto;
+}
+
+.substat-dropdown-btn:focus {
+  border-color: var(--gold);
+  outline: none;
+}
+
+.substat-dropdown-panel {
+  position: fixed;
+  z-index: 50;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 10rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.substat-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.substat-dropdown-item:hover {
+  background: var(--bg-card-hover);
+}
+
 .ctrl-btn {
   background: var(--bg-card);
   color: var(--text-sub);

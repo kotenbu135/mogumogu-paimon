@@ -96,6 +96,100 @@ export const STAT_NAMES: Record<StatKey, string> = {
   critDMG_: '会心ダメージ',
 }
 
+/** セットグループ定義（プルダウンの optgroup 用） */
+export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
+  {
+    label: 'メインアタッカー用',
+    keys: [
+      'ADayCarvedFromRisingWinds',
+      'NightOfTheSkysUnveiling',
+      'FinaleOfTheDeepGalleries',
+      'ObsidianCodex',
+      'LongNightsOath',
+      'FragmentOfHarmonicWhimsy',
+      'MarechausseeHunter',
+      'GladiatorsFinale',
+    ],
+  },
+  {
+    label: 'サブアタッカー用',
+    keys: [
+      'AubadeOfMorningstarAndMoon',
+      'EmblemOfSeveredFate',
+      'GildedDreams',
+      'GoldenTroupe',
+      'UnfinishedReverie',
+    ],
+  },
+  {
+    label: 'サポート用',
+    keys: [
+      'ArchaicPetra',
+      'DeepwoodMemories',
+      'MaidenBeloved',
+      'NoblesseOblige',
+      'OceanHuedClam',
+      'ScrollOfTheHeroOfCinderCity',
+      'SilkenMoonsSerenade',
+      'SongOfDaysPast',
+      'TenacityOfTheMillelith',
+      'ViridescentVenerer',
+      'VourukashasGlow',
+    ],
+  },
+  {
+    label: 'メインアタッカー用（優先度低）',
+    keys: [
+      'BlizzardStrayer',
+      'BloodstainedChivalry',
+      'CrimsonWitchOfFlames',
+      'DesertPavilionChronicle',
+      'EchoesOfAnOffering',
+      'FlowerOfParadiseLost',
+      'HeartOfDepth',
+      'HuskOfOpulentDreams',
+      'Lavawalker',
+      'NighttimeWhispersInTheEchoingWoods',
+      'NymphsDream',
+      'PaleFlame',
+      'RetracingBolide',
+      'ShimenawasReminiscence',
+      'ThunderingFury',
+      'Thundersoother',
+      'VermillionHereafter',
+      'WanderersTroupe',
+    ],
+  },
+]
+
+/** アップロードデータのセットキーをグループ化する */
+export function groupSetOptions(
+  availableKeys: string[],
+): { label: string; keys: string[] }[] {
+  const available = new Set(availableKeys)
+  const used = new Set<string>()
+  const groups: { label: string; keys: string[] }[] = []
+
+  for (const group of ARTIFACT_SET_GROUPS) {
+    const keys = group.keys.filter((k) => available.has(k))
+    if (keys.length > 0) {
+      groups.push({ label: group.label, keys })
+      keys.forEach((k) => used.add(k))
+    }
+  }
+
+  const others = availableKeys
+    .filter((k) => !used.has(k))
+    .sort((a, b) =>
+      (ARTIFACT_SET_NAMES[a] ?? a).localeCompare(ARTIFACT_SET_NAMES[b] ?? b, 'ja'),
+    )
+  if (others.length > 0) {
+    groups.push({ label: 'その他', keys: others })
+  }
+
+  return groups
+}
+
 /** パーセント表記のサブステ */
 export const PERCENT_STATS = new Set<StatKey>([
   'hp_',
