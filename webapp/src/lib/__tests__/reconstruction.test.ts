@@ -101,54 +101,98 @@ describe('multinomialProb', () => {
 // ── getGuaranteedIndices ──────────────────────────
 
 describe('getGuaranteedIndices', () => {
-  it('CV型: critRate_ と critDMG_ のインデックスを返す', () => {
-    const substats = [
-      { key: 'critRate_' as const, value: 10 },
-      { key: 'critDMG_' as const, value: 20 },
-      { key: 'hp_' as const, value: 5 },
-      { key: 'atk' as const, value: 30 },
-    ]
-    expect(getGuaranteedIndices('CV', substats)).toEqual([0, 1])
+  it('全スコアタイプ共通: critRate_ と critDMG_ のインデックスを返す', () => {
+    const art = makeArtifact()
+    expect(getGuaranteedIndices('CV', art)).toEqual([0, 1])
+    expect(getGuaranteedIndices('攻撃型', art)).toEqual([0, 1])
+    expect(getGuaranteedIndices('HP型', art)).toEqual([0, 1])
+    expect(getGuaranteedIndices('防御型', art)).toEqual([0, 1])
+    expect(getGuaranteedIndices('最良型', art)).toEqual([0, 1])
   })
 
-  it('HP型: critRate_ + hp_ のペアを優先して返す', () => {
-    const substats = [
-      { key: 'critRate_' as const, value: 10 },
-      { key: 'critDMG_' as const, value: 20 },
-      { key: 'hp_' as const, value: 5 },
-      { key: 'atk' as const, value: 30 },
-    ]
-    expect(getGuaranteedIndices('HP型', substats)).toEqual([0, 2])
+  it('理の冠・メインステ会心率・攻撃型: critDMG_ + atk_ を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 10 },
+        { key: 'critDMG_', value: 20 },
+        { key: 'hp_', value: 5 },
+        { key: 'atk', value: 30 },
+      ],
+    })
+    expect(getGuaranteedIndices('攻撃型', art)).toEqual([1, 0])
   })
 
-  it('HP型: critRate_ がない場合は critDMG_ + hp_ を返す', () => {
-    const substats = [
-      { key: 'atk_' as const, value: 10 },
-      { key: 'critDMG_' as const, value: 20 },
-      { key: 'hp_' as const, value: 5 },
-      { key: 'atk' as const, value: 30 },
-    ]
-    expect(getGuaranteedIndices('HP型', substats)).toEqual([1, 2])
+  it('理の冠・メインステ会心ダメ・攻撃型: critRate_ + atk_ を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critDMG_',
+      substats: [
+        { key: 'critRate_', value: 10 },
+        { key: 'atk_', value: 20 },
+        { key: 'hp_', value: 5 },
+        { key: 'atk', value: 30 },
+      ],
+    })
+    expect(getGuaranteedIndices('攻撃型', art)).toEqual([0, 1])
+  })
+
+  it('理の冠・メインステ会心率・CV型: null を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 10 },
+        { key: 'critDMG_', value: 20 },
+        { key: 'hp_', value: 5 },
+        { key: 'atk', value: 30 },
+      ],
+    })
+    expect(getGuaranteedIndices('CV', art)).toBeNull()
+  })
+
+  it('理の冠・メインステ会心率・最良型: critDMG_ + 固有ステで返す', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 10 },
+        { key: 'critDMG_', value: 20 },
+        { key: 'hp_', value: 5 },
+        { key: 'atk', value: 30 },
+      ],
+    })
+    const result = getGuaranteedIndices('最良型', art)
+    expect(result).not.toBeNull()
+    // critDMG_ は index 1
+    expect(result![0]).toBe(1)
+    // 固有ステ（atk_ or hp_）のいずれか
+    expect([0, 2]).toContain(result![1])
   })
 
   it('保証サブステが揃わない場合は null', () => {
-    const substats = [
-      { key: 'hp' as const, value: 200 },
-      { key: 'atk' as const, value: 20 },
-      { key: 'def' as const, value: 30 },
-      { key: 'eleMas' as const, value: 40 },
-    ]
-    expect(getGuaranteedIndices('CV', substats)).toBeNull()
+    const art = makeArtifact({
+      substats: [
+        { key: 'hp' as const, value: 200 },
+        { key: 'atk' as const, value: 20 },
+        { key: 'def' as const, value: 30 },
+        { key: 'eleMas' as const, value: 40 },
+      ],
+    })
+    expect(getGuaranteedIndices('CV', art)).toBeNull()
   })
 
-  it('最良型: critRate_ + critDMG_ を返す', () => {
-    const substats = [
-      { key: 'hp_' as const, value: 5 },
-      { key: 'critRate_' as const, value: 10 },
-      { key: 'critDMG_' as const, value: 20 },
-      { key: 'atk' as const, value: 30 },
-    ]
-    expect(getGuaranteedIndices('最良型', substats)).toEqual([1, 2])
+  it('最良型（通常部位）: critRate_ + critDMG_ を返す', () => {
+    const art = makeArtifact({
+      substats: [
+        { key: 'hp_' as const, value: 5 },
+        { key: 'critRate_' as const, value: 10 },
+        { key: 'critDMG_' as const, value: 20 },
+        { key: 'atk' as const, value: 30 },
+      ],
+    })
+    expect(getGuaranteedIndices('最良型', art)).toEqual([1, 2])
   })
 })
 
@@ -235,20 +279,74 @@ describe('calculateReconstructionRate', () => {
     expect(lowRate!).toBeGreaterThan(highRate!)
   })
 
-  it('HP型ではHP%への保証が考慮される', () => {
+  it('攻撃型でも会心率+会心ダメが保証ペアになる', () => {
     const art = makeArtifact({
       substats: [
         { key: 'critRate_', value: 3.9 },
-        { key: 'hp_', value: 4.7 },
         { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
         { key: 'atk', value: 51 },
       ],
       totalRolls: 9,
     })
     const rollCounts = [0, 0, 0, 5]
-    const rate = calculateReconstructionRate(art, rollCounts, 'HP型', 'normal')
+    const rate = calculateReconstructionRate(art, rollCounts, '攻撃型', 'normal')
     expect(rate).not.toBeNull()
     expect(rate!).toBeGreaterThan(0)
+  })
+
+  it('理の冠・メインステ会心率・攻撃型: critDMG_ + atk_ で計算可能', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 5.8 },
+        { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
+        { key: 'atk', value: 51 },
+      ],
+      totalRolls: 9,
+    })
+    const rollCounts = [0, 0, 0, 5]
+    const rate = calculateReconstructionRate(art, rollCounts, '攻撃型', 'normal')
+    expect(rate).not.toBeNull()
+    expect(rate!).toBeGreaterThanOrEqual(0)
+    expect(rate!).toBeLessThanOrEqual(100)
+  })
+
+  it('理の冠・メインステ会心率・CV型: null を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 5.8 },
+        { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
+        { key: 'atk', value: 51 },
+      ],
+      totalRolls: 9,
+    })
+    const rollCounts = [0, 0, 0, 5]
+    expect(calculateReconstructionRate(art, rollCounts, 'CV', 'normal')).toBeNull()
+  })
+
+  it('理の冠・メインステ会心率・最良型: 計算可能', () => {
+    const art = makeArtifact({
+      slotKey: 'circlet',
+      mainStatKey: 'critRate_',
+      substats: [
+        { key: 'atk_', value: 5.8 },
+        { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
+        { key: 'atk', value: 51 },
+      ],
+      totalRolls: 9,
+    })
+    const rollCounts = [0, 0, 0, 5]
+    const rate = calculateReconstructionRate(art, rollCounts, '最良型', 'normal')
+    expect(rate).not.toBeNull()
+    expect(rate!).toBeGreaterThanOrEqual(0)
+    expect(rate!).toBeLessThanOrEqual(100)
   })
 
   it('3OPスタート（totalRolls=8）でも計算できる', () => {

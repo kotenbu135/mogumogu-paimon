@@ -77,33 +77,6 @@ export default function HowToUsePage() {
           Lv20まで強化した聖遺物のみ表示されます。
         </p>
       </section>
-
-      <section className="content-section">
-        <h2 className="section-title">4. フィルタリング・スコアタイプの変更</h2>
-        <ul className="content-list">
-          <li>
-            <strong>スコアタイプ</strong>：
-            CV・HP型・攻撃型・防御型・熟知型・チャージ型・最良型から選択できます
-          </li>
-          <li>
-            <strong>セットフィルタ</strong>：
-            特定の聖遺物セットのみ表示できます
-          </li>
-          <li>
-            <strong>部位フィルタ</strong>：
-            花・羽・砂・杯・冠のいずれかに絞り込めます
-          </li>
-        </ul>
-      </section>
-
-      <section className="content-section">
-        <h2 className="section-title">5. アイコンクリックでフィルタ</h2>
-        <p className="content-text">
-          聖遺物またはキャラクターアイコンをクリックすると、
-          聖遺物セットでのフィルタリングメニューが表示されます。
-        </p>
-      </section>
-
     </div>
   )
 }

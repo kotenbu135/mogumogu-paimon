@@ -19,17 +19,6 @@ const GUARANTEE_THRESHOLDS: Record<ReconstructionType, number> = {
   absolute: 4,
 }
 
-/** スコアタイプ別の保証サブステ候補ペア（優先度順） */
-const GUARANTEED_PAIRS: Record<ScoreTypeName, [StatKey, StatKey][]> = {
-  CV: [['critRate_', 'critDMG_']],
-  HP型: [['critRate_', 'hp_'], ['critDMG_', 'hp_']],
-  攻撃型: [['critRate_', 'atk_'], ['critDMG_', 'atk_']],
-  防御型: [['critRate_', 'def_'], ['critDMG_', 'def_']],
-  熟知型: [['critRate_', 'eleMas'], ['critDMG_', 'eleMas']],
-  チャージ型: [['critRate_', 'enerRech_'], ['critDMG_', 'enerRech_']],
-  最良型: [['critRate_', 'critDMG_']],
-}
-
 /** スコア種別ごとの追加ステ: [StatKey, 係数] */
 const SCORE_EXTRA: [ScoreTypeName, StatKey, number][] = [
   ['HP型', 'hp_', 1.0],
@@ -38,6 +27,45 @@ const SCORE_EXTRA: [ScoreTypeName, StatKey, number][] = [
   ['熟知型', 'eleMas', 0.25],
   ['チャージ型', 'enerRech_', 0.9],
 ]
+
+/**
+ * スコアタイプと聖遺物に応じた保証サブステ候補ペアを返す
+ *
+ * 基本: critRate_ + critDMG_
+ * 理の冠でメインステが会心系の場合:
+ *   - メインステと同じサブステは出現しないため、代わりにスコアタイプ固有ステを使用
+ *   - CV型: 固有ステがないため空配列（= 計算不可）
+ *   - 最良型: 全固有ステを候補に
+ */
+function getGuaranteedPairs(
+  scoreType: ScoreTypeName,
+  artifact: Artifact,
+): [StatKey, StatKey][] {
+  const mainStat = artifact.mainStatKey
+  const critRateBlocked = mainStat === 'critRate_'
+  const critDMGBlocked = mainStat === 'critDMG_'
+
+  // メインステが会心系でない場合は全スコアタイプ共通で critRate_ + critDMG_
+  if (!critRateBlocked && !critDMGBlocked) {
+    return [['critRate_', 'critDMG_']]
+  }
+
+  // メインステが会心系の場合、残った会心ステとスコアタイプ固有ステのペア
+  const remainingCrit: StatKey = critRateBlocked ? 'critDMG_' : 'critRate_'
+
+  // CV型は固有ステがないため計算不可
+  if (scoreType === 'CV') return []
+
+  // 最良型は全固有ステを候補に
+  if (scoreType === '最良型') {
+    return SCORE_EXTRA.map(([, key]) => [remainingCrit, key])
+  }
+
+  // その他: スコアタイプ固有ステとペア
+  const extra = SCORE_EXTRA.find(([name]) => name === scoreType)
+  if (!extra) return []
+  return [[remainingCrit, extra[1]]]
+}
 
 // ── 数学ユーティリティ ──────────────────────────
 
@@ -84,20 +112,19 @@ export function enumeratePatterns(boxes: number, total: number): number[][] {
 }
 
 /**
- * スコアタイプに応じた保証サブステのインデックスペアを返す
+ * スコアタイプと聖遺物に応じた保証サブステのインデックスペアを返す
  * 候補ペアの中で最初に両方揃っているものを採用
  * @returns [indexA, indexB] または null（揃わない場合）
  */
 export function getGuaranteedIndices(
   scoreType: ScoreTypeName,
-  substats: { key: StatKey }[],
+  artifact: Artifact,
 ): [number, number] | null {
-  const pairs = GUARANTEED_PAIRS[scoreType]
-  if (!pairs) return null
+  const pairs = getGuaranteedPairs(scoreType, artifact)
 
   for (const [keyA, keyB] of pairs) {
-    const idxA = substats.findIndex((s) => s.key === keyA)
-    const idxB = substats.findIndex((s) => s.key === keyB)
+    const idxA = artifact.substats.findIndex((s) => s.key === keyA)
+    const idxB = artifact.substats.findIndex((s) => s.key === keyB)
     if (idxA !== -1 && idxB !== -1) return [idxA, idxB]
   }
   return null
@@ -149,8 +176,7 @@ export function calculateReconstructionRate(
   if (enhTotal <= 0) return null
 
   // 全候補ペアを試し、最大の成功率を返す
-  const pairs = GUARANTEED_PAIRS[scoreType]
-  if (!pairs) return null
+  const pairs = getGuaranteedPairs(scoreType, artifact)
 
   let bestRate: number | null = null
   for (const [keyA, keyB] of pairs) {

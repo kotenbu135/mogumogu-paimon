@@ -225,3 +225,13 @@ export function calculateAllScores(artifact: Artifact): Record<ScoreTypeName, nu
   }
   return scores
 }
+
+/** スコアタイプに応じた有効サブステの Set を返す */
+export function getEffectiveStats(scoreType: ScoreTypeName, bestType?: ScoreTypeName): Set<StatKey> {
+  const effective = new Set<StatKey>(['critRate_', 'critDMG_'])
+  const resolvedType = scoreType === '最良型' ? (bestType ?? 'CV') : scoreType
+  if (resolvedType === 'CV') return effective
+  const def = SCORE_TYPE_DEFS.find(([name]) => name === resolvedType)
+  if (def) effective.add(def[1])
+  return effective
+}

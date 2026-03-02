@@ -14,8 +14,7 @@ const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
 ]
 
-const RECON_OPTIONS: { value: ReconstructionType | ''; label: string }[] = [
-  { value: '', label: '表示しない' },
+const RECON_OPTIONS: { value: ReconstructionType; label: string }[] = [
   { value: 'normal', label: '通常再構築' },
   { value: 'advanced', label: '上級再構築' },
   { value: 'absolute', label: '絶対再構築' },
@@ -47,7 +46,8 @@ export default function HomePage() {
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
   const [filterSet, setFilterSet] = useState('')
   const [filterSlot, setFilterSlot] = useState<ArtifactSlotKey | ''>('')
-  const [reconType, setReconType] = useState<ReconstructionType | ''>('')
+  const [reconType, setReconType] = useState<ReconstructionType>('normal')
+  const [reconSort, setReconSort] = useState(false)
 
   function handleLoad(data: GoodFile) {
     setAllRanked(buildRankedList(data))
@@ -82,7 +82,7 @@ export default function HomePage() {
 
   // 再構築成功率マップ（entry index → rate）
   const reconRates = useMemo(() => {
-    if (!allRanked || !reconType) return new Map<number, number>()
+    if (!allRanked) return new Map<number, number>()
     const map = new Map<number, number>()
     for (let i = 0; i < allRanked.length; i++) {
       const e = allRanked[i]
@@ -100,15 +100,15 @@ export default function HomePage() {
       .filter(({ entry: e }) => !filterSet || e.artifact.setKey === filterSet)
       .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
       .sort((a, b) => {
-        if (reconType) {
-          // 再構築表示時は成功率の高い順（nullは末尾）
+        if (reconSort) {
+          // 再構築成功率ソートON: 成功率の高い順（nullは末尾）
           const ra = a.reconRate ?? -1
           const rb = b.reconRate ?? -1
           if (ra !== rb) return rb - ra
         }
         return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
       })
-  }, [allRanked, filterSet, filterSlot, scoreType, reconRates, reconType])
+  }, [allRanked, filterSet, filterSlot, scoreType, reconRates, reconSort])
 
   return (
     <main className="main-container">
@@ -188,12 +188,25 @@ export default function HomePage() {
               <select
                 className="ctrl-select"
                 value={reconType}
-                onChange={(e) => setReconType(e.target.value as ReconstructionType | '')}
+                onChange={(e) => setReconType(e.target.value as ReconstructionType)}
               >
                 {RECON_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
+            </div>
+
+            {/* 再構築成功率ソート */}
+            <div className="ctrl-group">
+              <label className="ctrl-label-toggle">
+                <input
+                  type="checkbox"
+                  className="ctrl-checkbox"
+                  checked={reconSort}
+                  onChange={(e) => setReconSort(e.target.checked)}
+                />
+                成功率順
+              </label>
             </div>
 
             {/* 件数 + フィルタクリア + 再アップロード */}

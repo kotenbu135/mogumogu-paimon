@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import type { RankedArtifact, ScoreTypeName, ArtifactSlotKey } from '@/lib/types'
+import type { RankedArtifact, ScoreTypeName, ArtifactSlotKey, StatKey } from '@/lib/types'
 import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, getMainStatValue } from '@/lib/constants'
-import { decomposeRolls } from '@/lib/scoring'
+import { decomposeRolls, getEffectiveStats } from '@/lib/scoring'
 import { getContextMenuItems, getCharContextMenuItems } from '@/lib/contextMenu'
 import ContextMenu from './ContextMenu'
 
@@ -79,6 +79,8 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
   // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う
   const displayLabel = scoreType === '最良型' ? entry.bestType : scoreType === 'CV' ? 'CV' : scoreType
   const showCvSub = scoreType !== 'CV' && !(scoreType === '最良型' && mainScore === cvScore)
+
+  const effectiveStats = getEffectiveStats(scoreType, entry.bestType as ScoreTypeName)
 
   const [menuState, setMenuState] = useState<MenuState | null>(null)
   const [charMenuState, setCharMenuState] = useState<MenuState | null>(null)
@@ -165,7 +167,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
       <div className="score-section">
         {/* メイン: 選択型スコア（大きく） */}
         <div className={`main-score ${scoreColor(mainScore)}`}>
-          {displayLabel} {mainScore.toFixed(1)}
+          <span className="score-label">{displayLabel}</span> {mainScore.toFixed(1)}
         </div>
         {/* サブ: CV スコア（CVが選択中は非表示） */}
         {showCvSub && (
@@ -178,8 +180,9 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
         {substats.map((s, i) => {
           const upgradeRolls = rollCounts[i] ?? 0
           const { label, valueStr, rollDetail } = formatSubstat(s.key, s.value, upgradeRolls)
+          const isEffective = effectiveStats.has(s.key as StatKey)
           return (
-            <div key={i} className="substat-row">
+            <div key={i} className={`substat-row${isEffective ? ' substat-effective' : ''}`}>
               <span className="substat-name">{label}</span>
               <span className="substat-value">{valueStr}</span>
               <span className="substat-rolls">{rollDetail}</span>

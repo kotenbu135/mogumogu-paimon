@@ -253,6 +253,28 @@ body {
   letter-spacing: 0.05em;
 }
 
+.ctrl-label-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.35rem 0.6rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.ctrl-checkbox {
+  accent-color: var(--gold);
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
 .ctrl-select {
   background: var(--bg-card);
   color: var(--text-main);
@@ -342,7 +364,7 @@ body {
   flex-shrink: 0;
   width: 64px;
   height: 64px;
-  background: #111320;
+  background: #b07b50;
   border-radius: 8px;
   border: 1px solid var(--border);
   overflow: hidden;
@@ -396,7 +418,7 @@ body {
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid var(--border);
-  background: #111320;
+  background: #e8e4df;
 }
 
 .char-img {
@@ -421,6 +443,12 @@ body {
   font-weight: bold;
   letter-spacing: 0.03em;
   line-height: 1;
+}
+
+.score-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.8;
 }
 
 /* CVサブ（選択型が CV 以外の場合） */
@@ -461,6 +489,15 @@ body {
   font-size: 0.7rem;
   padding-left: 0.25rem;
   white-space: nowrap;
+}
+
+/* 有効サブステのハイライト（スコアに寄与するサブステ） */
+.substat-effective .substat-name,
+.substat-effective .substat-value {
+  color: #facc15;
+}
+.substat-effective .substat-rolls {
+  color: #ca8a04;
 }
 
 /* ── スコア計算式パネル ──────────────────── */
