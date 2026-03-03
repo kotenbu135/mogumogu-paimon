@@ -386,15 +386,13 @@ export default function HomePage() {
                 {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ${allRanked.length} 件`}
               </span>
               <div className="ctrl-buttons">
-                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) && (
-                  <button
-                    className="ctrl-btn ctrl-clear"
-                    onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
-                  >
-                    フィルタをクリア
-                  </button>
-                )}
-
+                <button
+                  className="ctrl-btn ctrl-clear"
+                  style={{ visibility: (filterSet || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
+                  onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
+                >
+                  フィルタをクリア
+                </button>
               </div>
             </div>
           </div>
