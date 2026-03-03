@@ -49,6 +49,7 @@ export default function HomePage() {
   const [filterSlot, setFilterSlot] = useState<ArtifactSlotKey | ''>('')
   const [filterMainStat, setFilterMainStat] = useState('')
   const [filterSubStats, setFilterSubStats] = useState<StatKey[]>([])
+  const [filterInitialOp, setFilterInitialOp] = useState<'' | '3' | '4'>('')
   const [subStatSort, setSubStatSort] = useState<StatKey | ''>('')
   const [subStatOpen, setSubStatOpen] = useState(false)
   const subStatBtnRef = useRef<HTMLButtonElement>(null)
@@ -85,6 +86,7 @@ export default function HomePage() {
     setFilterSlot('')
     setFilterMainStat('')
     setFilterSubStats([])
+    setFilterInitialOp('')
     setSubStatSort('')
   }
 
@@ -157,6 +159,11 @@ export default function HomePage() {
         filterSubStats.length === 0 ||
         filterSubStats.every((k) => e.artifact.substats.some((s) => s.key === k)),
       )
+      .filter(({ entry: e }) => {
+        if (!filterInitialOp) return true
+        const initialOp = e.artifact.totalRolls - Math.floor(e.artifact.level / 4)
+        return initialOp === Number(filterInitialOp)
+      })
       .sort((a, b) => {
         if (reconSort) {
           // 再構築成功率ソートON: 成功率の高い順（nullは末尾）
@@ -171,7 +178,7 @@ export default function HomePage() {
         }
         return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
       })
-  }, [allRanked, filterSet, filterSlot, filterMainStat, filterSubStats, subStatSort, scoreType, reconRates, reconSort])
+  }, [allRanked, filterSet, filterSlot, filterMainStat, filterSubStats, filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
 
   return (
     <main className="main-container">
@@ -270,6 +277,20 @@ export default function HomePage() {
               </select>
             </div>
 
+            {/* 初期OPフィルタ */}
+            <div className="ctrl-group">
+              <label className="ctrl-label">初期OP</label>
+              <select
+                className="ctrl-select"
+                value={filterInitialOp}
+                onChange={(e) => setFilterInitialOp(e.target.value as '' | '3' | '4')}
+              >
+                <option value="">すべて</option>
+                <option value="3">3OP</option>
+                <option value="4">4OP</option>
+              </select>
+            </div>
+
             {/* サブステフィルタ */}
             <div className="ctrl-group">
               <label className="ctrl-label">サブステ（AND）</label>
@@ -362,18 +383,18 @@ export default function HomePage() {
             <div className="ctrl-group ctrl-end">
               <span className="result-count">
                 {displayed.length} 件
-                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ★5 ${allRanked.length} 件`}
+                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ${allRanked.length} 件`}
               </span>
               <div className="ctrl-buttons">
-                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && (
+                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) && (
                   <button
                     className="ctrl-btn ctrl-clear"
-                    onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]) }}
+                    onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
                   >
                     フィルタをクリア
                   </button>
                 )}
-                <FileUpload onLoad={handleLoad} compact />
+
               </div>
             </div>
           </div>

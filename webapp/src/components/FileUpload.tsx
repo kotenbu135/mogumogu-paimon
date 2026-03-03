@@ -5,11 +5,9 @@ import type { GoodFile } from '@/lib/types'
 
 interface FileUploadProps {
   onLoad: (data: GoodFile) => void
-  /** compact モード: コントロールバー内で使う小型ボタン */
-  compact?: boolean
 }
 
-export default function FileUpload({ onLoad, compact = false }: FileUploadProps) {
+export default function FileUpload({ onLoad }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -65,23 +63,6 @@ export default function FileUpload({ onLoad, compact = false }: FileUploadProps)
     />
   )
 
-  // compact: コントロールバー用の小型ボタン
-  if (compact) {
-    return (
-      <div>
-        {input}
-        <button
-          className="ctrl-btn ctrl-reupload"
-          onClick={() => inputRef.current?.click()}
-        >
-          📂 再読み込み
-        </button>
-        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
-      </div>
-    )
-  }
-
-  // 通常: ドラッグ&ドロップゾーン
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[800px]">
       <div

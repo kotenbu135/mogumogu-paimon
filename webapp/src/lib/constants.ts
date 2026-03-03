@@ -99,7 +99,7 @@ export const STAT_NAMES: Record<StatKey, string> = {
 /** セットグループ定義（プルダウンの optgroup 用） */
 export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
   {
-    label: 'メインアタッカー用',
+    label: 'メインアタッカー用(v4以降)',
     keys: [
       'ADayCarvedFromRisingWinds',
       'NightOfTheSkysUnveiling',
@@ -108,7 +108,6 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
       'LongNightsOath',
       'FragmentOfHarmonicWhimsy',
       'MarechausseeHunter',
-      'GladiatorsFinale',
     ],
   },
   {
@@ -138,7 +137,7 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
     ],
   },
   {
-    label: 'メインアタッカー用（優先度低）',
+    label: 'メインアタッカー用（v3まで）',
     keys: [
       'BlizzardStrayer',
       'BloodstainedChivalry',
@@ -158,6 +157,7 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
       'Thundersoother',
       'VermillionHereafter',
       'WanderersTroupe',
+      'GladiatorsFinale',
     ],
   },
 ]
