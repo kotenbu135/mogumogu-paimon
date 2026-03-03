@@ -137,7 +137,7 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
     ],
   },
   {
-    label: 'メインアタッカー用（v3まで）',
+    label: 'メインアタッカー用（v3以前）',
     keys: [
       'BlizzardStrayer',
       'BloodstainedChivalry',

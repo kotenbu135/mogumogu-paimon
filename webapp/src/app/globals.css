@@ -345,6 +345,45 @@ body {
   background: var(--bg-card-hover);
 }
 
+/* ── セットフィルタドロップダウン ──────────── */
+.set-dropdown-panel {
+  position: fixed;
+  z-index: 50;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 14rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.set-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  padding: 0.4rem 0.4rem 0.15rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.set-group-header:not(:first-child) {
+  border-top: 1px solid var(--border);
+  margin-top: 0.3rem;
+  padding-top: 0.5rem;
+}
+
+.set-item {
+  padding-left: 1.6rem;
+}
+
 .ctrl-btn {
   background: var(--bg-card);
   color: var(--text-sub);

@@ -45,7 +45,7 @@ function buildRankedList(data: GoodFile): RankedArtifact[] {
 export default function HomePage() {
   const [allRanked, setAllRanked] = useState<RankedArtifact[] | null>(null)
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
-  const [filterSet, setFilterSet] = useState('')
+  const [filterSets, setFilterSets] = useState<string[]>([])
   const [filterSlot, setFilterSlot] = useState<ArtifactSlotKey | ''>('')
   const [filterMainStat, setFilterMainStat] = useState('')
   const [filterSubStats, setFilterSubStats] = useState<StatKey[]>([])
@@ -54,23 +54,37 @@ export default function HomePage() {
   const [subStatOpen, setSubStatOpen] = useState(false)
   const subStatBtnRef = useRef<HTMLButtonElement>(null)
   const subStatPanelRef = useRef<HTMLDivElement>(null)
+  const [setFilterOpen, setSetFilterOpen] = useState(false)
+  const setFilterBtnRef = useRef<HTMLButtonElement>(null)
+  const setFilterPanelRef = useRef<HTMLDivElement>(null)
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
 
-  // サブステドロップダウンの外側クリック・Escキーで閉じる
+  // ドロップダウンの外側クリック・Escキーで閉じる共通処理
   useEffect(() => {
-    if (!subStatOpen) return
+    if (!subStatOpen && !setFilterOpen) return
     function handleClick(e: MouseEvent) {
       const target = e.target as Node
       if (
+        subStatOpen &&
         subStatBtnRef.current && !subStatBtnRef.current.contains(target) &&
         subStatPanelRef.current && !subStatPanelRef.current.contains(target)
       ) {
         setSubStatOpen(false)
       }
+      if (
+        setFilterOpen &&
+        setFilterBtnRef.current && !setFilterBtnRef.current.contains(target) &&
+        setFilterPanelRef.current && !setFilterPanelRef.current.contains(target)
+      ) {
+        setSetFilterOpen(false)
+      }
     }
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setSubStatOpen(false)
+      if (e.key === 'Escape') {
+        setSubStatOpen(false)
+        setSetFilterOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClick)
     document.addEventListener('keydown', handleKey)
@@ -78,11 +92,11 @@ export default function HomePage() {
       document.removeEventListener('mousedown', handleClick)
       document.removeEventListener('keydown', handleKey)
     }
-  }, [subStatOpen])
+  }, [subStatOpen, setFilterOpen])
 
   function handleLoad(data: GoodFile) {
     setAllRanked(buildRankedList(data))
-    setFilterSet('')
+    setFilterSets([])
     setFilterSlot('')
     setFilterMainStat('')
     setFilterSubStats([])
@@ -152,7 +166,7 @@ export default function HomePage() {
     if (!allRanked) return []
     return allRanked
       .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null }))
-      .filter(({ entry: e }) => !filterSet || e.artifact.setKey === filterSet)
+      .filter(({ entry: e }) => filterSets.length === 0 || filterSets.includes(e.artifact.setKey))
       .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
       .filter(({ entry: e }) => !filterMainStat || e.artifact.mainStatKey === filterMainStat)
       .filter(({ entry: e }) =>
@@ -178,7 +192,7 @@ export default function HomePage() {
         }
         return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
       })
-  }, [allRanked, filterSet, filterSlot, filterMainStat, filterSubStats, filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
+  }, [allRanked, filterSets, filterSlot, filterMainStat, filterSubStats, filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
 
   return (
     <main className="main-container">
@@ -224,22 +238,73 @@ export default function HomePage() {
             {/* セットフィルタ */}
             <div className="ctrl-group">
               <label className="ctrl-label">セット</label>
-              <select
-                className="ctrl-select"
-                value={filterSet}
-                onChange={(e) => setFilterSet(e.target.value)}
+              <button
+                ref={setFilterBtnRef}
+                type="button"
+                className="substat-dropdown-btn"
+                onClick={() => setSetFilterOpen((v) => !v)}
               >
-                <option value="">すべてのセット</option>
-                {setOptionGroups.map((group) => (
-                  <optgroup key={group.label} label={group.label}>
-                    {group.keys.map((key) => (
-                      <option key={key} value={key}>
-                        {ARTIFACT_SET_NAMES[key] ?? key}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                {filterSets.length > 0
+                  ? `セット(${filterSets.length})`
+                  : 'セット'}
+              </button>
+              {setFilterOpen && createPortal(
+                <div
+                  ref={setFilterPanelRef}
+                  className="set-dropdown-panel"
+                  style={{
+                    top: (setFilterBtnRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                    left: setFilterBtnRef.current?.getBoundingClientRect().left ?? 0,
+                  }}
+                >
+                  {setOptionGroups.map((group) => {
+                    const allSelected = group.keys.every((k) => filterSets.includes(k))
+                    const someSelected = group.keys.some((k) => filterSets.includes(k))
+                    return (
+                      <div key={group.label}>
+                        <label className="set-group-header">
+                          <input
+                            type="checkbox"
+                            className="ctrl-checkbox"
+                            checked={allSelected}
+                            ref={(el) => {
+                              if (el) el.indeterminate = someSelected && !allSelected
+                            }}
+                            onChange={() => {
+                              setFilterSets((prev) => {
+                                if (allSelected) {
+                                  return prev.filter((k) => !group.keys.includes(k))
+                                }
+                                const toAdd = group.keys.filter((k) => !prev.includes(k))
+                                return [...prev, ...toAdd]
+                              })
+                            }}
+                          />
+                          {group.label}
+                        </label>
+                        {group.keys.map((key) => (
+                          <label key={key} className="substat-dropdown-item set-item">
+                            <input
+                              type="checkbox"
+                              className="ctrl-checkbox"
+                              checked={filterSets.includes(key)}
+                              onChange={(e) => {
+                                setFilterSets((prev) =>
+                                  e.target.checked
+                                    ? [...prev, key]
+                                    : prev.filter((k) => k !== key),
+                                )
+                              }}
+                            />
+                            {ARTIFACT_SET_NAMES[key] ?? key}
+                          </label>
+                        ))}
+                      </div>
+                    )
+                  })}
+                </div>,
+                document.body,
+              )}
             </div>
 
             {/* 部位フィルタ */}
@@ -383,13 +448,13 @@ export default function HomePage() {
             <div className="ctrl-group ctrl-end">
               <span className="result-count">
                 {displayed.length} 件
-                {(filterSet || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ${allRanked.length} 件`}
+                {(filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ${allRanked.length} 件`}
               </span>
               <div className="ctrl-buttons">
                 <button
                   className="ctrl-btn ctrl-clear"
-                  style={{ visibility: (filterSet || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
-                  onClick={() => { setFilterSet(''); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
+                  style={{ visibility: (filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
+                  onClick={() => { setFilterSets([]); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
                 >
                   フィルタをクリア
                 </button>
@@ -406,7 +471,7 @@ export default function HomePage() {
                 entry={entry}
                 scoreType={scoreType}
                 reconRate={reconRate}
-                onFilterBySet={setFilterSet}
+                onFilterBySet={(setKey) => setFilterSets([setKey])}
                 onFilterBySlot={setFilterSlot}
                 equippedSetKeys={equippedSetsMap.get(entry.artifact.location) ?? []}
               />

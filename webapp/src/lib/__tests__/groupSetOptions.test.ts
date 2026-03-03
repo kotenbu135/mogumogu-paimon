@@ -7,9 +7,9 @@ describe('groupSetOptions', () => {
     const result = groupSetOptions(keys)
 
     expect(result).toEqual([
-      { label: 'メインアタッカー用', keys: ['GladiatorsFinale'] },
       { label: 'サブアタッカー用', keys: ['EmblemOfSeveredFate'] },
       { label: 'サポート用', keys: ['ViridescentVenerer'] },
+      { label: 'メインアタッカー用（v3以前）', keys: ['GladiatorsFinale'] },
     ])
   })
 
@@ -18,7 +18,7 @@ describe('groupSetOptions', () => {
     const result = groupSetOptions(keys)
 
     expect(result).toHaveLength(2)
-    expect(result[0]).toEqual({ label: 'メインアタッカー用', keys: ['GladiatorsFinale'] })
+    expect(result[0]).toEqual({ label: 'メインアタッカー用（v3以前）', keys: ['GladiatorsFinale'] })
     expect(result[1].label).toBe('その他')
     expect(result[1].keys).toContain('Adventurer')
     expect(result[1].keys).toContain('Gambler')
@@ -50,16 +50,18 @@ describe('groupSetOptions', () => {
     expect(names[1]).toBe('Adventurer') // 冒険者
   })
 
-  it('グループ内のキーはIssue記載の順序を維持する', () => {
+  it('グループ内のキーはARTIFACT_SET_GROUPSの定義順を維持する', () => {
     const keys = ['GladiatorsFinale', 'ADayCarvedFromRisingWinds', 'MarechausseeHunter']
     const result = groupSetOptions(keys)
 
-    expect(result[0].label).toBe('メインアタッカー用')
-    // ARTIFACT_SET_GROUPS の定義順: ADayCarvedFromRisingWinds → MarechausseeHunter → GladiatorsFinale
+    // v4以降グループが先に来る
+    expect(result[0].label).toBe('メインアタッカー用(v4以降)')
     expect(result[0].keys).toEqual([
       'ADayCarvedFromRisingWinds',
       'MarechausseeHunter',
-      'GladiatorsFinale',
     ])
+    // v3以前グループ
+    expect(result[1].label).toBe('メインアタッカー用（v3以前）')
+    expect(result[1].keys).toEqual(['GladiatorsFinale'])
   })
 })
