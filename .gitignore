@@ -39,3 +39,5 @@ next-env.d.ts
 
 # issue-workflow
 /.issue-workflow/
+
+*.deb
