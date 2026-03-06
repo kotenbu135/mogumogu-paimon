@@ -130,6 +130,20 @@ export const ja: Translations = {
         heading: 'スコア計算方式一覧',
         p1: '各ビルドに特化したスコアタイプから選んで評価できます。',
       },
+      mainStatFilter: {
+        heading: 'メインステとスコアタイプの対応',
+        p1: 'HP%・攻撃力%・防御力%・元素熟知・元素チャージ効率がメインステの場合、そのメインステに対応しないスコアタイプのスコアは 0 になります。',
+        p2: '例：メインステが「元素熟知」の場合、熟知型スコアは通常通り計算されますが、HP型・攻撃型・防御型・チャージ型のスコアは 0 になります。',
+        tableHeaders: { scoreType: 'スコアタイプ', mainStat: '対応するメインステ' },
+        rows: [
+          { scoreType: 'HP型', mainStat: 'HP%' },
+          { scoreType: '攻撃型', mainStat: '攻撃力%' },
+          { scoreType: '防御型', mainStat: '防御力%' },
+          { scoreType: '熟知型', mainStat: '元素熟知' },
+          { scoreType: 'チャージ型', mainStat: '元素チャージ効率' },
+        ],
+        note: '花（HP固定）・羽（攻撃力固定）・元素ダメージ系など「型なし」のメインステは対象外で、通常通り計算されます。CVスコアもメインステの影響を受けません。',
+      },
     },
 
     aboutReconstruction: {
