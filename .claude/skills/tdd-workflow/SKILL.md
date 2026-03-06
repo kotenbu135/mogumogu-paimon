@@ -5,113 +5,104 @@ description: 'RED-GREEN-REFACTOR サイクルによる TDD ワークフロース
 
 # TDD ワークフロースキル
 
-RED → GREEN → REFACTOR の TDD サイクルで開発を進めます。
+RED → GREEN → REFACTOR の TDD サイクルをフェーズ別サブエージェント（context: fork）で実行します。
 
-**CLAUDE.md の方針:** `TDD 必須 — 新ロジック追加時は先にテストを書く`
+各フェーズは独立したコンテキストで実行されるため、コンテキスト汚染なしに集中した作業が可能です。
+
+## 実行方法
+
+以下の3フェーズを順番に `Agent` ツール（`context: fork`）で実行すること。各フェーズの結果を次フェーズのプロンプトに渡すこと。
+
+---
+
+## フェーズ 1: RED（失敗するテストを書く）
+
+Agent ツールで以下のプロンプトを実行する（`context: fork`）:
+
+```
+TDD の RED フェーズを実行してください。
+
+1. プロジェクトのテスト規約を確認する
+   - CLAUDE.md の「テスト方針」セクションを読む
+   - 既存のテストファイルを参照してプロジェクトのテストパターンを把握する
+   - テスト配置ディレクトリ・命名規則・使用フレームワークを特定する
+
+2. 要件をテストで表現する
+   - テスト配置規則に従ってテストファイルを作成する
+   - Arrange-Act-Assert パターンで記述する
+   - 正常系・エッジケース・エラーケースを網羅する
+
+3. テストを実行して RED（失敗）を確認する
+   - まだ実装がないためテストが失敗することを確認する
+   - 失敗メッセージから期待する実装の形を把握する
+
+完了後、以下を報告してください:
+- 作成したテストファイルのパス
+- テストケース一覧
+- 失敗メッセージの要約
+```
+
+---
+
+## フェーズ 2: GREEN（テストを通す最小実装）
+
+フェーズ 1 の結果（テストファイルパス・失敗内容）を受け取り、Agent ツールで以下を実行する（`context: fork`）:
+
+```
+TDD の GREEN フェーズを実行してください。
+
+対象テスト: {{フェーズ1のテストファイルパス}}
+失敗内容: {{フェーズ1の失敗メッセージ}}
+
+1. テストファイルを読み込み、期待する動作を正確に把握する
+2. テストを通す最小限の実装を書く（過剰実装しない）
+3. テストを実行して GREEN（全通過）を確認する
+4. 型チェックを実行する（プロジェクトの型チェックコマンドは CLAUDE.md を参照）
+
+完了後、以下を報告してください:
+- 作成・更新した実装ファイルのパス
+- テスト結果（全通過の確認）
+- 型チェック結果
+```
+
+---
+
+## フェーズ 3: REFACTOR（コードを改善する）
+
+フェーズ 2 の結果（実装ファイルパス）を受け取り、Agent ツールで以下を実行する（`context: fork`）:
+
+```
+TDD の REFACTOR フェーズを実行してください。
+
+対象実装: {{フェーズ2の実装ファイルパス}}
+対象テスト: {{フェーズ1のテストファイルパス}}
+
+リファクタリング原則（テストは変更しないこと）:
+- 重複を排除する（DRY 原則）
+- 命名を明確にする
+- 関数を適切な粒度に分割する
+- CLAUDE.md のコーディング規約に準拠する
+
+完了後、品質ゲートを実行して全テストが GREEN であることを確認する。
+品質ゲートコマンドは CLAUDE.md を参照すること。
+
+完了後、以下を報告してください:
+- リファクタリング内容の要約
+- 品質ゲートの実行結果
+```
+
+---
 
 ## テスト配置規則
 
+プロジェクトのテスト配置規則は CLAUDE.md および既存テストファイルから確認すること。
+汎用的なパターン:
+
 ```
-webapp/src/lib/__tests__/<対象ファイル名>.test.ts
-```
-
-## RED フェーズ: 失敗するテストを書く
-
-### ステップ 1: 要件をテストで表現する
-
-```typescript
-// webapp/src/lib/__tests__/newFeature.test.ts
-import { describe, it, expect } from 'vitest'
-import { newFunction } from '../newFeature'
-
-describe('newFunction', () => {
-  it('期待する動作を説明する', () => {
-    // Arrange
-    const input = { /* テスト入力 */ }
-    const expected = { /* 期待する出力 */ }
-
-    // Act
-    const result = newFunction(input)
-
-    // Assert
-    expect(result).toEqual(expected)
-  })
-
-  it('エッジケース: 空入力の処理', () => {
-    expect(newFunction({})).toEqual(/* 期待値 */)
-  })
-})
+<テストディレクトリ>/<対象ファイル名>.test.<拡張子>
 ```
 
-### ステップ 2: テストを実行して RED を確認する
-
-```bash
-cd webapp && npm test -- --run <test-file-name>
-```
-
-テストが失敗することを確認（まだ実装がないため）。
-
-## GREEN フェーズ: テストを通す最小実装
-
-### ステップ 3: 最小限の実装を書く
-
-```typescript
-// webapp/src/lib/newFeature.ts
-export function newFunction(input: InputType): OutputType {
-  // テストを通す最小限の実装
-}
-```
-
-### ステップ 4: テストをパスさせる
-
-```bash
-cd webapp && npm test -- --run <test-file-name>
-```
-
-全テストが GREEN になることを確認。
-
-## REFACTOR フェーズ: コードを改善する
-
-### ステップ 5: 品質を高める
-
-リファクタリング時の注意:
-- テストは変更しない
-- 動作を変えずにコードを改善する
-- 重複を排除する
-- 命名を明確にする
-
-### ステップ 6: 全テストが通ることを確認
-
-```bash
-cd webapp && npm test
-```
-
-## このプロジェクトのテストパターン
-
-### スコア計算テスト
-
-```typescript
-// スコア計算関数のテストパターン
-import { calculateScore } from '../scoring'
-import type { Artifact } from '../types'
-
-describe('calculateScore', () => {
-  const mockArtifact: Artifact = {
-    // テスト用聖遺物データ
-  }
-
-  it('会心率サブステのスコアを正しく計算する', () => {
-    const result = calculateScore(mockArtifact, weights)
-    expect(result).toBeCloseTo(expected, 2)
-  })
-})
-```
-
-## 品質ゲート（全フェーズ共通）
-
-```bash
-cd webapp && npm run lint -- --fix && npm run typecheck && npm test
-```
+既存テストを参照して、プロジェクト固有のパターン（モック方法、型定義、フィクスチャなど）を把握してから実装すること。
 
 ## TDD の利点
 

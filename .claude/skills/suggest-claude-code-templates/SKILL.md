@@ -9,66 +9,74 @@ description: 'claude-code-templatesリポジトリからリポジトリのコン
 
 ## 手順
 
-1. **利用可能なテンプレートの取得**: 以下のURLからコンテンツを取得する。WebFetchツールを使用すること。
-   - コマンド一覧: `https://github.com/davila7/claude-code-templates/tree/main/.claude/commands`
-   - エージェント一覧: `https://github.com/davila7/claude-code-templates/tree/main/.claude/agents`
-   - プラグイン一覧: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude-plugin/marketplace.json`
-   - `cli-tool/components/` 以下の全コンテンツタイプ一覧: `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components`
-   - スキルカテゴリ一覧: `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills`
-   - フックカテゴリ一覧: `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/hooks`
-   - MCPカテゴリ一覧: `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/mcps`
-   - 設定カテゴリ一覧: `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/settings`
-   - 各カテゴリページを取得し、カテゴリ内のファイル/フォルダ名を収集する
+### Phase 1: データ収集（並列実行）
 
-2. **ローカルコンテンツのスキャン**: 以下のディレクトリ・ファイルを探索する。Globツールを使用すること。
-   - `.claude/commands/` — 既存のカスタムコマンド
-   - `.claude/agents/` — 既存のエージェント定義
-   - `.claude/skills/` — 既存のスキル（各スキルはフォルダ構造: `.claude/skills/<スキル名>/SKILL.md`）
-   - `.claude/hooks/` — 既存のフックスクリプト（`.py`、`.sh` など）
-   - `.claude/settings.json` — フック設定・モデル設定など
-   - `.claude/mcp.json` — 既存のMCPサーバー設定
+**ローカルコンテンツのスキャン**と**リモートテンプレート取得**を同時に行う。
 
-3. **ローカルメタデータの抽出**: 各ローカルファイルの以下を読み取る。Readツールを使用すること。
-   - フロントマターの `name` と `description`
-   - ファイルが存在するかどうか（パス確認）
+#### 1a. ローカルコンテンツのスキャン
 
-4. **コンテンツの取得**: 各カテゴリのファイルを以下のrawURLパターンで取得する:
-   - コマンド: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/commands/<ファイル名>.md`
-   - エージェント: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/agents/<ファイル名>.md`
-   - スキル: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/skills/<カテゴリ>/<スキル名>/SKILL.md`
-   - フック: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/hooks/<カテゴリ>/<フック名>.json`（設定）と `<フック名>.py`（スクリプト）
-   - MCP: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/mcps/<カテゴリ>/<MCP名>.json`
-   - 設定: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/settings/<カテゴリ>/<設定名>.json`
+Globツールで以下を探索し、Readツールで各ファイルのフロントマター（`name`、`description`）を読み取る:
+- `.claude/commands/` — 既存のカスタムコマンド
+- `.claude/agents/` — 既存のエージェント定義
+- `.claude/skills/` — 既存のスキル（`.claude/skills/<スキル名>/SKILL.md`）
+- `.claude/hooks/` — 既存のフックスクリプト
+- `.claude/settings.json` — フック設定・モデル設定
+- `.claude/mcp.json` — 既存のMCPサーバー設定
 
-5. **バージョンの比較**: ローカルにすでに同名・同機能のファイルがある場合:
-   - コンテンツを比較し、最新・古い・未導入を判定する
-   - スキルの場合: ローカルの `.claude/skills/<スキル名>/SKILL.md` とリモートを比較する
-   - 主要な差異を記録する
+#### 1b. リモートテンプレートの並列取得
 
-6. **コンテキストの分析**: チャット履歴・リポジトリファイル・現在のプロジェクトニーズをレビューする。
+Agentツール（`context: fork`）を使用し、以下の **7つのサブエージェントを同時に起動** してリモートデータを取得する。各サブエージェントは担当カテゴリのインデックスページと全コンテンツを取得し、結果を構造化テキストで返す。
 
-7. **既存コンテンツとの照合**: このリポジトリに既に存在するコンテンツと照合する。
+**サブエージェント1 — コマンド**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/.claude/commands` を取得し、ファイル名一覧を収集する。次に各コマンドの raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/commands/<ファイル名>.md`) からフロントマターの `description` を取得する。結果をJSON形式で返す: `{ "commands": [{ "name": "<ファイル名>", "description": "...", "url": "..." }] }`
 
-8. **関連性のマッチング**: 利用可能なテンプレートとプロジェクトのパターン・要件を比較する。
+**サブエージェント2 — エージェント**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/.claude/agents` を取得し、ファイル名一覧を収集する。次に各エージェントの raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/agents/<ファイル名>.md`) からフロントマターの `name`・`description` を取得する。結果をJSON形式で返す: `{ "agents": [{ "name": "...", "description": "...", "file": "<ファイル名>", "url": "..." }] }`
 
-9. **選択肢の提示**: 関連するテンプレートを説明・根拠・可用性ステータスと共に表示する。
+**サブエージェント3 — スキル**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills` を取得し、カテゴリ一覧を収集する。次に各カテゴリページ (`https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills/<カテゴリ>`) を取得してスキル名を収集する。各スキルの raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/skills/<カテゴリ>/<スキル名>/SKILL.md`) からフロントマターを取得する。結果をJSON形式で返す: `{ "skills": [{ "name": "...", "category": "...", "description": "...", "url": "..." }] }`
 
-10. **検証**: 提案するテンプレートが既存コンテンツでカバーされていない価値を追加できることを確認する。
+**サブエージェント4 — フック**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/hooks` を取得し、カテゴリ一覧を収集する。次に各カテゴリページを取得してフック名を収集する。各フックの JSON raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/hooks/<カテゴリ>/<フック名>.json`) を取得して `description` を抽出する。結果をJSON形式で返す: `{ "hooks": [{ "name": "...", "category": "...", "description": "...", "url": "..." }] }`
 
-11. **出力**: 提案・説明・リポジトリリンク・類似ローカルコンテンツへのリンクを含む構造化テーブルを提供する。
-    **待機** — ユーザーが特定のテンプレートのインストールまたは更新を指示するまで待つこと。**指示なしにインストール・更新を実行してはならない。**
+**サブエージェント5 — MCP**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/mcps` を取得し、カテゴリ一覧を収集する。次に各カテゴリページを取得してMCP名を収集する。各MCP JSON raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/mcps/<カテゴリ>/<MCP名>.json`) を取得して `description` を抽出する。結果をJSON形式で返す: `{ "mcps": [{ "name": "...", "category": "...", "description": "...", "url": "..." }] }`
 
-12. **アセットのダウンロード/更新**: 要求されたテンプレートについて、以下を自動的に実行する:
-    - **コマンド**: `.claude/commands/<ファイル名>.md` として保存する
-    - **エージェント**: `.claude/agents/<ファイル名>.md` として保存する
-    - **スキル**: `.claude/skills/<スキル名>/SKILL.md` としてフォルダ構造を維持して保存する。スキルフォルダ内に同梱アセット（スクリプト、テンプレート等）があれば一緒にダウンロードする
-    - **フック**: スクリプトファイル（`.py`、`.sh` など）を `.claude/hooks/<フック名>.<拡張子>` として保存する。JSONの `hooks` 配列エントリを `.claude/settings.json` の `hooks` セクションにマージする（既存エントリと重複しないよう確認する）
-    - **MCP**: JSONの `mcpServers` エントリを `.claude/mcp.json` の `mcpServers` セクションにマージする（既存エントリと重複しないよう確認する）
-    - **設定**: JSONの設定値を `.claude/settings.json` の該当セクションにマージする（既存値を上書きしないよう確認する）
-    - **プラグイン**: `marketplace.json` のコンテンツから各コマンド・エージェントを上記のパスに展開する
-    - ファイルの内容を調整しないこと
-    - WebFetchツールでコンテンツを取得し、WriteまたはEditツールでファイルを保存・マージする
-    - TodoWriteツールで進捗を管理する
+**サブエージェント6 — 設定**:
+WebFetchで `https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/settings` を取得し、カテゴリ一覧を収集する。次に各カテゴリページを取得して設定ファイル名を収集する。各設定 JSON raw URL (`https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/settings/<カテゴリ>/<設定名>.json`) を取得して内容を抽出する。結果をJSON形式で返す: `{ "settings": [{ "name": "...", "category": "...", "description": "...", "url": "..." }] }`
+
+**サブエージェント7 — プラグイン**:
+WebFetchで `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude-plugin/marketplace.json` を取得し、全プラグイン情報（名前・説明・含まれるコマンド数・エージェント数）を抽出する。結果をJSON形式で返す: `{ "plugins": [{ "name": "...", "description": "...", "commandCount": 0, "agentCount": 0, "url": "..." }] }`
+
+### Phase 2: バージョン比較（並列実行）
+
+1aで収集したローカルコンテンツについて、1bのリモートデータと同名のものをAgentツール（`context: fork`）でカテゴリ別に並列比較する。各サブエージェントは担当カテゴリのローカルファイルとリモートコンテンツを比較し、差異を返す:
+- **フロントマターの変更**（name、description）
+- **指示の更新**（ガイドライン、例、ベストプラクティス）
+- **JSONの変更**（フック設定、MCPサーバー設定、設定値）
+
+### Phase 3: 分析・提案
+
+1. **コンテキストの分析**: チャット履歴・リポジトリファイル・現在のプロジェクトニーズをレビューする
+2. **既存コンテンツとの照合**: Phase 1aで収集したローカルコンテンツと照合する
+3. **関連性のマッチング**: 利用可能なテンプレートとプロジェクトのパターン・要件を比較する
+4. **選択肢の提示**: 構造化テーブルを出力する（詳細は「出力フォーマット」参照）
+5. **検証**: 提案するテンプレートが既存コンテンツでカバーされていない価値を追加できることを確認する
+6. **待機** — ユーザーが特定のテンプレートのインストールまたは更新を指示するまで待つこと。**指示なしにインストール・更新を実行してはならない。**
+
+### Phase 4: アセットのダウンロード/更新
+
+ユーザーの指示を受けてから、要求されたテンプレートについて以下を自動的に実行する:
+- **コマンド**: `.claude/commands/<ファイル名>.md` として保存する
+- **エージェント**: `.claude/agents/<ファイル名>.md` として保存する
+- **スキル**: `.claude/skills/<スキル名>/SKILL.md` としてフォルダ構造を維持して保存する。スキルフォルダ内に同梱アセット（スクリプト、テンプレート等）があれば一緒にダウンロードする
+- **フック**: スクリプトファイル（`.py`、`.sh` など）を `.claude/hooks/<フック名>.<拡張子>` として保存する。JSONの `hooks` 配列エントリを `.claude/settings.json` の `hooks` セクションにマージする（既存エントリと重複しないよう確認する）
+- **MCP**: JSONの `mcpServers` エントリを `.claude/mcp.json` の `mcpServers` セクションにマージする（既存エントリと重複しないよう確認する）
+- **設定**: JSONの設定値を `.claude/settings.json` の該当セクションにマージする（既存値を上書きしないよう確認する）
+- **プラグイン**: `marketplace.json` のコンテンツから各コマンド・エージェントを上記のパスに展開する
+- ファイルの内容を調整しないこと
+- WebFetchツールでコンテンツを取得し、WriteまたはEditツールでファイルを保存・マージする
+- TodoWriteツールで進捗を管理する
 
 ## コンテキスト分析基準
 
@@ -132,77 +140,6 @@ description: 'claude-code-templatesリポジトリからリポジトリのコン
 | プラグイン名 | 含まれるコマンド数 | 含まれるエージェント数 | 説明 | 提案理由 |
 |------------|-----------------|---------------------|------|---------|
 | [testing-suite](https://github.com/davila7/claude-code-templates/tree/main/.claude-plugin) | 5 | 2 | 総合テストツールキット | Vitestを使用しているため |
-
-## ローカルコンテンツ探索プロセス
-
-1. `.claude/commands/`、`.claude/agents/`、`.claude/skills/`、`.claude/hooks/` を一覧表示する
-2. 各ファイルのフロントマターを読み取り、`name` と `description` を抽出する
-3. ファイルが存在するかどうかに基づいてインストール状況を判定する
-4. 既存コンテンツと機能の包括的なインベントリを構築する
-5. このインベントリを使用して重複の提案を避ける
-
-## バージョン比較プロセス
-
-1. 各ローカルファイルについて、リモートのrawURLを構築する:
-   - コマンドパターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/commands/<ファイル名>.md`
-   - エージェントパターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/.claude/agents/<ファイル名>.md`
-   - スキルパターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/skills/<カテゴリ>/<スキル名>/SKILL.md`
-     - スキルのカテゴリは `cli-tool/components/skills/` 以下のディレクトリ名（例: `git`、`development`、`security` など）
-   - フックパターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/hooks/<カテゴリ>/<フック名>.json`
-   - MCPパターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/mcps/<カテゴリ>/<MCP名>.json`
-   - 設定パターン: `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/settings/<カテゴリ>/<設定名>.json`
-2. WebFetchツールでリモートバージョンを取得する
-3. ファイル全体のコンテンツを比較する（JSONの場合はキー・値を比較）
-4. 具体的な差異を特定する:
-   - **フロントマターの変更**（name、description）
-   - **指示の更新**（ガイドライン、例、ベストプラクティス）
-   - **JSONの変更**（フック設定、MCPサーバー設定、設定値）
-5. 古いコンテンツの主要な差異を文書化する
-
-## テンプレート構造要件
-
-**コマンド** (`.claude/commands/<name>.md`):
-- フロントマター: `description`（コマンドの目的）
-- 本文: コマンドの実行手順・指示
-- ファイル名がコマンド名となる（例: `lint.md` → `/lint`）
-
-**エージェント** (`.claude/agents/<name>.md`):
-- フロントマター: `name`、`description`、`color`（任意）
-- 本文: エージェントの役割・専門知識・動作定義
-
-**スキル** (`.claude/skills/<スキル名>/SKILL.md`):
-- フォルダ構造: `.claude/skills/<スキル名>/` にフォルダを作成し、その中に `SKILL.md` を配置する
-- フロントマター: `name`（フォルダ名と一致）、`description`
-- 本文: スキルの詳細な指示・手順
-- 同梱アセット: スキルフォルダ内に存在するスクリプト・テンプレート等のファイルも一緒にダウンロードする
-- リモートのスキルカテゴリは `cli-tool/components/skills/<カテゴリ>/<スキル名>/` のパスにある
-
-**フック** (`.claude/hooks/<フック名>.<拡張子>` + `.claude/settings.json`):
-- スクリプトファイル（`.py`、`.sh` など）を `.claude/hooks/` に保存する
-- JSON設定ファイルの `hooks` 配列エントリを `.claude/settings.json` の `hooks` セクションにマージする
-- リモートのフックは `cli-tool/components/hooks/<カテゴリ>/` のパスにある（JSONとスクリプトのペア）
-
-**MCP** (`.claude/mcp.json`):
-- JSONファイルの `mcpServers` オブジェクトを `.claude/mcp.json` の `mcpServers` セクションにマージする
-- リモートのMCPは `cli-tool/components/mcps/<カテゴリ>/<MCP名>.json` のパスにある
-
-**設定** (`.claude/settings.json`):
-- JSONファイルの設定値を `.claude/settings.json` の該当セクションにマージする
-- リモートの設定は `cli-tool/components/settings/<カテゴリ>/<設定名>.json` のパスにある
-
-## 要件
-
-- WebFetchツールを使ってclaude-code-templatesリポジトリからコンテンツを取得する
-- Globツールを使って`.claude/`ディレクトリ内の既存コンテンツをスキャンする
-- ReadツールでローカルファイルのYAMLフロントマターを読み取り、名前と説明を抽出する
-- ローカルコンテンツとリモートバージョンを比較して古いファイルを検出する
-- 重複を避けるためにリポジトリの既存コンテンツと比較する
-- 現在のコンテンツライブラリのカバレッジのギャップに焦点を当てる
-- 提案するテンプレートがリポジトリの目的と技術スタックに合致することを検証する
-- 各提案に明確な根拠を提供する
-- テンプレートと類似ローカルコンテンツの両方へのリンクを含める
-- 古いコンテンツを明確に特定し、具体的な差異を記載する
-- テーブルと分析以外の追加情報やコンテキストは提供しない
 
 ## アイコン凡例
 
