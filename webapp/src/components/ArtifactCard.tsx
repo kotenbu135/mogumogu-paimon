@@ -76,8 +76,9 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
   const mainStatValue = getMainStatValue(level, rarity, mainStatKey)
 
   const bp = process.env.BASE_PATH ?? ''
-  const artifactImgSrc = `${bp}/artifacts/${setKey}/${slotKey}.png`
-  const charImgSrc = location ? `${bp}/chars/${location}.png` : null
+  const isSafeKey = (s: string) => /^[a-zA-Z0-9_-]+$/.test(s)
+  const artifactImgSrc = isSafeKey(setKey) && isSafeKey(slotKey) ? `${bp}/artifacts/${setKey}/${slotKey}.png` : null
+  const charImgSrc = location && isSafeKey(location) ? `${bp}/chars/${location}.png` : null
 
   const mainScore = allScores[scoreType]
   // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う
@@ -134,14 +135,16 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           onClick={handleImageClick}
           title={canFilter ? t.card.clickToFilter : undefined}
         >
-          <img
-            src={artifactImgSrc}
-            alt={`${setName} ${slotName}`}
-            className="artifact-img"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none'
-            }}
-          />
+          {artifactImgSrc && (
+            <img
+              src={artifactImgSrc}
+              alt={`${setName} ${slotName}`}
+              className="artifact-img"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
+          )}
         </div>
 
         {/* セット名・部位・メインステータス */}
