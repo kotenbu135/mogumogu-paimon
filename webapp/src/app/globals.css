@@ -253,10 +253,10 @@ body {
 
 /* ── コントロールバー ───────────────────── */
 .controls-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
   gap: 1rem;
+  align-items: end;
   margin-bottom: 1.25rem;
   padding: 0.75rem 1rem;
   background: var(--bg-ctrl);
@@ -271,8 +271,12 @@ body {
 }
 
 .ctrl-end {
-  margin-left: auto;
-  align-items: flex-end;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .ctrl-buttons {
