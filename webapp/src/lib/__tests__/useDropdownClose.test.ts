@@ -97,6 +97,30 @@ describe('useDropdownClose', () => {
     expect(dropdown.close).not.toHaveBeenCalled()
   })
 
+  it('再レンダー後の新しい close 関数が呼ばれる（ストールクロージャなし）', () => {
+    const oldClose = vi.fn()
+    const newClose = vi.fn()
+
+    const { rerender } = renderHook(
+      ({ closeFn }) =>
+        useDropdownClose([
+          {
+            open: true,
+            close: closeFn,
+            btnRef: makeRef(false),
+            panelRef: makeRef(false),
+          },
+        ]),
+      { initialProps: { closeFn: oldClose } },
+    )
+
+    rerender({ closeFn: newClose })
+    document.dispatchEvent(new MouseEvent('mousedown'))
+
+    expect(newClose).toHaveBeenCalledTimes(1)
+    expect(oldClose).not.toHaveBeenCalled()
+  })
+
   it('アンマウント時にイベントリスナーが削除される', () => {
     const dropdown = makeDropdown(true)
 

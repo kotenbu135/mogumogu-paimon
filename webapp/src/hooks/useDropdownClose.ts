@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { isOutsideDropdown } from '@/lib/dropdownUtils'
 
 interface DropdownEntry {
@@ -14,13 +14,15 @@ interface DropdownEntry {
  */
 export function useDropdownClose(dropdowns: DropdownEntry[]): void {
   const anyOpen = dropdowns.some((d) => d.open)
+  const dropdownsRef = useRef(dropdowns)
+  dropdownsRef.current = dropdowns
 
   useEffect(() => {
     if (!anyOpen) return
 
     function handleClick(e: MouseEvent) {
       const target = e.target as Node
-      for (const { open, close, btnRef, panelRef } of dropdowns) {
+      for (const { open, close, btnRef, panelRef } of dropdownsRef.current) {
         if (open && isOutsideDropdown(target, btnRef.current, panelRef.current)) {
           close()
         }
@@ -29,7 +31,7 @@ export function useDropdownClose(dropdowns: DropdownEntry[]): void {
 
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        for (const { close } of dropdowns) {
+        for (const { close } of dropdownsRef.current) {
           close()
         }
       }
@@ -41,6 +43,5 @@ export function useDropdownClose(dropdowns: DropdownEntry[]): void {
       document.removeEventListener('mousedown', handleClick)
       document.removeEventListener('keydown', handleKey)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anyOpen])
 }
