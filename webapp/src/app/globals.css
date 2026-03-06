@@ -445,12 +445,6 @@ body {
   border-color: var(--danger);
 }
 
-.result-count {
-  color: var(--text-sub);
-  font-size: 0.85rem;
-  white-space: nowrap;
-  margin-bottom: 0.25rem;
-}
 
 /* ── カードグリッド ─────────────────────── */
 .card-grid {
