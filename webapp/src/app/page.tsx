@@ -451,11 +451,7 @@ export default function HomePage() {
 
             {/* 件数 + フィルタクリア + 再アップロード */}
             <div className="ctrl-group ctrl-end">
-              <span className="result-count">
-                {displayed.length} 件
-                {(filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0) && ` / ${allRanked.length} 件`}
-              </span>
-              <div className="ctrl-buttons">
+<div className="ctrl-buttons">
                 <button
                   className="ctrl-btn ctrl-clear"
                   style={{ visibility: (filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
