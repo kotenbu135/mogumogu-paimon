@@ -1,0 +1,29 @@
+{
+  "skill_name": "e2e-test",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/e2e-test ControlsBar コンポーネントのフィルター操作をテストしてほしい",
+      "expected_output": "webapp/e2e/controls-bar.spec.ts が生成される。page.goto('/') を使用し、BASE_PATH を手動設定していない。フィルター操作（部位・セット・ステータス）のテストケースが含まれている。",
+      "files": [
+        "webapp/src/components/ControlsBar.tsx"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/e2e-test ArtifactCard のスコア表示テストを作成して",
+      "expected_output": "webapp/e2e/artifact-card.spec.ts が生成される。スコアの色分けや表示に関するテストケースが含まれる。data-testid が不足していれば追加提案または実装される。",
+      "files": [
+        "webapp/src/components/ArtifactCard.tsx"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/e2e-test ファイルアップロード機能のE2Eテストを書いてください",
+      "expected_output": "webapp/e2e/file-upload.spec.ts が生成される。GOOD形式ファイルのアップロードシナリオが含まれる。page.goto('/') を使用する。",
+      "files": [
+        "webapp/src/components/FileUpload.tsx"
+      ]
+    }
+  ]
+}
