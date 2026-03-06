@@ -7,27 +7,13 @@ import ArtifactCard from '@/components/ArtifactCard'
 import type { ArtifactSlotKey, GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
 import { calculateReconstructionRate } from '@/lib/reconstruction'
-import { ARTIFACT_SET_NAMES, MAIN_STAT_NAMES, SCORE_TYPE_FORMULAS, SLOT_NAMES, STAT_NAMES, groupSetOptions } from '@/lib/constants'
+import { ARTIFACT_SET_NAMES, MAIN_STAT_NAMES, SLOT_NAMES, STAT_NAMES, groupSetOptions } from '@/lib/constants'
+import { useTranslation } from '@/lib/i18n'
 
 const basePath = process.env.BASE_PATH ?? ''
 
 const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', '攻撃型', 'HP型', '防御型', '熟知型', 'チャージ型', '最良型',
-]
-
-const RECON_OPTIONS: { value: ReconstructionType; label: string }[] = [
-  { value: 'normal', label: '通常再構築' },
-  { value: 'advanced', label: '上級再構築' },
-  { value: 'absolute', label: '絶対再構築' },
-]
-
-const SLOT_OPTIONS: { value: ArtifactSlotKey | ''; label: string }[] = [
-  { value: '', label: 'すべての部位' },
-  { value: 'flower', label: SLOT_NAMES.flower },
-  { value: 'plume', label: SLOT_NAMES.plume },
-  { value: 'sands', label: SLOT_NAMES.sands },
-  { value: 'goblet', label: SLOT_NAMES.goblet },
-  { value: 'circlet', label: SLOT_NAMES.circlet },
 ]
 
 /** GOODファイルを読み込んで★5聖遺物をランク付けする */
@@ -43,6 +29,7 @@ function buildRankedList(data: GoodFile): RankedArtifact[] {
 }
 
 export default function HomePage() {
+  const { t } = useTranslation()
   const [allRanked, setAllRanked] = useState<RankedArtifact[] | null>(null)
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
   const [filterSets, setFilterSets] = useState<string[]>([])
@@ -194,10 +181,27 @@ export default function HomePage() {
       })
   }, [allRanked, filterSets, filterSlot, filterMainStat, filterSubStats, filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
 
+  const allMainStatNames: Record<string, string> = { ...t.stats, ...t.mainStatExtra }
+
+  const RECON_OPTIONS: { value: ReconstructionType; label: string }[] = [
+    { value: 'normal', label: t.reconTypes.normal },
+    { value: 'advanced', label: t.reconTypes.advanced },
+    { value: 'absolute', label: t.reconTypes.absolute },
+  ]
+
+  const SLOT_OPTIONS: { value: ArtifactSlotKey | ''; label: string }[] = [
+    { value: '', label: t.controls.allSlots },
+    { value: 'flower', label: t.slots.flower },
+    { value: 'plume', label: t.slots.plume },
+    { value: 'sands', label: t.slots.sands },
+    { value: 'goblet', label: t.slots.goblet },
+    { value: 'circlet', label: t.slots.circlet },
+  ]
+
   return (
     <main className="main-container">
       {/* ── ヘッダー ── */}
-      <h1 className="page-title">もぐもぐパイモン - 聖遺物スコア -</h1>
+      <h1 className="page-title">{t.siteTitle}</h1>
 
       {/* ── 空状態: ヒーロー画像 + アップロード ── */}
       {allRanked === null ? (
@@ -205,13 +209,13 @@ export default function HomePage() {
           <FileUpload onLoad={handleLoad} />
           {/* スコア計算式の説明 */}
           <div className="score-formulas">
-            <p className="score-formulas-title">スコア計算方式</p>
+            <p className="score-formulas-title">{t.pages.aboutScore.formulaList.heading}</p>
             <ul className="score-formulas-list">
               {SCORE_TYPE_OPTIONS.map((type) => (
                 <li key={type} className="score-formulas-item">
-                  <span className="score-formulas-label">{SCORE_TYPE_FORMULAS[type].label}</span>
+                  <span className="score-formulas-label">{t.scoreFormulas[type].label}</span>
                   <span className="score-formulas-eq">=</span>
-                  <span className="score-formulas-formula">{SCORE_TYPE_FORMULAS[type].formula}</span>
+                  <span className="score-formulas-formula">{t.scoreFormulas[type].formula}</span>
                 </li>
               ))}
             </ul>
@@ -223,21 +227,21 @@ export default function HomePage() {
           <div className="controls-bar">
             {/* スコアタイプ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">スコアタイプ</label>
+              <label className="ctrl-label">{t.controls.scoreType}</label>
               <select
                 className="ctrl-select"
                 value={scoreType}
                 onChange={(e) => setScoreType(e.target.value as ScoreTypeName)}
               >
-                {SCORE_TYPE_OPTIONS.map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                {SCORE_TYPE_OPTIONS.map((type) => (
+                  <option key={type} value={type}>{t.scoreFormulas[type].label}</option>
                 ))}
               </select>
             </div>
 
             {/* セットフィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">セット</label>
+              <label className="ctrl-label">{t.controls.set}</label>
               <button
                 ref={setFilterBtnRef}
                 type="button"
@@ -245,8 +249,8 @@ export default function HomePage() {
                 onClick={() => setSetFilterOpen((v) => !v)}
               >
                 {filterSets.length > 0
-                  ? `セット(${filterSets.length})`
-                  : 'セット'}
+                  ? `${t.controls.set}(${filterSets.length})`
+                  : t.controls.set}
               </button>
               {setFilterOpen && createPortal(
                 <div
@@ -260,6 +264,7 @@ export default function HomePage() {
                   {setOptionGroups.map((group) => {
                     const allSelected = group.keys.every((k) => filterSets.includes(k))
                     const someSelected = group.keys.some((k) => filterSets.includes(k))
+                    const groupLabel = t.setGroupLabels[group.label] ?? group.label
                     return (
                       <div key={group.label}>
                         <label className="set-group-header">
@@ -280,7 +285,7 @@ export default function HomePage() {
                               })
                             }}
                           />
-                          {group.label}
+                          {groupLabel}
                         </label>
                         {group.keys.map((key) => (
                           <label key={key} className="substat-dropdown-item set-item">
@@ -296,7 +301,7 @@ export default function HomePage() {
                                 )
                               }}
                             />
-                            {ARTIFACT_SET_NAMES[key] ?? key}
+                            {t.artifactSetNames[key] ?? ARTIFACT_SET_NAMES[key] ?? key}
                           </label>
                         ))}
                       </div>
@@ -309,7 +314,7 @@ export default function HomePage() {
 
             {/* 部位フィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">部位</label>
+              <label className="ctrl-label">{t.controls.slot}</label>
               <select
                 className="ctrl-select"
                 value={filterSlot}
@@ -323,7 +328,7 @@ export default function HomePage() {
 
             {/* メインステフィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">メインステ</label>
+              <label className="ctrl-label">{t.controls.mainStat}</label>
               <select
                 className="ctrl-select"
                 value={filterMainStat}
@@ -333,10 +338,10 @@ export default function HomePage() {
                   setFilterSubStats((prev) => prev.filter((k) => k !== val))
                 }}
               >
-                <option value="">すべて</option>
+                <option value="">{t.controls.allMainStats}</option>
                 {mainStatOptions.map((key) => (
                   <option key={key} value={key}>
-                    {MAIN_STAT_NAMES[key] ?? key}
+                    {allMainStatNames[key] ?? MAIN_STAT_NAMES[key] ?? key}
                   </option>
                 ))}
               </select>
@@ -344,21 +349,21 @@ export default function HomePage() {
 
             {/* 初期OPフィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">初期OP</label>
+              <label className="ctrl-label">{t.controls.initialOp}</label>
               <select
                 className="ctrl-select"
                 value={filterInitialOp}
                 onChange={(e) => setFilterInitialOp(e.target.value as '' | '3' | '4')}
               >
-                <option value="">すべて</option>
-                <option value="3">3OP</option>
-                <option value="4">4OP</option>
+                <option value="">{t.controls.allOps}</option>
+                <option value="3">{t.controls.op3}</option>
+                <option value="4">{t.controls.op4}</option>
               </select>
             </div>
 
             {/* サブステフィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">サブステ（AND）</label>
+              <label className="ctrl-label">{t.controls.substatFilter}</label>
               <button
                 ref={subStatBtnRef}
                 type="button"
@@ -366,8 +371,8 @@ export default function HomePage() {
                 onClick={() => setSubStatOpen((v) => !v)}
               >
                 {filterSubStats.length > 0
-                  ? `サブステ(${filterSubStats.length})`
-                  : 'サブステ'}
+                  ? `${t.controls.substatBtn}(${filterSubStats.length})`
+                  : t.controls.substatBtn}
               </button>
               {subStatOpen && createPortal(
                 <div
@@ -392,7 +397,7 @@ export default function HomePage() {
                           )
                         }}
                       />
-                      {STAT_NAMES[key]}
+                      {t.stats[key] ?? STAT_NAMES[key]}
                     </label>
                   ))}
                 </div>,
@@ -402,16 +407,16 @@ export default function HomePage() {
 
             {/* サブステソート */}
             <div className="ctrl-group">
-              <label className="ctrl-label">サブステソート</label>
+              <label className="ctrl-label">{t.controls.substatSort}</label>
               <select
                 className="ctrl-select"
                 value={subStatSort}
                 onChange={(e) => setSubStatSort(e.target.value as StatKey | '')}
               >
-                <option value="">スコア順</option>
+                <option value="">{t.controls.byScore}</option>
                 {ALL_SUBSTAT_KEYS.map((key) => (
                   <option key={key} value={key}>
-                    {STAT_NAMES[key]}
+                    {t.stats[key] ?? STAT_NAMES[key]}
                   </option>
                 ))}
               </select>
@@ -419,7 +424,7 @@ export default function HomePage() {
 
             {/* 再構築種別 */}
             <div className="ctrl-group">
-              <label className="ctrl-label">再構築</label>
+              <label className="ctrl-label">{t.controls.reconstruction}</label>
               <select
                 className="ctrl-select"
                 value={reconType}
@@ -440,7 +445,7 @@ export default function HomePage() {
                   checked={reconSort}
                   onChange={(e) => setReconSort(e.target.checked)}
                 />
-                成功率順
+                {t.controls.bySuccessRate}
               </label>
             </div>
 
@@ -456,7 +461,7 @@ export default function HomePage() {
                   style={{ visibility: (filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
                   onClick={() => { setFilterSets([]); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
                 >
-                  フィルタをクリア
+                  {t.controls.filterClear}
                 </button>
               </div>
             </div>

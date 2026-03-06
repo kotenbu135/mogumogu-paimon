@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import type { GoodFile } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n'
 
 interface FileUploadProps {
   onLoad: (data: GoodFile) => void
@@ -11,6 +12,7 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
+  const { t } = useTranslation()
 
   function parseFile(file: File) {
     setError(null)
@@ -19,12 +21,12 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
       try {
         const json = JSON.parse(e.target?.result as string)
         if (json.format !== 'GOOD') {
-          setError('GOODフォーマットのJSONを選択してください')
+          setError(t.upload.errorFormat)
           return
         }
         onLoad(json as GoodFile)
       } catch {
-        setError('JSONの解析に失敗しました')
+        setError(t.upload.errorParse)
       }
     }
     reader.readAsText(file)
@@ -74,8 +76,8 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
       >
         {input}
         <div className="upload-icon">📂</div>
-        <p className="upload-title">GOODファイルをドロップ</p>
-        <p className="upload-sub">またはクリックしてJSONを選択</p>
+        <p className="upload-title">{t.upload.drop}</p>
+        <p className="upload-sub">{t.upload.click}</p>
       </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}
     </div>

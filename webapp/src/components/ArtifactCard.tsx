@@ -6,6 +6,7 @@ import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NA
 import { decomposeRolls, getEffectiveStats } from '@/lib/scoring'
 import { getContextMenuItems, getCharContextMenuItems } from '@/lib/contextMenu'
 import ContextMenu from './ContextMenu'
+import { useTranslation } from '@/lib/i18n'
 
 interface ArtifactCardProps {
   rank: number
@@ -29,10 +30,11 @@ function scoreColor(score: number): string {
 function formatSubstat(
   key: string,
   value: number,
-  upgradeRolls: number  // 強化ロール数（初期除く）
+  upgradeRolls: number,  // 強化ロール数（初期除く）
+  statLabels: Record<string, string>,
 ): { label: string; valueStr: string; rollDetail: string } {
   const statKey = key as keyof typeof STAT_NAMES
-  const label = STAT_NAMES[statKey] ?? key
+  const label = statLabels[statKey] ?? STAT_NAMES[statKey] ?? key
   const isPercent = PERCENT_STATS.has(statKey as never)
   const valueStr = isPercent ? `${value.toFixed(1)}%` : `${value}`
 
@@ -65,10 +67,12 @@ interface MenuState {
 export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
+  const { t } = useTranslation()
 
-  const setName = ARTIFACT_SET_NAMES[setKey] ?? setKey
-  const slotName = SLOT_NAMES[slotKey] ?? slotKey
-  const mainStatName = MAIN_STAT_NAMES[mainStatKey] ?? mainStatKey
+  const allStatLabels: Record<string, string> = { ...t.stats, ...t.mainStatExtra }
+  const setName = t.artifactSetNames[setKey] ?? ARTIFACT_SET_NAMES[setKey] ?? setKey
+  const slotName = t.slots[slotKey] ?? SLOT_NAMES[slotKey] ?? slotKey
+  const mainStatName = allStatLabels[mainStatKey] ?? MAIN_STAT_NAMES[mainStatKey] ?? mainStatKey
   const mainStatValue = getMainStatValue(level, rarity, mainStatKey)
 
   const bp = process.env.BASE_PATH ?? ''
@@ -77,7 +81,8 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
 
   const mainScore = allScores[scoreType]
   // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う
-  const displayLabel = scoreType === '最良型' ? entry.bestType : scoreType === 'CV' ? 'CV' : scoreType
+  const scoreLabel = (type: string) => t.scoreFormulas[type as ScoreTypeName]?.label ?? type
+  const displayLabel = scoreType === '最良型' ? scoreLabel(entry.bestType) : scoreLabel(scoreType)
   const showCvSub = scoreType !== 'CV' && !(scoreType === '最良型' && mainScore === cvScore)
 
   const effectiveStats = getEffectiveStats(scoreType, entry.bestType as ScoreTypeName)
@@ -101,12 +106,19 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
     setCharMenuState({ x: e.clientX, y: e.clientY })
   }
 
+  const contextLabels = {
+    setPrefix: t.card.filterSet,
+    slotPrefix: t.card.filterSlot,
+    setNames: t.artifactSetNames,
+    slotNames: t.slots,
+  }
+
   const menuItems = canFilter
-    ? getContextMenuItems(setKey, slotKey, onFilterBySet!, onFilterBySlot!)
+    ? getContextMenuItems(setKey, slotKey, onFilterBySet!, onFilterBySlot!, contextLabels)
     : []
 
   const charMenuItems = canCharFilter
-    ? getCharContextMenuItems(equippedSetKeys!, onFilterBySet!)
+    ? getCharContextMenuItems(equippedSetKeys!, onFilterBySet!, { setPrefix: t.card.filterSet, setNames: t.artifactSetNames })
     : []
 
   return (
@@ -120,7 +132,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
         <div
           className={`artifact-img-wrap${canFilter ? ' artifact-img-clickable' : ''}`}
           onClick={handleImageClick}
-          title={canFilter ? 'クリックしてフィルタ' : undefined}
+          title={canFilter ? t.card.clickToFilter : undefined}
         >
           <img
             src={artifactImgSrc}
@@ -149,7 +161,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           <div
             className={`char-wrap${canCharFilter ? ' char-wrap-clickable' : ''}`}
             onClick={handleCharClick}
-            title={canCharFilter ? 'クリックして装備セットでフィルタ' : undefined}
+            title={canCharFilter ? t.card.clickToFilterEquipped : undefined}
           >
             <img
               src={charImgSrc}
@@ -179,7 +191,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
       <div className="substats">
         {substats.map((s, i) => {
           const upgradeRolls = rollCounts[i] ?? 0
-          const { label, valueStr, rollDetail } = formatSubstat(s.key, s.value, upgradeRolls)
+          const { label, valueStr, rollDetail } = formatSubstat(s.key, s.value, upgradeRolls, t.stats)
           const isEffective = effectiveStats.has(s.key as StatKey)
           return (
             <div key={i} className={`substat-row${isEffective ? ' substat-effective' : ''}`}>

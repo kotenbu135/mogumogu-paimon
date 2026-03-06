@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Sidebar from '@/components/Sidebar'
+import { LanguageProvider } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: 'もぐもぐパイモン - 聖遺物スコア -',
@@ -15,12 +16,14 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <div className="app-layout">
-          <Sidebar />
-          <div className="main-area">
-            {children}
+        <LanguageProvider>
+          <div className="app-layout">
+            <Sidebar />
+            <div className="main-area">
+              {children}
+            </div>
           </div>
-        </div>
+        </LanguageProvider>
       </body>
     </html>
   )
