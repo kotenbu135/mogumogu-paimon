@@ -153,7 +153,7 @@ export default function HomePage() {
   const displayed = useMemo(() => {
     if (!allRanked) return []
     return allRanked
-      .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null }))
+      .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null, originalIndex: i }))
       .filter(({ entry: e }) => filterSets.length === 0 || filterSets.includes(e.artifact.setKey))
       .filter(({ entry: e }) => !filterSlot || e.artifact.slotKey === filterSlot)
       .filter(({ entry: e }) => !filterMainStat || e.artifact.mainStatKey === filterMainStat)
@@ -464,9 +464,9 @@ export default function HomePage() {
 
           {/* ── カードグリッド ── */}
           <div className="card-grid">
-            {displayed.map(({ entry, reconRate }, i) => (
+            {displayed.map(({ entry, reconRate, originalIndex }, i) => (
               <ArtifactCard
-                key={i}
+                key={originalIndex}
                 rank={i + 1}
                 entry={entry}
                 scoreType={scoreType}
