@@ -16,6 +16,11 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
 
   function parseFile(file: File) {
     setError(null)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      setError(t.upload.errorSize)
+      return
+    }
     const reader = new FileReader()
     reader.onload = (e) => {
       try {

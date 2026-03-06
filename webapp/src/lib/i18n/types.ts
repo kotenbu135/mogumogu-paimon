@@ -31,6 +31,7 @@ export interface Translations {
     click: string
     errorFormat: string
     errorParse: string
+    errorSize: string
   }
 
   controls: {
