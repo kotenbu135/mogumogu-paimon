@@ -9,7 +9,7 @@
   --gold: #c8a35a;
   --gold-light: #e8c880;
   --text-main: #e8e0d0;
-  --text-sub: #9a9080;
+  --text-sub: #b0a898;
   --border: #2e3050;
   --danger: #ef4444;
 }
@@ -577,7 +577,7 @@ body {
 }
 
 .substat-rolls {
-  color: #555870;
+  color: #7a7d96;
   font-size: 0.7rem;
   padding-left: 0.25rem;
   white-space: nowrap;
