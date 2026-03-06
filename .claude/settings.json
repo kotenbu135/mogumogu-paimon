@@ -1,39 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3:*)",
-      "Bash(npx create-next-app@latest webapp --typescript --tailwind --app --no-eslint --src-dir --no-turbopack --yes)",
-      "Bash(node --version)",
-      "Bash(npm --version)",
-      "Bash(bash -i -c \"which node && node --version && which npm && npm --version\")",
-      "Bash(bash -i -c \"node scripts/copy-assets.mjs 2>&1\")",
-      "Bash(bash -i -c \"npm run build 2>&1\")",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(curl -s https://api.github.com/repos/github/awesome-copilot:*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/mogumogu-paimon)",
-      "Bash(curl -s http://localhost:3000/:*)",
-      "Bash(ldconfig -p)",
-      "Bash(dpkg -l libnspr4)",
-      "Bash(apt list --installed)",
-      "Bash(npm install:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm run tsc:*)",
-      "Bash(npm exec:*)",
-      "Bash(npx:*)",
-      "Bash(npm run test:*)",
-      "Bash(npm run lint)",
-      "Bash(npm run lint:*)",
-      "Bash(npm run format:*)",
-      "Bash(npm ls:*)",
-      "Bash(bash -i:*)",
-      "Bash(git remote get-url origin)",
-      "Bash(gh issue:*)",
-      "Bash(git checkout:*)",
-      "Bash(xargs cat)",
-      "Bash(npm run:*)",
-      "Bash(npm test)"
+      "Bash(python3:*)"
     ]
   }
 }
