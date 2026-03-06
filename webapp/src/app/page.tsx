@@ -1,12 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ArtifactCard from '@/components/ArtifactCard'
 import HeroSection from '@/components/HeroSection'
 import ControlsBar from '@/components/ControlsBar'
 import type { GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
-import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
-import { calculateReconstructionRate } from '@/lib/reconstruction'
 import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
@@ -20,7 +18,8 @@ const MAIN_STAT_ORDER: string[] = [
 ]
 
 /** GOODファイルを読み込んで★5聖遺物をランク付けする */
-function buildRankedList(data: GoodFile): RankedArtifact[] {
+async function buildRankedList(data: GoodFile): Promise<RankedArtifact[]> {
+  const { calculateScores, calculateAllScores, estimateRollCounts } = await import('@/lib/scoring')
   return data.artifacts
     .filter((a) => a.rarity === 5)
     .map((artifact) => {
@@ -40,8 +39,8 @@ export default function HomePage() {
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
 
-  function handleLoad(data: GoodFile) {
-    setAllRanked(buildRankedList(data))
+  async function handleLoad(data: GoodFile) {
+    setAllRanked(await buildRankedList(data))
     filters.resetFilters()
   }
 
@@ -75,15 +74,24 @@ export default function HomePage() {
     return map
   }, [allRanked])
 
-  const reconRates = useMemo(() => {
-    if (!allRanked) return new Map<number, number>()
-    const map = new Map<number, number>()
-    for (let i = 0; i < allRanked.length; i++) {
-      const e = allRanked[i]
-      const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
-      if (rate !== null) map.set(i, rate)
+  const [reconRates, setReconRates] = useState<Map<number, number>>(new Map())
+  useEffect(() => {
+    if (!allRanked) {
+      setReconRates(new Map())
+      return
     }
-    return map
+    let cancelled = false
+    import('@/lib/reconstruction').then(({ calculateReconstructionRate }) => {
+      if (cancelled) return
+      const map = new Map<number, number>()
+      for (let i = 0; i < allRanked.length; i++) {
+        const e = allRanked[i]
+        const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
+        if (rate !== null) map.set(i, rate)
+      }
+      setReconRates(map)
+    })
+    return () => { cancelled = true }
   }, [allRanked, scoreType, reconType])
 
   const displayed = useMemo(() => {
