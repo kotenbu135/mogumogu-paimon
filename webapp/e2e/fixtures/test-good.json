@@ -1,0 +1,67 @@
+{
+  "format": "GOOD",
+  "version": 3,
+  "source": "test",
+  "characters": [],
+  "artifacts": [
+    {
+      "setKey": "GladiatorsFinale",
+      "slotKey": "flower",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "hp",
+      "location": "",
+      "lock": false,
+      "substats": [
+        { "key": "critRate_", "value": 9.3, "initialValue": 3.1 },
+        { "key": "critDMG_", "value": 19.4, "initialValue": 9.7 },
+        { "key": "atk", "value": 33.0, "initialValue": 18.0 },
+        { "key": "atk_", "value": 5.8, "initialValue": 5.8 }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    },
+    {
+      "setKey": "GladiatorsFinale",
+      "slotKey": "plume",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "atk",
+      "location": "",
+      "lock": false,
+      "substats": [
+        { "key": "critRate_", "value": 6.2, "initialValue": 3.1 },
+        { "key": "critDMG_", "value": 29.1, "initialValue": 9.7 },
+        { "key": "hp_", "value": 5.3, "initialValue": 5.3 },
+        { "key": "def", "value": 21.0, "initialValue": 21.0 }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    },
+    {
+      "setKey": "GladiatorsFinale",
+      "slotKey": "sands",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "atk_",
+      "location": "",
+      "lock": false,
+      "substats": [
+        { "key": "critRate_", "value": 9.3, "initialValue": 3.1 },
+        { "key": "critDMG_", "value": 9.7, "initialValue": 9.7 },
+        { "key": "atk", "value": 53.0, "initialValue": 18.0 },
+        { "key": "eleMas", "value": 21.0, "initialValue": 21.0 }
+      ],
+      "totalRolls": 8,
+      "astralMark": false,
+      "elixerCrafted": false,
+      "unactivatedSubstats": []
+    }
+  ],
+  "weapons": [],
+  "materials": {}
+}
