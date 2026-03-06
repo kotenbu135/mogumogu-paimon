@@ -144,16 +144,13 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           />
         </div>
 
-        {/* セット名・部位・メインステータス・レベル */}
+        {/* セット名・部位・メインステータス */}
         <div className="artifact-info">
           <p className="set-name">{setName}</p>
-          <p className="slot-name">
-            {slotName}
-            {mainStatValue && (
-              <span className="main-stat-inline"> · {mainStatName} {mainStatValue}</span>
-            )}
-          </p>
-          <p className="level">+{level}</p>
+          <p className="slot-name">{slotName}</p>
+          {mainStatValue && (
+            <p className="main-stat-line">{mainStatName} {mainStatValue}</p>
+          )}
         </div>
 
         {/* キャラアイコン（クリックで装備セットフィルタメニュー） */}
