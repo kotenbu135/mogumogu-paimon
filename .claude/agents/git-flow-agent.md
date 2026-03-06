@@ -1,6 +1,8 @@
 ---
 name: git-flow-agent
 description: 'Git-Flow戦略に従ったブランチ管理・コミット・PRレビューを専門とするサブエージェント。ブランチ名やコミットメッセージの規約違反を検出し修正を提案する。'
+tools: Read, Bash, Glob, Grep
+model: sonnet
 color: green
 ---
 

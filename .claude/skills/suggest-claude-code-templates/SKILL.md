@@ -1,6 +1,7 @@
 ---
 name: suggest-claude-code-templates
 description: 'claude-code-templatesリポジトリからリポジトリのコンテキストとチャット履歴に基づいて関連するコマンド・エージェント・スキル・フック・MCP・設定・プラグインをClaude Code用に提案します。既存コンテンツとの重複を避け、プロジェクトに最適なテンプレートを特定します。'
+disable-model-invocation: true
 ---
 
 # Claude Code Templates の提案

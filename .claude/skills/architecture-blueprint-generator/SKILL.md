@@ -1,6 +1,7 @@
 ---
 name: architecture-blueprint-generator
 description: 'コードベースを分析して包括的なアーキテクチャドキュメントを生成'
+disable-model-invocation: true
 ---
 
 # アーキテクチャブループリント生成

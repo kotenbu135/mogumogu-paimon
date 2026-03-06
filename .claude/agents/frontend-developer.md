@@ -1,6 +1,8 @@
 ---
 name: frontend-developer
 description: React/Next.js フロントエンド開発専門家。UI コンポーネント・パフォーマンス最適化・アクセシビリティ実装に特化。コンポーネント設計・レビュー・リファクタリングの依頼時に使用する。
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
 color: blue
 ---
 

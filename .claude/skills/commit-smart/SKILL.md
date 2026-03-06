@@ -1,6 +1,7 @@
 ---
 name: commit-smart
 description: 'git diff を解析して Conventional Commits 形式のコミットメッセージを自動生成するスキル。コミット前に /commit-smart を実行する。'
+disable-model-invocation: true
 ---
 
 # Commit Smart スキル

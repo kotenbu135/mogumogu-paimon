@@ -1,6 +1,7 @@
 ---
 name: tdd-workflow
 description: 'RED-GREEN-REFACTOR サイクルによる TDD ワークフロースキル。新ロジック追加時に /tdd-workflow を実行してテスト先行開発を行う。'
+disable-model-invocation: true
 ---
 
 # TDD ワークフロースキル

@@ -1,6 +1,7 @@
 ---
 name: git-flow
 description: 'Git-Flowブランチ戦略に従ったブランチ作成・コミット・PRの手順をガイドするスキル'
+disable-model-invocation: true
 ---
 
 # Git-Flow ワークフロースキル
