@@ -7,18 +7,9 @@ import ControlsBar from '@/components/ControlsBar'
 import type { GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/scoring'
 import { calculateReconstructionRate } from '@/lib/reconstruction'
-import { groupSetOptions } from '@/lib/constants'
+import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
-
-const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
-  'CV', '攻撃型', 'HP型', '防御型', '熟知型', 'チャージ型', '最良型',
-]
-
-const ALL_SUBSTAT_KEYS: StatKey[] = [
-  'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
-  'eleMas', 'enerRech_', 'atk', 'hp', 'def',
-]
 
 const MAIN_STAT_ORDER: string[] = [
   'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
