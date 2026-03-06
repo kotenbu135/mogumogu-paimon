@@ -9,6 +9,7 @@
 **/dist/
 **/build/
 **/.next/
+webapp/out/
 
 # ログ・キャッシュ
 **/*.log
