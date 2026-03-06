@@ -1,0 +1,66 @@
+{
+  "tdd": {
+    "enabled": true,
+    "description": "新ロジック追加時はテストを先に書く（Red-Green-Refactor）",
+    "testDir": "webapp/src/lib/__tests__/",
+    "testRunner": "vitest",
+    "order": ["write-test", "implement", "refactor"]
+  },
+  "qualityGate": {
+    "description": "コミット前に必須の品質チェック",
+    "commands": [
+      "cd webapp && npm run lint -- --fix",
+      "cd webapp && npm run typecheck",
+      "cd webapp && npm test"
+    ],
+    "required": true,
+    "failFast": true
+  },
+  "gitFlow": {
+    "mainBranch": "main",
+    "developBranch": "develop",
+    "branchTypes": {
+      "feature": { "base": "develop", "mergeInto": ["develop"] },
+      "bugfix":  { "base": "develop", "mergeInto": ["develop"] },
+      "hotfix":  { "base": "main",    "mergeInto": ["main", "develop"] },
+      "release": { "base": "develop", "mergeInto": ["main", "develop"] },
+      "chore":   { "base": "develop", "mergeInto": ["develop"] },
+      "docs":    { "base": "develop", "mergeInto": ["develop"] },
+      "refactor":{ "base": "develop", "mergeInto": ["develop"] }
+    },
+    "protectedBranches": ["main", "develop"],
+    "branchPattern": "^(feature|bugfix|hotfix|release|chore|docs|refactor)/[0-9]+-[a-z0-9-]+$",
+    "releasePattern": "^release/[0-9]+\\.[0-9]+\\.[0-9]+$"
+  },
+  "commitConvention": {
+    "format": "Conventional Commits",
+    "pattern": "^(feat|fix|docs|style|refactor|test|chore|ci|perf|revert)(\\([a-z-]+\\))?: .{1,72}$",
+    "language": "english",
+    "case": "lowercase",
+    "noPeriodAtEnd": true,
+    "imperativeMood": true
+  },
+  "pr": {
+    "targetBranch": {
+      "feature": "develop",
+      "bugfix": "develop",
+      "hotfix": "main",
+      "release": "main",
+      "chore": "develop",
+      "docs": "develop",
+      "refactor": "develop"
+    },
+    "requiredChecks": ["lint", "typecheck", "test"],
+    "mergeStrategy": {
+      "feature": "squash",
+      "bugfix": "squash",
+      "hotfix": "merge",
+      "release": "merge"
+    }
+  },
+  "reporting": {
+    "updateIssueComment": true,
+    "includePRLink": true,
+    "language": "ja"
+  }
+}
