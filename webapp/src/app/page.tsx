@@ -449,18 +449,17 @@ export default function HomePage() {
               </label>
             </div>
 
-            {/* 件数 + フィルタクリア + 再アップロード */}
-            <div className="ctrl-group ctrl-end">
-<div className="ctrl-buttons">
+            {/* フィルタクリア（フィルタ設定時のみ表示） */}
+            {(filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) && (
+              <div className="ctrl-group ctrl-end">
                 <button
                   className="ctrl-btn ctrl-clear"
-                  style={{ visibility: (filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) ? 'visible' : 'hidden' }}
                   onClick={() => { setFilterSets([]); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
                 >
                   {t.controls.filterClear}
                 </button>
               </div>
-            </div>
+            )}
           </div>
 
           {/* ── カードグリッド ── */}
