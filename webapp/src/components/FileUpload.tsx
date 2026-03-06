@@ -16,6 +16,10 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
 
   function parseFile(file: File) {
     setError(null)
+    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+      setError(t.upload.errorFormat)
+      return
+    }
     const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
     if (file.size > MAX_FILE_SIZE) {
       setError(t.upload.errorSize)
