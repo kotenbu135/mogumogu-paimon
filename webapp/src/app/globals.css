@@ -184,7 +184,7 @@ body {
 .score-tier-red { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
 .score-tier-orange { color: #f97316; background: rgba(249, 115, 22, 0.1); }
 .score-tier-yellow { color: #eab308; background: rgba(234, 179, 8, 0.1); }
-.score-tier-default { color: var(--text-main); background: var(--bg-card); }
+.score-tier-default { color: var(--text-sub); background: rgba(156, 163, 175, 0.1); }
 
 /* 計算式ブロック */
 .formula-block {
