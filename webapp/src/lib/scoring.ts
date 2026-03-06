@@ -177,6 +177,27 @@ export function estimateRollCounts(artifact: Artifact): number[] {
   return floorRolls
 }
 
+/**
+ * スコアタイプに対応したメインステキーのセット。
+ * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
+ */
+const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
+
+/**
+ * メインステとスコアタイプが一致しているか確認し、不一致ならスコアを 0 にする。
+ * 花（hp）・羽（atk）・元素ダメージ系など型なしメインステは判定しない。
+ */
+function typeScore(
+  mainStatKey: string,
+  typeStatKey: StatKey,
+  cv: number,
+  subValue: number,
+  coeff: number,
+): number {
+  if (TYPED_MAIN_STATS.has(mainStatKey) && mainStatKey !== typeStatKey) return 0
+  return cv + subValue * coeff
+}
+
 /** CVスコアと最高スコア（型名付き）を返す */
 export function calculateScores(artifact: Artifact): ScoreResult {
   const subMap: Partial<Record<StatKey, number>> = {}
@@ -192,7 +213,7 @@ export function calculateScores(artifact: Artifact): ScoreResult {
   let bestType = 'CV'
 
   for (const [name, key, coeff] of SCORE_TYPE_DEFS) {
-    const score = cv + (subMap[key] ?? 0) * coeff
+    const score = typeScore(artifact.mainStatKey, key, cv, subMap[key] ?? 0, coeff)
     if (score > bestScore) {
       bestScore = score
       bestType = name
@@ -210,14 +231,15 @@ export function calculateAllScores(artifact: Artifact): Record<ScoreTypeName, nu
   }
 
   const cv = (subMap['critRate_'] ?? 0) * 2 + (subMap['critDMG_'] ?? 0)
+  const main = artifact.mainStatKey
 
   const baseScores = {
     'CV': cv,
-    'HP型': cv + (subMap['hp_'] ?? 0) * 1.0,
-    '攻撃型': cv + (subMap['atk_'] ?? 0) * 1.0,
-    '防御型': cv + (subMap['def_'] ?? 0) * 0.8,
-    '熟知型': cv + (subMap['eleMas'] ?? 0) * 0.25,
-    'チャージ型': cv + (subMap['enerRech_'] ?? 0) * 0.9,
+    'HP型': typeScore(main, 'hp_', cv, subMap['hp_'] ?? 0, 1.0),
+    '攻撃型': typeScore(main, 'atk_', cv, subMap['atk_'] ?? 0, 1.0),
+    '防御型': typeScore(main, 'def_', cv, subMap['def_'] ?? 0, 0.8),
+    '熟知型': typeScore(main, 'eleMas', cv, subMap['eleMas'] ?? 0, 0.25),
+    'チャージ型': typeScore(main, 'enerRech_', cv, subMap['enerRech_'] ?? 0, 0.9),
   }
   const scores: Record<ScoreTypeName, number> = {
     ...baseScores,
