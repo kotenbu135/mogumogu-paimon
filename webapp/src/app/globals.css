@@ -523,15 +523,9 @@ body {
   margin-top: 0.1rem;
 }
 
-.main-stat-inline {
+.main-stat-line {
   color: var(--gold-light);
   font-size: 0.7rem;
-  white-space: nowrap;
-}
-
-.level {
-  font-size: 0.75rem;
-  color: #6ea8ff;
   margin-top: 0.1rem;
 }
 
