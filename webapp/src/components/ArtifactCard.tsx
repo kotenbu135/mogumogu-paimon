@@ -33,14 +33,14 @@ function formatSubstat(
   upgradeRolls: number,  // 強化ロール数（初期除く）
   statLabels: Record<string, string>,
 ): { label: string; valueStr: string; rollDetail: string } {
-  const statKey = key as keyof typeof STAT_NAMES
+  const statKey = key as StatKey
   const label = statLabels[statKey] ?? STAT_NAMES[statKey] ?? key
-  const isPercent = PERCENT_STATS.has(statKey as never)
+  const isPercent = PERCENT_STATS.has(statKey)
   const valueStr = isPercent ? `${value.toFixed(1)}%` : `${value}`
 
   // 全ロール数 = 強化 + 1（初期分）で分解
   const totalRolls = upgradeRolls + 1
-  const rolls = decomposeRolls(statKey as never, value, totalRolls)
+  const rolls = decomposeRolls(statKey, value, totalRolls)
   let rollDetail = ''
   if (rolls && rolls.length > 0) {
     rollDetail = `(${upgradeRolls}) ${rolls.map((v) => String(v)).join(' + ')}`
