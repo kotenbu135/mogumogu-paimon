@@ -1,0 +1,39 @@
+{
+  "skill_name": "git-flow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "issue #42 でアーティファクトフィルター機能を追加したい。Git-Flow に従ってブランチを作成する手順を教えてください。現在は main ブランチにいます。",
+      "expected_output": "develop ブランチから feature/42-add-artifact-filter ブランチを作成する手順を示す",
+      "files": [],
+      "expectations": [
+        "feature/42-add-artifact-filter という正確なブランチ名を提案している",
+        "develop ブランチをベースにすることを明示している",
+        "git checkout develop && git pull origin develop のコマンドを含む"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "スコア計算ロジックに会心率サブステータスのサポートを追加した変更をコミットしたい。適切なコミットメッセージを教えてください。",
+      "expected_output": "feat(scoring): add critical damage rate substat support のような Conventional Commits 形式のメッセージ",
+      "files": [],
+      "expectations": [
+        "Conventional Commits 形式 (<type>(<scope>): <description>) に従っている",
+        "type として feat を使っている",
+        "scope として scoring を使っている",
+        "英語・命令形・小文字で記述されている"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "本番環境でデプロイエラーが発生している (issue #60)。緊急修正が必要です。Git-Flow に従って対応する手順を教えてください。",
+      "expected_output": "main ブランチから hotfix/60-fix-deploy-error を作成し、main と develop 両方に PR を出す手順",
+      "files": [],
+      "expectations": [
+        "hotfix/60 という prefix を含むブランチ名を提案している",
+        "main ブランチをベースにすることを明示している",
+        "main と develop の両方へのマージを言及している"
+      ]
+    }
+  ]
+}

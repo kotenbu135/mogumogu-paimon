@@ -1,0 +1,87 @@
+{
+  "evals": [
+    {
+      "eval_id": 1,
+      "eval_name": "feature-branch-creation",
+      "with_skill": {
+        "expectations": [
+          {"text": "feature/42-* 形式のブランチ名を提案している", "passed": true, "evidence": "branch_name_suggested: feature/42-artifact-filter"},
+          {"text": "develop ブランチをベースにすることを明示している", "passed": true, "evidence": "base_branch: develop"},
+          {"text": "git checkout develop && git pull origin develop コマンドを含む", "passed": true, "evidence": "steps_followed にブランチ作成コマンドが含まれ、スキルのステップ2通りに develop ベースを指定"}
+        ],
+        "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0}
+      },
+      "without_skill": {
+        "expectations": [
+          {"text": "feature/42-* 形式のブランチ名を提案している", "passed": true, "evidence": "branch_name_suggested: feature/42-artifact-filter"},
+          {"text": "develop ブランチをベースにすることを明示している", "passed": false, "evidence": "base_branch: main — Git-Flow では feature は develop から分岐すべきだが、skill なしでは main を使用"},
+          {"text": "git checkout develop && git pull origin develop コマンドを含む", "passed": false, "evidence": "main ベースを使っているため develop の checkout コマンドなし"}
+        ],
+        "summary": {"passed": 1, "failed": 2, "total": 3, "pass_rate": 0.33}
+      }
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "commit-message",
+      "with_skill": {
+        "expectations": [
+          {"text": "Conventional Commits 形式 (<type>(<scope>): <description>) に従っている", "passed": true, "evidence": "commit_message: feat(scoring): add critical rate substat support"},
+          {"text": "type として feat を使っている", "passed": true, "evidence": "type: feat"},
+          {"text": "scope として scoring を使っている", "passed": true, "evidence": "scope: scoring — commit message に (scoring) を含む"},
+          {"text": "英語・命令形・小文字で記述されている", "passed": true, "evidence": "is_english: true, is_imperative: true, is_lowercase: true"}
+        ],
+        "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}
+      },
+      "without_skill": {
+        "expectations": [
+          {"text": "Conventional Commits 形式 (<type>(<scope>): <description>) に従っている", "passed": true, "evidence": "commit_message: feat: add crit rate substat support to score calculation logic — scope なしだが形式は準拠"},
+          {"text": "type として feat を使っている", "passed": true, "evidence": "type: feat"},
+          {"text": "scope として scoring を使っている", "passed": false, "evidence": "実際の commit message に scope (scoring) が含まれない。metrics.json の scope フィールドは参考情報として記録されただけで message には反映されていない"},
+          {"text": "英語・命令形・小文字で記述されている", "passed": true, "evidence": "is_english: true, is_imperative: true, is_lowercase: true"}
+        ],
+        "summary": {"passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75}
+      }
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "hotfix-workflow",
+      "with_skill": {
+        "expectations": [
+          {"text": "hotfix/60-* 形式のブランチ名を提案している", "passed": true, "evidence": "branch_name_suggested: hotfix/60-fix-deploy-error"},
+          {"text": "main ブランチをベースにすることを明示している", "passed": true, "evidence": "base_branch: main"},
+          {"text": "main と develop 両方へのマージを言及している", "passed": true, "evidence": "mentions_develop_merge: true, mentions_main_merge: true"}
+        ],
+        "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0}
+      },
+      "without_skill": {
+        "expectations": [
+          {"text": "hotfix/60-* 形式のブランチ名を提案している", "passed": true, "evidence": "branch_name_suggested: hotfix/60-fix-deploy-error"},
+          {"text": "main ブランチをベースにすることを明示している", "passed": true, "evidence": "base_branch: main"},
+          {"text": "main と develop 両方へのマージを言及している", "passed": true, "evidence": "mentions_develop_merge: true, mentions_main_merge: true — 一般的な Git-Flow 知識から正解"}
+        ],
+        "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0}
+      }
+    }
+  ],
+  "aggregate": {
+    "with_skill": {
+      "total_passed": 10,
+      "total_failed": 0,
+      "total": 10,
+      "pass_rate": 1.0
+    },
+    "without_skill": {
+      "total_passed": 7,
+      "total_failed": 3,
+      "total": 10,
+      "pass_rate": 0.7
+    },
+    "delta": "+0.30"
+  },
+  "notes": [
+    "Eval 1: skill なしでは feature ブランチを main ベースで作成するという重大なミスが発生 — Git-Flow の core concept (develop ベース) が欠如",
+    "Eval 2: skill なしでは scope (scoring) の省略が発生 — プロジェクト固有の scope 規約はスキルに依存",
+    "Eval 3: hotfix ワークフローは両設定で満点 — main+develop マージは一般的 Git-Flow 知識として定着している",
+    "スキルは特に feature branch の develop ベース指定とプロジェクト固有 scope 規約に有効"
+  ]
+}

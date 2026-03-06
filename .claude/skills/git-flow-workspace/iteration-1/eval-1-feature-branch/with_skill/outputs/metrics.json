@@ -1,0 +1,13 @@
+{
+  "steps_followed": [
+    "ステップ1: 現在の状態を把握する（git branch --show-current / git status / git log --oneline -5 を提示）",
+    "ステップ2: 適切なブランチを作成する（feature タイプを選択、develop ベースでブランチ名を決定）",
+    "ステップ2補足: develop ブランチが存在しない場合の手順を提示",
+    "ステップ3: 品質ゲートを通過させる（コミット前の lint / typecheck / test コマンドを提示）",
+    "ステップ4: コミットメッセージを作成する（feat(ui): add artifact filter functionality）",
+    "ステップ5: ファイルをステージ・コミットする（git add <specific-files> / git commit を提示）",
+    "ステップ6: プッシュして PR を作成する（git push origin feature/42-artifact-filter、PR ターゲット develop を提示）"
+  ],
+  "branch_name_suggested": "feature/42-artifact-filter",
+  "base_branch": "develop"
+}
