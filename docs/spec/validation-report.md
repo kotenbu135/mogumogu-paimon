@@ -175,16 +175,16 @@ def validate_total_rolls(artifact: dict) -> bool:
 
 ## 関連ドキュメント
 
-- [GOOD_Format_Specification.md](docs/GOOD_Format_Specification.md) - GOOD v6.0.0仕様
-- [Artifact_Specification.md](docs/Artifact_Specification.md) - 聖遺物データ構造
-- [Artifact_Enhancement.md](docs/Artifact_Enhancement.md) - Wiki統計データ表
-- [Substat_Rolls_Calculation.md](docs/Substat_Rolls_Calculation.md) - 計算ロジック詳細
+- [good-format.md](docs/spec/good-format.md) - GOOD v6.0.0仕様
+- [artifact.md](docs/spec/artifact.md) - 聖遺物データ構造
+- [enhancement.md](docs/spec/enhancement.md) - Wiki統計データ表
+- [substat-rolls.md](docs/spec/substat-rolls.md) - 計算ロジック詳細
 
 ---
 
 ## 検証スクリプト
 
-[validation_GOOD_v3.py](validation_GOOD_v3.py) - 全アーティファクトの自動検証スクリプト
+[validation_GOOD_v3.py](../../sample/sample_code/validation_GOOD_v3.py) - 全アーティファクトの自動検証スクリプト
 
 実行: `python3 validation_GOOD_v3.py`
 

@@ -69,6 +69,6 @@
 | `getGuaranteedIndices` | 保証サブステのインデックスペア取得 |
 
 ## 関連ドキュメント
-- ロール数計算の詳細: `docs/Substat_Rolls_Calculation.md`
-- 強化仕様: `docs/Artifact_Enhancement.md`
-- 検証レポート: `docs/VALIDATION_REPORT.md`
+- ロール数計算の詳細: `docs/spec/substat-rolls.md`
+- 強化仕様: `docs/spec/enhancement.md`
+- 検証レポート: `docs/spec/validation-report.md`
