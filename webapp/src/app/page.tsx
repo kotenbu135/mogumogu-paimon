@@ -9,6 +9,7 @@ import { calculateAllScores, calculateScores, estimateRollCounts } from '@/lib/s
 import { calculateReconstructionRate } from '@/lib/reconstruction'
 import { ARTIFACT_SET_NAMES, MAIN_STAT_NAMES, SLOT_NAMES, STAT_NAMES, groupSetOptions } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
+import { hasActiveFilter } from '@/lib/filterUtils'
 
 const basePath = process.env.BASE_PATH ?? ''
 
@@ -449,17 +450,16 @@ export default function HomePage() {
               </label>
             </div>
 
-            {/* フィルタクリア（フィルタ設定時のみ表示） */}
-            {(filterSets.length > 0 || filterSlot || filterMainStat || filterSubStats.length > 0 || filterInitialOp) && (
-              <div className="ctrl-group ctrl-end">
-                <button
-                  className="ctrl-btn ctrl-clear"
-                  onClick={() => { setFilterSets([]); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
-                >
-                  {t.controls.filterClear}
-                </button>
-              </div>
-            )}
+            {/* フィルタクリア（常に表示） */}
+            <div className="ctrl-group ctrl-end">
+              <button
+                className="ctrl-btn ctrl-clear"
+                disabled={!hasActiveFilter(filterSets, filterSlot, filterMainStat, filterSubStats, filterInitialOp)}
+                onClick={() => { setFilterSets([]); setFilterSlot(''); setFilterMainStat(''); setFilterSubStats([]); setFilterInitialOp('') }}
+              >
+                {t.controls.filterClear}
+              </button>
+            </div>
           </div>
 
           {/* ── カードグリッド ── */}

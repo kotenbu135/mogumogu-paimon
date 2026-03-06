@@ -254,7 +254,7 @@ body {
 /* ── コントロールバー ───────────────────── */
 .controls-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   gap: 1rem;
   align-items: end;
   margin-bottom: 1.25rem;
@@ -439,9 +439,14 @@ body {
   border-color: var(--gold);
 }
 
-.ctrl-clear:hover {
+.ctrl-clear:hover:not(:disabled) {
   color: var(--danger);
   border-color: var(--danger);
+}
+
+.ctrl-clear:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 
