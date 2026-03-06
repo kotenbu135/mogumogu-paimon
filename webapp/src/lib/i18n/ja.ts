@@ -71,6 +71,7 @@ export const ja: Translations = {
     click: 'またはクリックしてJSONを選択',
     errorFormat: 'GOODフォーマットのJSONを選択してください',
     errorParse: 'JSONの解析に失敗しました',
+    errorSize: 'ファイルサイズが大きすぎます（上限: 10MB）',
   },
 
   controls: {
