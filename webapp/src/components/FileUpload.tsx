@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import type { GoodFile } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n'
+import { validateGoodFile } from '@/lib/validateGoodFile'
 
 interface FileUploadProps {
   onLoad: (data: GoodFile) => void
@@ -29,11 +30,11 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string)
-        if (json.format !== 'GOOD') {
+        if (!validateGoodFile(json)) {
           setError(t.upload.errorFormat)
           return
         }
-        onLoad(json as GoodFile)
+        onLoad(json)
       } catch {
         setError(t.upload.errorParse)
       }
