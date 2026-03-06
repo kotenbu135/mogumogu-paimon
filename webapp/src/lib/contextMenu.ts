@@ -1,6 +1,21 @@
 import type { ArtifactSlotKey } from './types'
 import { ARTIFACT_SET_NAMES, SLOT_NAMES } from './constants'
 
+/** メニューがビューポート内に収まるよう座標をクランプする */
+export function clampMenuPosition(
+  x: number,
+  y: number,
+  menuWidth: number,
+  menuHeight: number,
+  viewportWidth: number,
+  viewportHeight: number,
+): { left: number; top: number } {
+  return {
+    left: Math.min(x, Math.max(0, viewportWidth - menuWidth)),
+    top: Math.min(y, Math.max(0, viewportHeight - menuHeight)),
+  }
+}
+
 export interface ContextMenuItem {
   label: string
   onClick: () => void

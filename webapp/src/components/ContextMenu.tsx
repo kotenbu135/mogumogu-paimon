@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { clampMenuPosition } from '@/lib/contextMenu'
 import type { ContextMenuItem } from '@/lib/contextMenu'
 
 interface ContextMenuProps {
@@ -14,6 +15,14 @@ interface ContextMenuProps {
 /** 聖遺物アイコンクリック時に表示するコンテキストメニュー */
 export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
+  const [pos, setPos] = useState({ left: x, top: y })
+
+  // ビューポート境界チェック: メニューが画面外にはみ出さないよう座標を調整
+  useLayoutEffect(() => {
+    if (!menuRef.current) return
+    const { width, height } = menuRef.current.getBoundingClientRect()
+    setPos(clampMenuPosition(x, y, width, height, window.innerWidth, window.innerHeight))
+  }, [x, y])
 
   // メニュー外クリックで閉じる
   useEffect(() => {
@@ -39,7 +48,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
     <div
       ref={menuRef}
       className="context-menu"
-      style={{ left: x, top: y }}
+      style={{ left: pos.left, top: pos.top }}
     >
       {items.map((item, i) => (
         <button
