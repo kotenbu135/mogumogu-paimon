@@ -149,7 +149,7 @@ export const en: Translations = {
     substatSort: 'Substat Sort',
     byScore: 'By Score',
     reconstruction: 'Reconstruction',
-    bySuccessRate: 'By Success Rate',
+    byOdds: 'By Odds',
     filterClear: 'Clear Filters',
     filterBySet: 'Set',
     filterBySlot: 'Slot',

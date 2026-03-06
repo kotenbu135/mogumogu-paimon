@@ -49,7 +49,7 @@ export interface Translations {
     substatSort: string
     byScore: string
     reconstruction: string
-    bySuccessRate: string
+    byOdds: string
     filterClear: string
     filterBySet: string
     filterBySlot: string

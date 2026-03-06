@@ -287,7 +287,7 @@ export default function ControlsBar({
             checked={reconSort}
             onChange={(e) => setReconSort(e.target.checked)}
           />
-          {t.controls.bySuccessRate}
+          {t.controls.byOdds}
         </label>
       </div>
 
