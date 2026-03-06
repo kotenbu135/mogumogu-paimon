@@ -209,8 +209,10 @@ function calcRateForPair(
   for (const s of substats) currentSubMap[s.key] = s.value
   const currentScore = calcScore(currentSubMap, scoreType)
 
-  // 初期ロール値を推定: 現在値 - 平均強化幅 × 強化ロール数
-  const initialValues = substats.map((s, i) => s.value - AVG_INCREMENT[s.key] * rollCounts[i])
+  // 初期ロール値を推定: 現在値 - 平均強化幅 × 強化ロール数（負にならないようクリッピング）
+  const initialValues = substats.map((s, i) =>
+    Math.max(0, s.value - AVG_INCREMENT[s.key] * rollCounts[i])
+  )
 
   // 全パターンを列挙して保証フィルタ → スコア比較
   const patterns = enumeratePatterns(4, enhTotal)
