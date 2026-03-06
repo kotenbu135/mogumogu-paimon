@@ -35,5 +35,14 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN  }}
+          custom_instructions: |
+            処理の終わりには必ず以下のサマリーをGitHubコメントに追記してください（マークダウン形式）：
+
+            ---
+            ## 処理サマリー
+            - **使用ツール/スキル**: (使用したツールとスキルのリスト)
+            - **サブエージェント**: (起動したサブエージェント名。なければ「なし」)
+            - **コンテキスト使用状況**: (おおよそのトークン使用量・残量の見積もり)
+            ---
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
