@@ -87,6 +87,14 @@ export interface AboutScoreT {
     tierDefault: string
   }
   formulaList: { heading: string; p1: string }
+  mainStatFilter: {
+    heading: string
+    p1: string
+    p2: string
+    tableHeaders: { scoreType: string; mainStat: string }
+    rows: readonly { scoreType: string; mainStat: string }[]
+    note: string
+  }
 }
 
 export interface AboutReconstructionT {

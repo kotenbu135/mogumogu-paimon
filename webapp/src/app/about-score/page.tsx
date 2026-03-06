@@ -49,6 +49,29 @@ export default function AboutScorePage() {
           ))}
         </ul>
       </section>
+
+      <section className="content-section">
+        <h2 className="section-title">{p.mainStatFilter.heading}</h2>
+        <p className="content-text">{p.mainStatFilter.p1}</p>
+        <p className="content-text">{p.mainStatFilter.p2}</p>
+        <table className="w-full text-sm border-collapse my-3">
+          <thead>
+            <tr className="border-b border-gray-600">
+              <th className="text-left py-1 pr-4 font-medium">{p.mainStatFilter.tableHeaders.scoreType}</th>
+              <th className="text-left py-1 font-medium">{p.mainStatFilter.tableHeaders.mainStat}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {p.mainStatFilter.rows.map((row) => (
+              <tr key={row.scoreType} className="border-b border-gray-700">
+                <td className="py-1 pr-4">{row.scoreType}</td>
+                <td className="py-1">{row.mainStat}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="content-text text-sm opacity-75">{p.mainStatFilter.note}</p>
+      </section>
     </div>
   )
 }

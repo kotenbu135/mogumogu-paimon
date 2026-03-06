@@ -190,6 +190,20 @@ export const en: Translations = {
         heading: 'Score Formula List',
         p1: 'Choose from score types specialized for each build.',
       },
+      mainStatFilter: {
+        heading: 'Main Stat & Score Type Matching',
+        p1: 'When the main stat is one of HP%、ATK%、DEF%、Elemental Mastery、or Energy Recharge, score types that do not match the main stat will be set to 0.',
+        p2: 'Example: If the main stat is Elemental Mastery, the Mastery score is calculated normally, but HP, ATK, DEF, and Charge type scores become 0.',
+        tableHeaders: { scoreType: 'Score Type', mainStat: 'Matching Main Stat' },
+        rows: [
+          { scoreType: 'HP', mainStat: 'HP%' },
+          { scoreType: 'ATK', mainStat: 'ATK%' },
+          { scoreType: 'DEF', mainStat: 'DEF%' },
+          { scoreType: 'Mastery', mainStat: 'Elemental Mastery' },
+          { scoreType: 'Charge', mainStat: 'Energy Recharge' },
+        ],
+        note: 'Flower (fixed HP), Plume (fixed ATK), and elemental DMG bonus main stats are untyped and are always calculated normally. CV score is also unaffected by main stat.',
+      },
     },
 
     aboutReconstruction: {
