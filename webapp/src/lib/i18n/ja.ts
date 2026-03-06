@@ -89,7 +89,7 @@ export const ja: Translations = {
     substatSort: 'サブステソート',
     byScore: 'スコア順',
     reconstruction: '再構築',
-    bySuccessRate: '成功率順',
+    byOdds: 'オッズ順',
     filterClear: 'フィルタをクリア',
     filterBySet: 'セット',
     filterBySlot: '部位',
