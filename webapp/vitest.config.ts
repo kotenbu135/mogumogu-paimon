@@ -5,6 +5,16 @@ export default defineConfig({
   test: {
     environment: 'node',
     exclude: ['**/node_modules/**', '**/e2e/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.d.ts',
+        'src/app/**',
+      ],
+    },
   },
   resolve: {
     alias: {
