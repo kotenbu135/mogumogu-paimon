@@ -1,7 +1,60 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run test*)",
+      "Bash(npm run build*)",
+      "Bash(npm run typecheck*)",
+      "Bash(npm run dev*)",
+      "Bash(npm install*)",
+      "Bash(npm ci*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git pull*)",
+      "Bash(git checkout*)",
+      "Bash(git branch*)",
+      "Bash(git log*)",
+      "Bash(git fetch*)",
+      "Bash(git stash*)",
+      "Bash(git merge*)",
+      "Bash(git rebase*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport json, sys, re\ntry:\n    data = json.load(sys.stdin)\n    cmd = data.get('command', '')\n    if 'git commit' in cmd:\n        msg_match = re.search(r'-m\\s+[\\\"\\']([^\\\"\\']+)[\\\"\\']', cmd)\n        if msg_match:\n            msg = msg_match.group(1)\n            pattern = r'^(feat|fix|docs|style|refactor|test|chore|ci|perf|revert)(\\([a-z][a-z0-9-]*\\))?: .{1,72}$'\n            if not re.match(pattern, msg):\n                print(f'ERROR: Commit message does not follow Conventional Commits format.', file=sys.stderr)\n                print(f'Expected: type(scope): description', file=sys.stderr)\n                print(f'Got: {msg}', file=sys.stderr)\n                sys.exit(1)\nexcept Exception:\n    pass\n\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport json, sys, os, re\ntry:\n    data = json.load(sys.stdin)\n    path = data.get('file_path', '')\n    if re.search(r'webapp/src/(?!.*__tests__).*\\.tsx?$', path):\n        base = re.sub(r'webapp/src/', 'webapp/src/lib/__tests__/', path)\n        base = re.sub(r'\\.(tsx?)$', '.test.\\\\1', base)\n        alt = re.sub(r'webapp/src/(.+?)\\.(tsx?)$', r'webapp/src/lib/__tests__/\\1.test.\\2', path)\n        if not os.path.exists(path.replace('/src/', '/src/lib/__tests__/').replace('.ts', '.test.ts').replace('.tsx', '.test.tsx')):\n            dir_name = os.path.dirname(path)\n            test_dir = os.path.join(os.path.dirname(os.path.dirname(path)), 'lib', '__tests__')\n            base_name = os.path.basename(path)\n            test_name = re.sub(r'\\.(tsx?)$', r'.test.\\1', base_name)\n            test_path = os.path.join(test_dir, test_name)\n            if 'lib/' in path and not os.path.exists(test_path):\n                print(f'WARNING: No test file found for {os.path.basename(path)}.', file=sys.stderr)\n                print(f'TDD required: create {test_path} first.', file=sys.stderr)\nexcept Exception:\n    pass\n\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport json, sys, os, subprocess, re\ntry:\n    data = json.load(sys.stdin)\n    path = data.get('file_path', '')\n    if re.search(r'webapp/src/.*\\.(tsx?|js)$', path):\n        result = subprocess.run(\n            ['npm', 'test', '--', '--run'],\n            cwd=os.path.join(os.path.dirname(path).split('webapp')[0], 'webapp'),\n            capture_output=True, text=True, timeout=60\n        )\n        if result.returncode != 0:\n            print('Tests failed after changes:', file=sys.stderr)\n            print(result.stdout[-2000:], file=sys.stderr)\nexcept Exception:\n    pass\n\""
+          }
+        ]
+      }
     ]
   }
 }
