@@ -1,28 +1,31 @@
+'use client'
+
+import { useTranslation } from '@/lib/i18n'
+
 export default function HowToUsePage() {
+  const { t } = useTranslation()
+  const p = t.pages.howToUse
+
   return (
     <div className="page-container">
-      <h1 className="page-title">使い方</h1>
+      <h1 className="page-title">{p.title}</h1>
 
       <section className="content-section">
-        <h2 className="section-title">1. GOODファイルを取得する</h2>
+        <h2 className="section-title">{p.step1.heading}</h2>
         <p className="content-text">
+          {p.step1.p1pre}
           <a
             href="https://konkers.github.io/irminsul/02-quickstart.html"
             target="_blank"
             rel="noopener noreferrer"
             className="content-link"
           >
-            irminsul
+            {p.step1.p1link}
           </a>
-          等を利用してゲームから聖遺物データをエクスポートします。
+          {p.step1.p1post}
         </p>
-        <p className="content-text">
-          irminsulはGOOD（Genshin Open Object Description）形式のJSONファイルを
-          生成するツールです。
-        </p>
-        <p className="content-text">
-          なお、irminsul以外にもGOODファイルを生成できるツールがあります。
-        </p>
+        <p className="content-text">{p.step1.p2}</p>
+        <p className="content-text">{p.step1.p3}</p>
         <ol className="content-list">
           <li>
             <a
@@ -58,24 +61,15 @@ export default function HowToUsePage() {
       </section>
 
       <section className="content-section">
-        <h2 className="section-title">2. GOODファイルを読み込む</h2>
-        <p className="content-text">
-          ホーム画面のドラッグ&ドロップエリアにGOODファイルをドロップするか、
-          クリックしてファイルを選択します。
-        </p>
+        <h2 className="section-title">{p.step2.heading}</h2>
+        <p className="content-text">{p.step2.p1}</p>
       </section>
 
       <section className="content-section">
-        <h2 className="section-title">3. 聖遺物を確認する</h2>
-        <p className="content-text">
-          ファイルを読み込むと★5聖遺物が一覧表示されます。
-        </p>
-        <p className="content-text">
-          各カードにはスコアとサブステータスの詳細が表示されます。
-        </p>
-        <p className="content-text">
-          Lv20まで強化した聖遺物のみ表示されます。
-        </p>
+        <h2 className="section-title">{p.step3.heading}</h2>
+        <p className="content-text">{p.step3.p1}</p>
+        <p className="content-text">{p.step3.p2}</p>
+        <p className="content-text">{p.step3.p3}</p>
       </section>
     </div>
   )

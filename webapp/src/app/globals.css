@@ -70,6 +70,38 @@ body {
   background: var(--bg-card);
 }
 
+/* 言語トグル */
+.lang-toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem 0.5rem;
+  margin-top: auto;
+}
+
+.lang-btn {
+  flex: 1;
+  padding: 0.3rem 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.lang-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+}
+
+.lang-btn-active {
+  color: var(--gold-light);
+  border-color: var(--gold);
+  background: var(--bg-card);
+}
+
 /* メインエリア（サイドバーの右側） */
 .main-area {
   flex: 1;

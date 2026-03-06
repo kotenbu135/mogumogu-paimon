@@ -6,17 +6,28 @@ export interface ContextMenuItem {
   onClick: () => void
 }
 
+export interface ContextMenuLabels {
+  setPrefix?: string
+  slotPrefix?: string
+  setNames?: Record<string, string>
+  slotNames?: Partial<Record<ArtifactSlotKey, string>>
+}
+
 /** キャラアイコンクリック時のコンテキストメニュー項目を生成する */
 export function getCharContextMenuItems(
   equippedSetKeys: string[],
   onFilterBySet: (setKey: string) => void,
+  labels?: Pick<ContextMenuLabels, 'setPrefix' | 'setNames'>,
 ): ContextMenuItem[] {
-  // キャラが装備しているセットを重複排除して日本語名付きで列挙
+  const setPrefix = labels?.setPrefix ?? 'セット'
   const uniqueSets = [...new Set(equippedSetKeys)]
-  return uniqueSets.map((setKey) => ({
-    label: `セット: ${ARTIFACT_SET_NAMES[setKey] ?? setKey}`,
-    onClick: () => onFilterBySet(setKey),
-  }))
+  return uniqueSets.map((setKey) => {
+    const name = labels?.setNames?.[setKey] ?? ARTIFACT_SET_NAMES[setKey] ?? setKey
+    return {
+      label: `${setPrefix}: ${name}`,
+      onClick: () => onFilterBySet(setKey),
+    }
+  })
 }
 
 /** 聖遺物アイコンクリック時のコンテキストメニュー項目を生成する */
@@ -25,16 +36,19 @@ export function getContextMenuItems(
   slotKey: ArtifactSlotKey,
   onFilterBySet: (setKey: string) => void,
   onFilterBySlot: (slotKey: ArtifactSlotKey) => void,
+  labels?: ContextMenuLabels,
 ): ContextMenuItem[] {
-  const setName = ARTIFACT_SET_NAMES[setKey] ?? setKey
-  const slotName = SLOT_NAMES[slotKey] ?? slotKey
+  const setPrefix = labels?.setPrefix ?? 'セット'
+  const slotPrefix = labels?.slotPrefix ?? '部位'
+  const setName = labels?.setNames?.[setKey] ?? ARTIFACT_SET_NAMES[setKey] ?? setKey
+  const slotName = labels?.slotNames?.[slotKey] ?? SLOT_NAMES[slotKey] ?? slotKey
   return [
     {
-      label: `セット: ${setName}`,
+      label: `${setPrefix}: ${setName}`,
       onClick: () => onFilterBySet(setKey),
     },
     {
-      label: `部位: ${slotName}`,
+      label: `${slotPrefix}: ${slotName}`,
       onClick: () => onFilterBySlot(slotKey),
     },
   ]
