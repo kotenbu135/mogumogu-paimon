@@ -157,7 +157,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           tabIndex={canFilter ? 0 : undefined}
           aria-label={canFilter ? t.card.clickToFilter : undefined}
         >
-          {artifactImgSrc && (
+          {artifactImgSrc ? (
             <img
               src={artifactImgSrc}
               alt={`${setName} ${slotName}`}
@@ -166,6 +166,8 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
                 (e.target as HTMLImageElement).style.display = 'none'
               }}
             />
+          ) : (
+            <span className="artifact-img-placeholder" aria-hidden="true">?</span>
           )}
         </div>
 

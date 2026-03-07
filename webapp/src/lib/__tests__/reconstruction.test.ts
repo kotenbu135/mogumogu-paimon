@@ -207,8 +207,8 @@ describe('calculateReconstructionRate', () => {
     expect(calculateReconstructionRate(artLv16, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
   })
 
-  it('totalRolls > 20 の場合は null を返す（DoS 防止）', () => {
-    const art = makeArtifact({ totalRolls: 21 })
+  it('totalRolls > 12 の場合は null を返す（DoS 防止・バリデーション上限と統一）', () => {
+    const art = makeArtifact({ totalRolls: 13 })
     expect(calculateReconstructionRate(art, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
 
     const artExcessive = makeArtifact({ totalRolls: 1000 })
