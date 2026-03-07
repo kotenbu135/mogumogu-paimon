@@ -1,11 +1,7 @@
 'use client'
 
-import type { ScoreTypeName } from '@/lib/types'
+import { SCORE_TYPE_OPTIONS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
-
-const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
-  'CV', 'HP型', '攻撃型', '防御型', '熟知型', 'チャージ型', '最良型',
-]
 
 export default function AboutScorePage() {
   const { t } = useTranslation()
