@@ -17,6 +17,8 @@ export default function AboutScorePage() {
         <p className="content-text">{p.whatIsScore.p2}</p>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.cv.heading}</h2>
         <p className="content-text">{p.cv.p1}</p>
@@ -32,6 +34,8 @@ export default function AboutScorePage() {
         </div>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.formulaList.heading}</h2>
         <p className="content-text">{p.formulaList.p1}</p>
@@ -46,22 +50,24 @@ export default function AboutScorePage() {
         </ul>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.mainStatFilter.heading}</h2>
         <p className="content-text">{p.mainStatFilter.p1}</p>
         <p className="content-text">{p.mainStatFilter.p2}</p>
-        <table className="w-full text-sm border-collapse my-3">
+        <table className="info-table">
           <thead>
-            <tr className="border-b border-gray-600">
-              <th className="text-left py-1 pr-4 font-medium">{p.mainStatFilter.tableHeaders.scoreType}</th>
-              <th className="text-left py-1 font-medium">{p.mainStatFilter.tableHeaders.mainStat}</th>
+            <tr>
+              <th>{p.mainStatFilter.tableHeaders.scoreType}</th>
+              <th>{p.mainStatFilter.tableHeaders.mainStat}</th>
             </tr>
           </thead>
           <tbody>
             {p.mainStatFilter.rows.map((row) => (
-              <tr key={row.scoreType} className="border-b border-gray-700">
-                <td className="py-1 pr-4">{row.scoreType}</td>
-                <td className="py-1">{row.mainStat}</td>
+              <tr key={row.scoreType}>
+                <td>{row.scoreType}</td>
+                <td>{row.mainStat}</td>
               </tr>
             ))}
           </tbody>

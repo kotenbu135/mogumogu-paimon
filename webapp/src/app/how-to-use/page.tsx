@@ -60,10 +60,14 @@ export default function HowToUsePage() {
         </ol>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.step2.heading}</h2>
         <p className="content-text">{p.step2.p1}</p>
       </section>
+
+      <hr className="section-divider" />
 
       <section className="content-section">
         <h2 className="section-title">{p.step3.heading}</h2>
