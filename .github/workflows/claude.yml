@@ -35,6 +35,9 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN  }}
+          claude_args: >-
+            --allowedTools
+            "Bash(npm run lint:*),Bash(npm run test:*),Bash(npm run build:*),Bash(npm run typecheck:*),Bash(npm run dev:*),Bash(npm install:*),Bash(npm ci:*),Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git pull:*),Bash(git checkout:*),Bash(git branch:*),Bash(git log:*),Bash(git fetch:*),Bash(git stash:*),Bash(git merge:*),Bash(git rebase:*),Bash(gh pr:*),Bash(gh issue:*),Bash(python3:*),Bash(cd:*)"
           custom_instructions: |
             処理の終わりには必ず以下のサマリーをGitHubコメントに追記してください（マークダウン形式）：
 
