@@ -130,8 +130,18 @@ export function getGuaranteedIndices(
   return null
 }
 
+/**
+ * スコアタイプに対応したメインステキーのセット（scoring.ts と同定義）。
+ * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
+ */
+const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
+
 /** サブステ値マップから指定スコアタイプのスコアを計算 */
-function calcScore(subMap: Partial<Record<StatKey, number>>, scoreType: ScoreTypeName): number {
+function calcScore(
+  subMap: Partial<Record<StatKey, number>>,
+  scoreType: ScoreTypeName,
+  mainStatKey: string,
+): number {
   const cv = (subMap['critRate_'] ?? 0) * 2 + (subMap['critDMG_'] ?? 0)
 
   if (scoreType === 'CV') return cv
@@ -139,6 +149,7 @@ function calcScore(subMap: Partial<Record<StatKey, number>>, scoreType: ScoreTyp
   if (scoreType === '最良型') {
     let best = cv
     for (const [, key, coeff] of SCORE_EXTRA) {
+      if (TYPED_MAIN_STATS.has(mainStatKey) && mainStatKey !== key) continue
       const s = cv + (subMap[key] ?? 0) * coeff
       if (s > best) best = s
     }
@@ -147,6 +158,7 @@ function calcScore(subMap: Partial<Record<StatKey, number>>, scoreType: ScoreTyp
 
   const extra = SCORE_EXTRA.find(([name]) => name === scoreType)
   if (!extra) return cv
+  if (TYPED_MAIN_STATS.has(mainStatKey) && mainStatKey !== extra[1]) return 0
   return cv + (subMap[extra[1]] ?? 0) * extra[2]
 }
 
@@ -187,7 +199,7 @@ export function calculateReconstructionRate(
     const idxB = substats.findIndex((s) => s.key === keyB)
     if (idxA === -1 || idxB === -1) continue
 
-    const rate = calcRateForPair(substats, rollCounts, enhTotal, scoreType, reconType, idxA, idxB)
+    const rate = calcRateForPair(substats, rollCounts, enhTotal, scoreType, reconType, idxA, idxB, artifact.mainStatKey)
     if (rate !== null && (bestRate === null || rate > bestRate)) {
       bestRate = rate
     }
@@ -204,13 +216,14 @@ function calcRateForPair(
   reconType: ReconstructionType,
   idxA: number,
   idxB: number,
+  mainStatKey: string,
 ): number | null {
   const threshold = GUARANTEE_THRESHOLDS[reconType]
 
   // 現在のスコア
   const currentSubMap: Partial<Record<StatKey, number>> = {}
   for (const s of substats) currentSubMap[s.key] = s.value
-  const currentScore = calcScore(currentSubMap, scoreType)
+  const currentScore = calcScore(currentSubMap, scoreType, mainStatKey)
 
   // 初期ロール値を推定: 現在値 - 平均強化幅 × 強化ロール数（負にならないようクリッピング）
   const initialValues = substats.map((s, i) =>
@@ -233,7 +246,7 @@ function calcRateForPair(
     for (let i = 0; i < substats.length; i++) {
       newSubMap[substats[i].key] = initialValues[i] + AVG_INCREMENT[substats[i].key] * pattern[i]
     }
-    if (calcScore(newSubMap, scoreType) > currentScore) {
+    if (calcScore(newSubMap, scoreType, mainStatKey) > currentScore) {
       successProb += prob
     }
   }

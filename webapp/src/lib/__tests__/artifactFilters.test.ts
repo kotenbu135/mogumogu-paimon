@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { StatKey } from '@/lib/types'
 import {
   INITIAL_ARTIFACT_FILTER_STATE,
   resetArtifactFilters,
@@ -42,7 +43,7 @@ describe('setMainStatFilter', () => {
   it('メインステと同じキーをサブステフィルタから除外する', () => {
     const state = {
       ...INITIAL_ARTIFACT_FILTER_STATE,
-      filterSubStats: ['critRate_', 'critDMG_'] as const,
+      filterSubStats: ['critRate_', 'critDMG_'] as StatKey[],
     }
     const next = setMainStatFilter(state, 'critRate_')
     expect(next.filterSubStats).toEqual(['critDMG_'])
@@ -76,7 +77,7 @@ describe('toggleSubStatFilter', () => {
   it('checked=false のときサブステを削除する', () => {
     const state = {
       ...INITIAL_ARTIFACT_FILTER_STATE,
-      filterSubStats: ['critDMG_', 'atk_'] as const,
+      filterSubStats: ['critDMG_', 'atk_'] as StatKey[],
     }
     const next = toggleSubStatFilter(state, 'critDMG_', false)
     expect(next.filterSubStats).not.toContain('critDMG_')
