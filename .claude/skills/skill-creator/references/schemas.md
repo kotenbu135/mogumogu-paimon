@@ -1,12 +1,12 @@
-# JSON Schemas
+# JSONスキーマ
 
-This document defines the JSON schemas used by skill-creator.
+このドキュメントはskill-creatorが使用するJSONスキーマを定義する。
 
 ---
 
 ## evals.json
 
-Defines the evals for a skill. Located at `evals/evals.json` within the skill directory.
+スキルのevalを定義する。スキルディレクトリ内の`evals/evals.json`に配置する。
 
 ```json
 {
@@ -14,31 +14,31 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
   "evals": [
     {
       "id": 1,
-      "prompt": "User's example prompt",
-      "expected_output": "Description of expected result",
+      "prompt": "ユーザーのサンプルプロンプト",
+      "expected_output": "期待される結果の説明",
       "files": ["evals/files/sample1.pdf"],
       "expectations": [
-        "The output includes X",
-        "The skill used script Y"
+        "出力にXが含まれている",
+        "スキルがスクリプトYを使用した"
       ]
     }
   ]
 }
 ```
 
-**Fields:**
-- `skill_name`: Name matching the skill's frontmatter
-- `evals[].id`: Unique integer identifier
-- `evals[].prompt`: The task to execute
-- `evals[].expected_output`: Human-readable description of success
-- `evals[].files`: Optional list of input file paths (relative to skill root)
-- `evals[].expectations`: List of verifiable statements
+**フィールド:**
+- `skill_name`: スキルのフロントマターと一致する名前
+- `evals[].id`: 一意の整数識別子
+- `evals[].prompt`: 実行するタスク
+- `evals[].expected_output`: 成功の人間が読める説明
+- `evals[].files`: 入力ファイルパスのオプションリスト（スキルルートからの相対パス）
+- `evals[].expectations`: 検証可能な陳述のリスト
 
 ---
 
 ## history.json
 
-Tracks version progression in Improve mode. Located at workspace root.
+Improveモードでのバージョン進行を追跡する。ワークスペースルートに配置する。
 
 ```json
 {
@@ -71,34 +71,34 @@ Tracks version progression in Improve mode. Located at workspace root.
 }
 ```
 
-**Fields:**
-- `started_at`: ISO timestamp of when improvement started
-- `skill_name`: Name of the skill being improved
-- `current_best`: Version identifier of the best performer
-- `iterations[].version`: Version identifier (v0, v1, ...)
-- `iterations[].parent`: Parent version this was derived from
-- `iterations[].expectation_pass_rate`: Pass rate from grading
-- `iterations[].grading_result`: "baseline", "won", "lost", or "tie"
-- `iterations[].is_current_best`: Whether this is the current best version
+**フィールド:**
+- `started_at`: 改善開始時のISOタイムスタンプ
+- `skill_name`: 改善中のスキルの名前
+- `current_best`: 最高パフォーマーのバージョン識別子
+- `iterations[].version`: バージョン識別子（v0、v1、...）
+- `iterations[].parent`: このバージョンの派生元の親バージョン
+- `iterations[].expectation_pass_rate`: グレーディングのパス率
+- `iterations[].grading_result`: "baseline"、"won"、"lost"、または "tie"
+- `iterations[].is_current_best`: これが現在の最良バージョンかどうか
 
 ---
 
 ## grading.json
 
-Output from the grader agent. Located at `<run-dir>/grading.json`.
+グレーダーエージェントの出力。`<run-dir>/grading.json`に配置する。
 
 ```json
 {
   "expectations": [
     {
-      "text": "The output includes the name 'John Smith'",
+      "text": "出力に 'John Smith' という名前が含まれている",
       "passed": true,
-      "evidence": "Found in transcript Step 3: 'Extracted names: John Smith, Sarah Johnson'"
+      "evidence": "トランスクリプトのステップ3で発見: '抽出された名前: John Smith, Sarah Johnson'"
     },
     {
-      "text": "The spreadsheet has a SUM formula in cell B10",
+      "text": "スプレッドシートのセルB10にSUM数式がある",
       "passed": false,
-      "evidence": "No spreadsheet was created. The output was a text file."
+      "evidence": "スプレッドシートは作成されなかった。出力はテキストファイルだった。"
     }
   ],
   "summary": {
@@ -126,43 +126,43 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
   },
   "claims": [
     {
-      "claim": "The form has 12 fillable fields",
+      "claim": "フォームには12の記入可能なフィールドがある",
       "type": "factual",
       "verified": true,
-      "evidence": "Counted 12 fields in field_info.json"
+      "evidence": "field_info.jsonで12のフィールドを確認"
     }
   ],
   "user_notes_summary": {
-    "uncertainties": ["Used 2023 data, may be stale"],
+    "uncertainties": ["2023年のデータを使用、古い可能性がある"],
     "needs_review": [],
-    "workarounds": ["Fell back to text overlay for non-fillable fields"]
+    "workarounds": ["記入不可フィールドにテキストオーバーレイでフォールバック"]
   },
   "eval_feedback": {
     "suggestions": [
       {
-        "assertion": "The output includes the name 'John Smith'",
-        "reason": "A hallucinated document that mentions the name would also pass"
+        "assertion": "出力に 'John Smith' という名前が含まれている",
+        "reason": "名前を言及する幻覚されたドキュメントもパスする"
       }
     ],
-    "overall": "Assertions check presence but not correctness."
+    "overall": "アサーションは存在を確認するが正確性は確認しない。"
   }
 }
 ```
 
-**Fields:**
-- `expectations[]`: Graded expectations with evidence
-- `summary`: Aggregate pass/fail counts
-- `execution_metrics`: Tool usage and output size (from executor's metrics.json)
-- `timing`: Wall clock timing (from timing.json)
-- `claims`: Extracted and verified claims from the output
-- `user_notes_summary`: Issues flagged by the executor
-- `eval_feedback`: (optional) Improvement suggestions for the evals, only present when the grader identifies issues worth raising
+**フィールド:**
+- `expectations[]`: 証拠付きのグレードされた期待値
+- `summary`: 集計パス/フェイル数
+- `execution_metrics`: ツール使用量と出力サイズ（エグゼキューターのmetrics.jsonから）
+- `timing`: ウォールクロックタイミング（timing.jsonから）
+- `claims`: 出力から抽出して検証した主張
+- `user_notes_summary`: エグゼキューターがフラグした問題
+- `eval_feedback`: （オプション）evalの改善提案、グレーダーが問題を特定した場合のみ存在
 
 ---
 
 ## metrics.json
 
-Output from the executor agent. Located at `<run-dir>/outputs/metrics.json`.
+エグゼキューターエージェントの出力。`<run-dir>/outputs/metrics.json`に配置する。
 
 ```json
 {
@@ -183,22 +183,22 @@ Output from the executor agent. Located at `<run-dir>/outputs/metrics.json`.
 }
 ```
 
-**Fields:**
-- `tool_calls`: Count per tool type
-- `total_tool_calls`: Sum of all tool calls
-- `total_steps`: Number of major execution steps
-- `files_created`: List of output files created
-- `errors_encountered`: Number of errors during execution
-- `output_chars`: Total character count of output files
-- `transcript_chars`: Character count of transcript
+**フィールド:**
+- `tool_calls`: ツールタイプごとのカウント
+- `total_tool_calls`: すべてのツール呼び出しの合計
+- `total_steps`: 主要な実行ステップの数
+- `files_created`: 作成された出力ファイルのリスト
+- `errors_encountered`: 実行中のエラー数
+- `output_chars`: 出力ファイルの総文字数
+- `transcript_chars`: トランスクリプトの文字数
 
 ---
 
 ## timing.json
 
-Wall clock timing for a run. Located at `<run-dir>/timing.json`.
+実行のウォールクロックタイミング。`<run-dir>/timing.json`に配置する。
 
-**How to capture:** When a subagent task completes, the task notification includes `total_tokens` and `duration_ms`. Save these immediately — they are not persisted anywhere else and cannot be recovered after the fact.
+**取得方法:** サブエージェントタスクが完了すると、タスク通知に`total_tokens`と`duration_ms`が含まれる。すぐに保存する — これらは他の場所には保持されず、後から回収できない。
 
 ```json
 {
@@ -218,7 +218,7 @@ Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
 ## benchmark.json
 
-Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
+Benchmarkモードの出力。`benchmarks/<timestamp>/benchmark.json`に配置する。
 
 ```json
 {
@@ -252,8 +252,8 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
         {"text": "...", "passed": true, "evidence": "..."}
       ],
       "notes": [
-        "Used 2023 data, may be stale",
-        "Fell back to text overlay for non-fillable fields"
+        "2023年のデータを使用、古い可能性がある",
+        "記入不可フィールドにテキストオーバーレイでフォールバック"
       ]
     }
   ],
@@ -277,43 +277,43 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
   },
 
   "notes": [
-    "Assertion 'Output is a PDF file' passes 100% in both configurations - may not differentiate skill value",
-    "Eval 3 shows high variance (50% ± 40%) - may be flaky or model-dependent",
-    "Without-skill runs consistently fail on table extraction expectations",
-    "Skill adds 13s average execution time but improves pass rate by 50%"
+    "アサーション 'Output is a PDF file' が両設定で100%パス — スキルの価値を区別しない可能性",
+    "Eval 3が高い分散を示す（50% ± 40%）— 不安定またはモデル依存の可能性",
+    "スキルなし実行がテーブル抽出の期待値で一貫して失敗",
+    "スキルが平均13秒の実行時間を追加するが、パス率を50%改善する"
   ]
 }
 ```
 
-**Fields:**
-- `metadata`: Information about the benchmark run
-  - `skill_name`: Name of the skill
-  - `timestamp`: When the benchmark was run
-  - `evals_run`: List of eval names or IDs
-  - `runs_per_configuration`: Number of runs per config (e.g. 3)
-- `runs[]`: Individual run results
-  - `eval_id`: Numeric eval identifier
-  - `eval_name`: Human-readable eval name (used as section header in the viewer)
-  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
-  - `run_number`: Integer run number (1, 2, 3...)
-  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
-- `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
-  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
-- `notes`: Freeform observations from the analyzer
+**フィールド:**
+- `metadata`: ベンチマーク実行に関する情報
+  - `skill_name`: スキルの名前
+  - `timestamp`: ベンチマーク実行時刻
+  - `evals_run`: eval名またはIDのリスト
+  - `runs_per_configuration`: 設定ごとの実行数（例: 3）
+- `runs[]`: 個別の実行結果
+  - `eval_id`: 数値のeval識別子
+  - `eval_name`: 人間が読める名前（ビューアーのセクションヘッダーとして使用）
+  - `configuration`: 必ず`"with_skill"`または`"without_skill"`（ビューアーがこの文字列をグループ化と色分けに使用）
+  - `run_number`: 整数の実行番号（1、2、3...）
+  - `result`: `pass_rate`、`passed`、`total`、`time_seconds`、`tokens`、`errors`を含むネストされたオブジェクト
+- `run_summary`: 設定ごとの統計集計
+  - `with_skill` / `without_skill`: それぞれ`mean`と`stddev`フィールドを含む`pass_rate`、`time_seconds`、`tokens`オブジェクト
+  - `delta`: `"+0.50"`、`"+13.0"`、`"+1700"`のような差分文字列
+- `notes`: アナライザーからの自由形式の観察
 
-**Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.
+**重要:** ビューアーはこれらのフィールド名を正確に読む。`configuration`の代わりに`config`を使用したり、`pass_rate`を`result`の下にネストする代わりにrunのトップレベルに置いたりすると、ビューアーが空・ゼロの値を表示する原因になる。手動でbenchmark.jsonを生成する際は常にこのスキーマを参照する。
 
 ---
 
 ## comparison.json
 
-Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
+ブラインドコンパレーターの出力。`<grading-dir>/comparison-N.json`に配置する。
 
 ```json
 {
   "winner": "A",
-  "reasoning": "Output A provides a complete solution with proper formatting and all required fields. Output B is missing the date field and has formatting inconsistencies.",
+  "reasoning": "出力Aは適切なフォーマットとすべての必須フィールドを含む完全なソリューションを提供する。出力Bはdateフィールドが欠落しており、フォーマットの一貫性に問題がある。",
   "rubric": {
     "A": {
       "content": {
@@ -349,13 +349,13 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
   "output_quality": {
     "A": {
       "score": 9,
-      "strengths": ["Complete solution", "Well-formatted", "All fields present"],
-      "weaknesses": ["Minor style inconsistency in header"]
+      "strengths": ["完全なソリューション", "適切なフォーマット", "すべてのフィールドが存在"],
+      "weaknesses": ["ヘッダーのスタイルに軽微な不一致"]
     },
     "B": {
       "score": 5,
-      "strengths": ["Readable output", "Correct basic structure"],
-      "weaknesses": ["Missing date field", "Formatting inconsistencies", "Partial data extraction"]
+      "strengths": ["読みやすい出力", "基本構造が正確"],
+      "weaknesses": ["dateフィールドが欠落", "フォーマットの不一致", "データ抽出が部分的"]
     }
   },
   "expectation_results": {
@@ -383,7 +383,7 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
 
 ## analysis.json
 
-Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
+ポストホック分析エージェントの出力。`<grading-dir>/analysis.json`に配置する。
 
 ```json
 {
@@ -391,26 +391,26 @@ Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
     "winner": "A",
     "winner_skill": "path/to/winner/skill",
     "loser_skill": "path/to/loser/skill",
-    "comparator_reasoning": "Brief summary of why comparator chose winner"
+    "comparator_reasoning": "コンパレーターが勝者を選んだ理由の概要"
   },
   "winner_strengths": [
-    "Clear step-by-step instructions for handling multi-page documents",
-    "Included validation script that caught formatting errors"
+    "複数ページドキュメント処理のための明確なステップバイステップの指示",
+    "フォーマットエラーを検出した検証スクリプトを含む"
   ],
   "loser_weaknesses": [
-    "Vague instruction 'process the document appropriately' led to inconsistent behavior",
-    "No script for validation, agent had to improvise"
+    "「適切にドキュメントを処理する」という曖昧な指示が一貫性のない動作につながった",
+    "検証スクリプトがなく、エージェントが即興した"
   ],
   "instruction_following": {
     "winner": {
       "score": 9,
-      "issues": ["Minor: skipped optional logging step"]
+      "issues": ["軽微: オプションのログ記録ステップをスキップした"]
     },
     "loser": {
       "score": 6,
       "issues": [
-        "Did not use the skill's formatting template",
-        "Invented own approach instead of following step 3"
+        "スキルのフォーマットテンプレートを使用しなかった",
+        "ステップ3を無視して独自のアプローチを考案した"
       ]
     }
   },
@@ -418,13 +418,13 @@ Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
     {
       "priority": "high",
       "category": "instructions",
-      "suggestion": "Replace 'process the document appropriately' with explicit steps",
-      "expected_impact": "Would eliminate ambiguity that caused inconsistent behavior"
+      "suggestion": "「適切にドキュメントを処理する」を明示的なステップに置き換える",
+      "expected_impact": "一貫性のない動作を引き起こした曖昧さを排除できる"
     }
   ],
   "transcript_insights": {
-    "winner_execution_pattern": "Read skill -> Followed 5-step process -> Used validation script",
-    "loser_execution_pattern": "Read skill -> Unclear on approach -> Tried 3 different methods"
+    "winner_execution_pattern": "スキル読み込み -> 5ステップのプロセスに従う -> 検証スクリプト使用",
+    "loser_execution_pattern": "スキル読み込み -> アプローチが不明確 -> 3つの異なる方法を試行"
   }
 }
 ```

@@ -1,109 +1,109 @@
 ---
 name: skill-creator
-description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.
+description: 新しいスキルの作成、既存スキルの修正・改善、スキルのパフォーマンス計測を行うスキル。スキルをゼロから作成したい・既存スキルを最適化したい・evalでテストしたい・ベンチマーク分析を行いたい・説明文のトリガー精度を最適化したい場合に使用する。
 ---
 
-# Skill Creator
+# スキルクリエーター
 
-A skill for creating new skills and iteratively improving them.
+新しいスキルを作成し、反復的に改善するためのスキル。
 
-The core loop:
-1. Understand what the skill should do
-2. Write or edit a skill draft
-3. Run test cases via parallel subagents (skill vs. baseline)
-4. Help the user evaluate results qualitatively and quantitatively
-5. Improve the skill based on feedback
-6. Repeat until satisfied
-7. Optionally: optimize the description for better triggering
+コアループ:
+1. スキルが何をすべきか理解する
+2. スキルの草案を書くまたは編集する
+3. 並列サブエージェントでテストケースを実行する（スキルあり vs ベースライン）
+4. 定性的・定量的に結果を評価する
+5. フィードバックに基づきスキルを改善する
+6. 満足するまで繰り返す
+7. オプション: トリガー精度向上のための説明文最適化
 
-Jump in wherever the user is. If they have an existing skill already, go straight to step 3. If they say "just vibe with me," skip the formal eval loop and iterate directly.
+ユーザーがいる段階から参加する。既存のスキルがあればステップ3から始める。「直感的に進めよう」と言われたら、フォーマルなevalループをスキップして直接イテレーションする。
 
-**Context efficiency note**: Subagents run in isolated (forked) contexts and don't accumulate tokens in the main conversation. Use them freely for eval runs and grading — this keeps the main context focused on planning and writing the skill itself.
+**コンテキスト効率の注意**: サブエージェントは独立した（フォーク）コンテキストで実行され、メイン会話のトークンを消費しない。evalの実行やグレーディングに自由に使用することで、メインコンテキストを計画とスキル執筆に集中させる。
 
-## Communicating with the user
+## ユーザーとのコミュニケーション
 
-People using this skill range from beginners to experienced engineers. Read context cues carefully:
-- "evaluation" and "benchmark" are OK
-- "JSON" and "assertion" need context cues before using without explanation
+このスキルを使用する人は、初心者から経験豊富なエンジニアまで幅広い。文脈の手がかりを注意深く読む:
+- 「評価」「ベンチマーク」はそのまま使用して良い
+- 「JSON」「アサーション」は説明なしに使う場合は文脈を確認する
 
-Brief definitions are welcome when in doubt.
+疑わしい場合は簡単な定義を添える。
 
 ---
 
-## Creating a skill
+## スキルの作成
 
-### Capture Intent
+### 意図の把握
 
-Check the conversation history first — tools used, corrections made, and input/output patterns may already tell you a lot.
+まず会話履歴を確認する — 使用ツール、修正点、入出力パターンが多くを語ってくれる。
 
-1. What should this skill enable Claude to do?
-2. When should this skill trigger? (what user phrases/contexts)
-3. What's the expected output format?
-4. Should we set up test cases? Skills with objectively verifiable outputs (file transforms, code generation, fixed workflows) benefit from them. Subjective skills (writing style, art) often don't. Suggest a default, let the user decide.
+1. このスキルはClaudeに何をできるようにするか？
+2. いつこのスキルをトリガーするか？（どんなユーザーフレーズ・コンテキスト）
+3. 期待する出力フォーマットは何か？
+4. テストケースを設定するか？客観的に検証可能な出力（ファイル変換、コード生成、固定ワークフロー）を持つスキルは有益。主観的なスキル（文体、アート）は多くの場合不要。デフォルトを提案し、ユーザーに決定してもらう。
 
-### Interview and Research
+### インタビューとリサーチ
 
-Ask about edge cases, example files, success criteria, and dependencies. Don't write test prompts until this is settled.
+エッジケース、サンプルファイル、成功基準、依存関係について確認する。テストプロンプトはこれが確定するまで書かない。
 
-Check available MCPs — if useful for research, spawn parallel subagents to research in the background while you continue interviewing the user.
+利用可能なMCPを確認する — リサーチに有用なら、インタビュー中にバックグラウンドで並列サブエージェントをリサーチに使う。
 
-### Write the SKILL.md
+### SKILL.mdの作成
 
-Components to fill in:
+記入すべき要素:
 
-- **name**: lowercase, hyphens, max 64 chars
-- **description**: what it does + when to use it. This is the primary trigger mechanism. Make it a bit "pushy" — Claude tends to undertrigger. Instead of "helps with dashboards," write "Use this whenever the user mentions dashboards, data visualization, or internal metrics, even if they don't say 'dashboard'."
-- **the rest of the skill**
+- **name**: 小文字、ハイフン、最大64文字
+- **description**: 機能と使用タイミング。これが主要なトリガーメカニズム。少し「積極的」に書く — Claudeはトリガーが少なすぎる傾向がある。「ダッシュボードに役立つ」ではなく「ユーザーがダッシュボード、データ可視化、内部メトリクスに言及するときは常に使用する」と書く。
+- **スキルの残りの部分**
 
-#### Anatomy of a Skill
+#### スキルの構造
 
 ```
 skill-name/
-├── SKILL.md (required, <500 lines)
-│   ├── YAML frontmatter (name, description required)
-│   └── Markdown instructions
-└── Bundled Resources (optional)
-    ├── scripts/    - Executable code (runs without loading into context)
-    ├── references/ - Docs loaded as needed (zero cost until accessed)
-    └── assets/     - Templates, icons, fonts
+├── SKILL.md (必須、500行以内)
+│   ├── YAMLフロントマター (name, description必須)
+│   └── Markdownの指示
+└── バンドルリソース (オプション)
+    ├── scripts/    - 実行可能コード（コンテキストに読み込まずに実行）
+    ├── references/ - 必要時に読み込まれるドキュメント（アクセスまでコストゼロ）
+    └── assets/     - テンプレート、アイコン、フォント
 ```
 
-#### Progressive Disclosure
+#### プログレッシブディスクロージャー
 
-Three loading levels — keep this in mind as the skill grows:
-1. **Metadata** (name + description) — always in context
-2. **SKILL.md body** — loaded when skill triggers (keep under 500 lines)
-3. **Bundled resources** — loaded or executed only as needed, no context cost until accessed
+3つの読み込みレベル — スキルが大きくなったら考慮する:
+1. **メタデータ** (name + description) — 常にコンテキストに存在
+2. **SKILL.mdボディ** — スキルトリガー時に読み込み（500行以内に収める）
+3. **バンドルリソース** — 必要時のみ読み込み・実行、アクセスまでコストなし
 
-When SKILL.md grows large, move detailed content to `references/` and add clear pointers. When a skill covers multiple domains, organize by domain so only the relevant file gets loaded:
+SKILL.mdが大きくなったら、詳細なコンテンツを`references/`に移動して明確なポインタを追加する。スキルが複数のドメインをカバーする場合は、関連ファイルのみが読み込まれるようにドメイン別に整理する:
 
 ```
 bigquery-skill/
-├── SKILL.md (overview + navigation)
+├── SKILL.md (概要とナビゲーション)
 └── references/
     ├── finance.md
     ├── sales.md
     └── product.md
 ```
 
-Keep references 1 level deep — nested references cause partial reads and missed information.
+参照は1レベルの深さに保つ — ネストされた参照は部分的な読み込みや情報の見落としを引き起こす。
 
-#### Writing Style
+#### 文体
 
-- Use imperative form
-- Explain *why*, not just *what* — LLMs reason better with purpose than rigid rules
-- Prefer one clear approach over multiple options
-- Start with a draft, read it fresh, improve it
+- 命令形を使用する
+- *なぜ*を説明する、*何を*だけでなく — LLMは硬直したルールよりも目的で推論する
+- 複数の選択肢ではなく、一つの明確なアプローチを優先する
+- 草案を書き、新鮮な目で読み返し、改善する
 
-#### Principle of Lack of Surprise
+#### 予測可能性の原則
 
-Skills must not contain malware, exploit code, or deceptive content. A skill's behavior should match exactly what its description promises.
+スキルにマルウェア、エクスプロイトコード、または欺瞞的なコンテンツを含めてはならない。スキルの動作は説明が約束する内容と完全に一致しなければならない。
 
-### Test Cases
+### テストケース
 
-Come up with 2-3 realistic test prompts — what a real user would actually type. Share them: "Here are a few test cases I'd like to try. Do these look right, or do you want to add more?" Then run them.
+現実的なテストプロンプトを2〜3個考える — 実際のユーザーが入力するもの。共有する: 「試したいテストケースをいくつか用意しました。これで良いですか、追加しますか？」その後実行する。
 
-Save test cases to `evals/evals.json`:
+テストケースを`evals/evals.json`に保存する:
 
 ```json
 {
@@ -111,96 +111,96 @@ Save test cases to `evals/evals.json`:
   "evals": [
     {
       "id": 1,
-      "prompt": "User's task prompt",
-      "expected_output": "Description of expected result",
+      "prompt": "ユーザーのタスクプロンプト",
+      "expected_output": "期待される結果の説明",
       "files": []
     }
   ]
 }
 ```
 
-See `references/schemas.md` for the full schema including the `assertions` field.
+`assertions`フィールドを含む完全なスキーマは`references/schemas.md`を参照。
 
 ---
 
-## Running and evaluating test cases
+## テストケースの実行と評価
 
-Read `references/running-evals.md` for the complete step-by-step process (Steps 1–5).
+完全なステップバイステップのプロセス（ステップ1〜5）は`references/running-evals.md`を参照。
 
-**Overview:**
-1. Spawn all runs (with-skill + baseline) as parallel subagents in the same turn — subagents run in forked contexts, keeping main conversation lean
-2. While runs are in progress, draft quantitative assertions
-3. Capture timing data from each subagent completion notification (only opportunity to get it)
-4. Grade, aggregate into benchmark, launch eval viewer
-5. Read user feedback from `feedback.json`
+**概要:**
+1. すべての実行（スキルあり + ベースライン）を同じターンで並列サブエージェントとして起動 — サブエージェントはフォークされたコンテキストで実行され、メイン会話をスリムに保つ
+2. 実行中に定量的アサーションを草案する
+3. 各サブエージェント完了通知からタイミングデータを取得（取得できる唯一の機会）
+4. グレーディング、ベンチマーク集計、evalビューアー起動
+5. `feedback.json`からユーザーフィードバックを読む
 
-Do NOT stop partway through — this is one continuous sequence.
-
----
-
-## Improving the skill
-
-Read `references/improving-skill.md` for detailed guidance.
-
-Key principles:
-- **Generalize** from examples — don't overfit to specific test cases
-- **Keep it lean** — remove instructions that aren't pulling their weight
-- **Explain the why** — reasoning beats rigid rules
-- **Bundle repeated work** — if subagents independently write the same helper script across test cases, bundle it in `scripts/`
-
-After improving, rerun all test cases into a new `iteration-N+1/` directory and repeat.
+途中で止めない — これは一連の連続したシーケンス。
 
 ---
 
-## Description Optimization
+## スキルの改善
 
-Read `references/description-optimization.md` for the full workflow.
+詳細なガイダンスは`references/improving-skill.md`を参照。
 
-**Overview:**
-1. Generate 20 eval queries (mix of should-trigger and should-not-trigger)
-2. Review with user via `assets/eval_review.html`
-3. Run `scripts/run_loop.py` in background to iteratively optimize
-4. Apply `best_description` to SKILL.md frontmatter
+主要な原則:
+- **一般化** — 特定のテストケースに過適合しない
+- **スリムに保つ** — 効果のない指示を削除する
+- **理由を説明する** — 推論は硬直したルールに勝る
+- **繰り返し作業をバンドルする** — サブエージェントが独立して同じヘルパースクリプトを書いていたら`scripts/`にバンドルする
 
-Do this after the skill itself is in good shape — not before.
-
----
-
-## Platform-specific notes
-
-Read `references/platform-specific.md` for Claude.ai and Cowork adaptations.
-
-Short version:
-- **Claude Code**: Full workflow (subagents, browser viewer, description optimization)
-- **Claude.ai**: No subagents → run tests inline, skip baselines and benchmarking
-- **Cowork**: Use `--static` for viewer (no browser), feedback downloads as `feedback.json`
+改善後、すべてのテストケースを新しい`iteration-N+1/`ディレクトリに再実行して繰り返す。
 
 ---
 
-## Reference files
+## 説明文の最適化
 
-| File | When to read |
+完全なワークフローは`references/description-optimization.md`を参照。
+
+**概要:**
+1. 20件のevalクエリを生成（トリガーすべき・すべきでないを混在）
+2. `assets/eval_review.html`でユーザーと確認
+3. `scripts/run_loop.py`をバックグラウンドで実行して反復最適化
+4. `best_description`をSKILL.mdフロントマターに適用
+
+スキル自体が良好な状態になった後に行う — それ以前は不可。
+
+---
+
+## プラットフォーム固有のメモ
+
+Claude.aiとCoworkの適応については`references/platform-specific.md`を参照。
+
+短い要約:
+- **Claude Code**: 完全なワークフロー（サブエージェント、ブラウザビューアー、説明文最適化）
+- **Claude.ai**: サブエージェントなし → インラインでテスト実行、ベースラインとベンチマークをスキップ
+- **Cowork**: ビューアーには`--static`を使用（ブラウザなし）、フィードバックは`feedback.json`としてダウンロード
+
+---
+
+## リファレンスファイル
+
+| ファイル | 読むタイミング |
 |------|--------------|
-| `references/running-evals.md` | When starting eval runs (Steps 1–5) |
-| `references/improving-skill.md` | When iterating on feedback |
-| `references/description-optimization.md` | When optimizing trigger description |
-| `references/platform-specific.md` | When on Claude.ai or Cowork |
-| `references/schemas.md` | When checking JSON schemas for evals/grading |
-| `agents/grader.md` | When spawning grader subagent |
-| `agents/comparator.md` | When doing blind A/B comparison |
-| `agents/analyzer.md` | When analyzing benchmark results |
+| `references/running-evals.md` | eval実行を開始するとき（ステップ1〜5） |
+| `references/improving-skill.md` | フィードバックに基づいてイテレーションするとき |
+| `references/description-optimization.md` | トリガー説明文を最適化するとき |
+| `references/platform-specific.md` | Claude.aiまたはCoworkを使用するとき |
+| `references/schemas.md` | evals/グレーディングのJSONスキーマを確認するとき |
+| `agents/grader.md` | グレーダーサブエージェントを起動するとき |
+| `agents/comparator.md` | ブラインドA/B比較を行うとき |
+| `agents/analyzer.md` | ベンチマーク結果を分析するとき |
 
 ---
 
-## The loop (summary)
+## ループ（まとめ）
 
-1. Understand the skill
-2. Draft or edit SKILL.md
-3. Run tests → `references/running-evals.md`
-4. User reviews in eval viewer
-5. Improve → `references/improving-skill.md`
-6. Repeat until satisfied
-7. Optimize description → `references/description-optimization.md`
-8. Package (if `present_files` is available): `python -m scripts.package_skill <skill-path>`
+1. スキルを理解する
+2. SKILL.mdを草案または編集する
+3. テスト実行 → `references/running-evals.md`
+4. ユーザーがevalビューアーで確認
+5. 改善 → `references/improving-skill.md`
+6. 満足するまで繰り返す
+7. 説明文の最適化 → `references/description-optimization.md`
+8. パッケージ化（`present_files`が利用可能な場合）: `python -m scripts.package_skill <skill-path>`
 
-Add these as TodoList items. Good luck!
+これらをTodoListアイテムとして追加する。頑張って！

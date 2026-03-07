@@ -1,35 +1,35 @@
-# Platform-Specific Instructions
+# プラットフォーム固有の指示
 
 ## Claude.ai
 
-No subagents available. Adapt the workflow:
+サブエージェントは利用不可。ワークフローを適応させる:
 
-**Running test cases:** Read the skill's SKILL.md, then follow its instructions to complete the test prompt yourself, one at a time. You wrote the skill and you're running it, so you have full context — less rigorous than independent subagents, but the human review step compensates. Skip baseline runs.
+**テストケースの実行:** スキルのSKILL.mdを読み、その指示に従ってテストプロンプトを一度に一つ自分で実行する。スキルを書いて実行しているので完全なコンテキストがある — 独立したサブエージェントほど厳密ではないが、人間のレビューステップが補完する。ベースライン実行をスキップする。
 
-**Reviewing results:** Can't open a browser. Present results directly in conversation — show each prompt and its output. For file outputs (.docx, .xlsx), save to the filesystem and tell the user the path to download it. Ask for feedback inline: "How does this look? Anything you'd change?"
+**結果の確認:** ブラウザを開けない。会話内で直接結果を提示する — 各プロンプトとその出力を表示する。ファイル出力（.docx、.xlsx）の場合、ファイルシステムに保存してユーザーにダウンロードパスを伝える。インラインでフィードバックを求める: 「これはどう見えますか？変更したいことはありますか？」
 
-**Benchmarking:** Skip — relies on baseline comparisons that aren't meaningful without subagents.
+**ベンチマーク:** スキップ — サブエージェントなしでは意味のないベースライン比較に依存している。
 
-**Iteration loop:** Same as main workflow, but without the browser reviewer. Organize results in iteration directories if a filesystem is available.
+**イテレーションループ:** メインワークフローと同じだが、ブラウザレビューなし。ファイルシステムが利用可能な場合、イテレーションディレクトリに結果を整理する。
 
-**Description optimization:** Requires `claude -p` CLI (Claude Code only). Skip.
+**説明文の最適化:** `claude -p` CLI（Claude Codeのみ）が必要。スキップする。
 
-**Blind comparison:** Requires subagents. Skip.
+**ブラインド比較:** サブエージェントが必要。スキップする。
 
-**Packaging:** `python -m scripts.package_skill <skill-path>` works anywhere with Python. User can download the `.skill` file.
+**パッケージ化:** `python -m scripts.package_skill <skill-path>`はPythonがあればどこでも動作する。ユーザーが`.skill`ファイルをダウンロードできる。
 
 ---
 
 ## Cowork
 
-Subagents work. Browser doesn't.
+サブエージェントは動作する。ブラウザは動作しない。
 
-**Eval viewer:** Use `--static <output_path>` to write a standalone HTML file instead of starting a server. Provide the path as a link the user can click. The "Submit All Reviews" button downloads `feedback.json` — you may need to request access before reading it.
+**Evalビューアー:** サーバーを起動する代わりに`--static <output_path>`を使用してスタンドアロンHTMLファイルを書き込む。ユーザーがクリックできるリンクとしてパスを提供する。「すべてのレビューを送信」ボタンで`feedback.json`をダウンロードする — 読む前にアクセスのリクエストが必要な場合がある。
 
-**Generate the eval viewer before evaluating inputs yourself.** Cowork environments tend to skip this step — don't. Use `generate_review.py`, not custom HTML. Get results in front of the human before making any revisions.
+**入力を自分で評価する前にevalビューアーを生成する。** Cowork環境はこのステップをスキップしがちだが、しないこと。`generate_review.py`を使用し、カスタムHTMLは使用しない。改訂を行う前に結果を人間の前に置く。
 
-**Description optimization:** `run_loop.py` works fine via subprocess. Save it until the skill is fully in good shape.
+**説明文の最適化:** `run_loop.py`はサブプロセス経由で正常に動作する。スキルが完全に良好な状態になるまで保留する。
 
-**Packaging:** Works normally.
+**パッケージ化:** 通常通り動作する。
 
-**Timeouts:** If parallel subagent runs hit timeouts, it's OK to run test prompts in series rather than parallel.
+**タイムアウト:** 並列サブエージェント実行がタイムアウトに達した場合、直列でテストプロンプトを実行しても良い。

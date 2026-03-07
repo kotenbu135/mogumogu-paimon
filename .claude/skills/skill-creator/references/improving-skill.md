@@ -1,38 +1,38 @@
-# Improving the Skill
+# スキルの改善
 
-This is the heart of the loop. You've run tests, the user has reviewed results — now make the skill better.
+これはループの核心部分。テストを実行し、ユーザーが結果を確認した — 今、スキルをより良くする。
 
-## How to think about improvements
+## 改善の考え方
 
-**1. Generalize from the feedback.**
-You're iterating on a handful of examples, but the skill will run across millions of different prompts. Don't make overfitty changes tuned to specific test cases. If something is stubbornly wrong, try a completely different framing — a different metaphor, a different pattern of working. It's cheap to try and you might land on something great.
+**1. フィードバックから一般化する。**
+いくつかのサンプルでイテレーションしているが、スキルは何百万もの異なるプロンプトで実行される。特定のテストケースに合わせたオーバーフィットな変更をしない。何かが頑固に間違っている場合、まったく異なるフレーミングを試す — 異なるメタファー、異なる作業パターン。試すのは安価で、素晴らしいものを見つけるかもしれない。
 
-**2. Keep it lean.**
-Read the transcripts, not just the final outputs. If the skill is making the model spend time on unproductive steps, find the instruction driving that behavior and remove or rephrase it. Every token in SKILL.md costs something every time the skill runs. Remove anything that isn't clearly pulling its weight.
+**2. スリムに保つ。**
+最終出力だけでなくトランスクリプトを読む。スキルがモデルに非生産的なステップに時間を費やさせている場合、その動作を引き起こしている指示を見つけて削除または言い換える。SKILL.md内のすべてのトークンは、スキルが実行されるたびにコストがかかる。明らかに機能していないものはすべて削除する。
 
-**3. Explain the why.**
-LLMs reason better when they understand purpose. If you catch yourself writing "ALWAYS" or "NEVER" in all caps, that's a signal: step back and explain *why* that behavior matters instead. Instructions with reasoning behind them generalize better than rigid rules. More humane and more effective.
+**3. なぜを説明する。**
+LLMは目的を理解したときに推論がより良くなる。「ALWAYS」や「NEVER」を大文字で書いていたら、それはシグナル: 一歩引いて、その動作がなぜ重要かを代わりに説明する。背後に推論がある指示は、硬直したルールよりも良く一般化する。より人道的で、より効果的。
 
-**4. Bundle repeated work.**
-Read the subagent transcripts across all test cases. If every run independently wrote the same `create_docx.py` or `build_chart.py`, that script belongs in `scripts/`. Write it once, bundle it, and save every future invocation from reinventing the wheel.
+**4. 繰り返し作業をバンドルする。**
+すべてのテストケースのサブエージェントトランスクリプトを読む。すべての実行が独立して同じ`create_docx.py`や`build_chart.py`を書いていたら、そのスクリプトは`scripts/`に属する。一度書いて、バンドルして、将来のすべての呼び出しで車輪を再発明することを節約する。
 
-Take time here. Draft a revision, then set it down and read it fresh before finalizing. Really get into the head of the user.
+ここで時間をかける。改訂版を草案し、一度置いて新鮮な目で読み直してから確定する。ユーザーの立場になって考える。
 
-## The iteration loop
+## イテレーションループ
 
-1. Apply your improvements to the skill
-2. Rerun all test cases into `iteration-<N+1>/`, including baseline runs
-   - **New skill**: baseline is always `without_skill` (no skill)
-   - **Improving existing skill**: use the original version the user came in with as baseline, or the previous iteration — your judgment based on what's most informative
-3. Launch the eval viewer with `--previous-workspace <workspace>/iteration-<N>`
-4. Wait for the user to review and say they're done
-5. Read the new `feedback.json`, improve, repeat
+1. スキルに改善を適用する
+2. すべてのテストケースを`iteration-<N+1>/`に再実行する（ベースライン実行を含む）
+   - **新しいスキル**: ベースラインは常に`without_skill`（スキルなし）
+   - **既存スキルの改善**: ユーザーが最初に持ってきたオリジナルバージョンまたは前のイテレーションをベースラインとして使用する — 何が最も有益かによる判断
+3. `--previous-workspace <workspace>/iteration-<N>`でevalビューアーを起動する
+4. ユーザーが確認して完了と言うのを待つ
+5. 新しい`feedback.json`を読み、改善して繰り返す
 
-Keep going until:
-- The user says they're happy
-- All feedback entries are empty (everything looked good)
-- You're not making meaningful progress
+以下の場合まで続ける:
+- ユーザーが満足と言う
+- すべてのフィードバックエントリが空（すべてが良く見えた）
+- 意味のある進歩ができていない
 
-## Advanced: Blind comparison
+## 上級: ブラインド比較
 
-For more rigorous version comparison ("is the new version actually better?"), read `agents/comparator.md` and `agents/analyzer.md`. An independent subagent judges two outputs without knowing which is which. Optional — the human review loop is usually sufficient.
+バージョン比較をより厳密に行うために（「新しいバージョンは本当に良くなっているか？」）、`agents/comparator.md`と`agents/analyzer.md`を読む。独立したサブエージェントがどちらがどちらか知らずに2つの出力を判断する。オプション — 人間のレビューループで通常は十分。
