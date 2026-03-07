@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import FileUpload from '@/components/FileUpload'
 import type { GoodFile, ScoreTypeName } from '@/lib/types'
 import type { Translations } from '@/lib/i18n/types'
@@ -10,21 +13,31 @@ interface HeroSectionProps {
 
 /** アップロード画面（空状態）の Hero セクション */
 export default function HeroSection({ onLoad, t, scoreTypeOptions }: HeroSectionProps) {
+  const [selectedType, setSelectedType] = useState<ScoreTypeName | null>(null)
+
   return (
     <div className="hero-section">
+      {/* ヒーロービジュアル: キャッチコピー */}
+      <p className="hero-subtitle">原神の聖遺物スコアを一括評価</p>
+
+      {/* アップロードゾーン */}
       <FileUpload onLoad={onLoad} />
-      {/* スコア計算式の説明 */}
-      <div className="score-formulas">
-        <p className="score-formulas-title">{t.pages.aboutScore.formulaList.heading}</p>
-        <ul className="score-formulas-list">
+
+      {/* スコア式カードグリッド */}
+      <div className="score-card-section">
+        <p className="score-card-title">{t.pages.aboutScore.formulaList.heading}</p>
+        <div className="score-card-grid">
           {scoreTypeOptions.map((type) => (
-            <li key={type} className="score-formulas-item">
-              <span className="score-formulas-label">{t.scoreFormulas[type].label}</span>
-              <span className="score-formulas-eq">=</span>
-              <span className="score-formulas-formula">{t.scoreFormulas[type].formula}</span>
-            </li>
+            <button
+              key={type}
+              className={`score-formula-card ${selectedType === type ? 'score-formula-card-active' : ''}`}
+              onClick={() => setSelectedType(selectedType === type ? null : type)}
+            >
+              <span className="score-formula-card-label">{t.scoreFormulas[type].label}</span>
+              <span className="score-formula-card-formula">{t.scoreFormulas[type].formula}</span>
+            </button>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   )
