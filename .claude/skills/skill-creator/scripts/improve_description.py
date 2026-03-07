@@ -2,22 +2,43 @@
 """Improve a skill description based on eval results.
 
 Takes eval results (from run_eval.py) and generates an improved description
-using Claude with extended thinking.
+using claude -p subprocess.
 """
 
 import argparse
 import json
+import os
 import re
+import subprocess
 import sys
 from pathlib import Path
-
-import anthropic
 
 from scripts.utils import parse_skill_md
 
 
+def call_claude(prompt: str, model: str | None = None) -> str:
+    """claude -p を使ってプロンプトを実行し、テキスト応答を返す。"""
+    cmd = ["claude", "-p", prompt]
+    if model:
+        cmd.extend(["--model", model])
+
+    # CLAUDECODE env var を除去してネスト実行を許可
+    env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(f"claude -p 呼び出し失敗: {result.stderr}")
+
+    return result.stdout.strip()
+
+
 def improve_description(
-    client: anthropic.Anthropic,
     skill_name: str,
     skill_content: str,
     current_description: str,
@@ -28,7 +49,7 @@ def improve_description(
     log_dir: Path | None = None,
     iteration: int | None = None,
 ) -> str:
-    """Call Claude to improve the description based on eval results."""
+    """claude -p を使って eval 結果に基づいて description を改善する。"""
     failed_triggers = [
         r for r in eval_results["results"]
         if r["should_trigger"] and not r["pass"]
@@ -107,80 +128,40 @@ Here are some tips that we've found to work well in writing these descriptions:
 - The description competes with other skills for Claude's attention — make it distinctive and immediately recognizable.
 - If you're getting lots of failures after repeated attempts, change things up. Try different sentence structures or wordings.
 
-I'd encourage you to be creative and mix up the style in different iterations since you'll have multiple opportunities to try different approaches and we'll just grab the highest-scoring one at the end. 
+I'd encourage you to be creative and mix up the style in different iterations since you'll have multiple opportunities to try different approaches and we'll just grab the highest-scoring one at the end.
 
-Please respond with only the new description text in <new_description> tags, nothing else."""
+Please respond with only the new description text in <new_description> tags, nothing else. Keep the description under 1024 characters."""
 
-    response = client.messages.create(
-        model=model,
-        max_tokens=16000,
-        thinking={
-            "type": "enabled",
-            "budget_tokens": 10000,
-        },
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    # Extract thinking and text from response
-    thinking_text = ""
-    text = ""
-    for block in response.content:
-        if block.type == "thinking":
-            thinking_text = block.thinking
-        elif block.type == "text":
-            text = block.text
+    text = call_claude(prompt, model)
 
     # Parse out the <new_description> tags
     match = re.search(r"<new_description>(.*?)</new_description>", text, re.DOTALL)
     description = match.group(1).strip().strip('"') if match else text.strip().strip('"')
 
+    # If over 1024 chars, make a new call to shorten it
+    if len(description) > 1024:
+        shorten_prompt = (
+            f"The following skill description is {len(description)} characters, "
+            f"which exceeds the hard 1024 character limit. "
+            f"Please rewrite it to be under 1024 characters while preserving the most important "
+            f"trigger words and intent coverage. "
+            f"Respond with only the new description in <new_description> tags.\n\n"
+            f"Description to shorten:\n{description}"
+        )
+        shorten_text = call_claude(shorten_prompt, model)
+        match = re.search(r"<new_description>(.*?)</new_description>", shorten_text, re.DOTALL)
+        description = match.group(1).strip().strip('"') if match else shorten_text.strip().strip('"')
+
     # Log the transcript
     transcript: dict = {
         "iteration": iteration,
         "prompt": prompt,
-        "thinking": thinking_text,
         "response": text,
         "parsed_description": description,
         "char_count": len(description),
         "over_limit": len(description) > 1024,
+        "final_description": description,
     }
-
-    # If over 1024 chars, ask the model to shorten it
-    if len(description) > 1024:
-        shorten_prompt = f"Your description is {len(description)} characters, which exceeds the hard 1024 character limit. Please rewrite it to be under 1024 characters while preserving the most important trigger words and intent coverage. Respond with only the new description in <new_description> tags."
-        shorten_response = client.messages.create(
-            model=model,
-            max_tokens=16000,
-            thinking={
-                "type": "enabled",
-                "budget_tokens": 10000,
-            },
-            messages=[
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": text},
-                {"role": "user", "content": shorten_prompt},
-            ],
-        )
-
-        shorten_thinking = ""
-        shorten_text = ""
-        for block in shorten_response.content:
-            if block.type == "thinking":
-                shorten_thinking = block.thinking
-            elif block.type == "text":
-                shorten_text = block.text
-
-        match = re.search(r"<new_description>(.*?)</new_description>", shorten_text, re.DOTALL)
-        shortened = match.group(1).strip().strip('"') if match else shorten_text.strip().strip('"')
-
-        transcript["rewrite_prompt"] = shorten_prompt
-        transcript["rewrite_thinking"] = shorten_thinking
-        transcript["rewrite_response"] = shorten_text
-        transcript["rewrite_description"] = shortened
-        transcript["rewrite_char_count"] = len(shortened)
-        description = shortened
-
-    transcript["final_description"] = description
 
     if log_dir:
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -195,7 +176,7 @@ def main():
     parser.add_argument("--eval-results", required=True, help="Path to eval results JSON (from run_eval.py)")
     parser.add_argument("--skill-path", required=True, help="Path to skill directory")
     parser.add_argument("--history", default=None, help="Path to history JSON (previous attempts)")
-    parser.add_argument("--model", required=True, help="Model for improvement")
+    parser.add_argument("--model", default=None, help="Model for improvement (default: claude's default)")
     parser.add_argument("--verbose", action="store_true", help="Print thinking to stderr")
     args = parser.parse_args()
 
@@ -216,9 +197,7 @@ def main():
         print(f"Current: {current_description}", file=sys.stderr)
         print(f"Score: {eval_results['summary']['passed']}/{eval_results['summary']['total']}", file=sys.stderr)
 
-    client = anthropic.Anthropic()
     new_description = improve_description(
-        client=client,
         skill_name=name,
         skill_content=content,
         current_description=current_description,
