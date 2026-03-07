@@ -9,9 +9,9 @@
  *   4. 現在スコアを上回るパターンの正規化確率を合計
  */
 
-import type { Artifact, ReconstructionType, ScoreTypeName, StatKey } from './types'
+import type { Artifact, MainStatKey, ReconstructionType, ScoreTypeName, StatKey } from './types'
 import { AVG_INCREMENT } from './scoring'
-import { TYPED_MAIN_STATS, SCORE_TYPE_DEFS } from './constants'
+import { SCORE_TYPE_DEFS, TYPED_MAIN_STATS } from './constants'
 
 /** 再構築種別ごとの保証閾値（選択2サブステへの合計ロール数） */
 const GUARANTEE_THRESHOLDS: Record<ReconstructionType, number> = {
@@ -126,7 +126,7 @@ export function getGuaranteedIndices(
 function calcScore(
   subMap: Partial<Record<StatKey, number>>,
   scoreType: ScoreTypeName,
-  mainStatKey: string,
+  mainStatKey: MainStatKey,
 ): number {
   const cv = (subMap['critRate_'] ?? 0) * 2 + (subMap['critDMG_'] ?? 0)
 
@@ -202,7 +202,7 @@ function calcRateForPair(
   reconType: ReconstructionType,
   idxA: number,
   idxB: number,
-  mainStatKey: string,
+  mainStatKey: MainStatKey,
 ): number | null {
   const threshold = GUARANTEE_THRESHOLDS[reconType]
 

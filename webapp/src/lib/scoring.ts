@@ -10,8 +10,8 @@
  *   チャージ型  = CV + 元素チャージ × 0.9
  */
 
-import type { Artifact, ScoreResult, ScoreTypeName, StatKey } from './types'
-import { PERCENT_STATS, TYPED_MAIN_STATS, SCORE_TYPE_DEFS } from './constants'
+import type { Artifact, MainStatKey, ScoreResult, ScoreTypeName, StatKey } from './types'
+import { PERCENT_STATS, SCORE_TYPE_DEFS, TYPED_MAIN_STATS } from './constants'
 
 // サブステの4段階ティア値（低/中/高/最高）
 const SUBSTAT_TIERS: Record<StatKey, number[]> = {
@@ -173,7 +173,7 @@ export function estimateRollCounts(artifact: Artifact): number[] {
  * 花（hp）・羽（atk）・元素ダメージ系など型なしメインステは判定しない。
  */
 function typeScore(
-  mainStatKey: string,
+  mainStatKey: MainStatKey,
   typeStatKey: StatKey,
   cv: number,
   subValue: number,
@@ -195,7 +195,7 @@ export function calculateScores(artifact: Artifact): ScoreResult {
   const cv = critRate * 2 + critDmg
 
   let bestScore = cv
-  let bestType = 'CV'
+  let bestType: ScoreTypeName = 'CV'
 
   for (const [name, key, coeff] of SCORE_TYPE_DEFS) {
     const score = typeScore(artifact.mainStatKey, key, cv, subMap[key] ?? 0, coeff)

@@ -121,9 +121,9 @@ describe('calculateScores と calculateAllScores の整合性', () => {
       const allScores = calculateAllScores(artifact)
 
       // bestType は ScoreTypeName のキーである
-      expect(allScores[bestType as keyof typeof allScores]).toBeDefined()
+      expect(allScores[bestType]).toBeDefined()
       // bestType のスコアが最良型スコアと一致する
-      expect(allScores[bestType as keyof typeof allScores]).toBeCloseTo(allScores['最良型'], 5)
+      expect(allScores[bestType]).toBeCloseTo(allScores['最良型'], 5)
     })
   }
 })

@@ -19,6 +19,15 @@ export const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
   'CV', '攻撃型', 'HP型', '防御型', '熟知型', 'チャージ型', '最良型',
 ]
 
+/** スコア種別の定義: [ScoreTypeName, サブステkey, 係数] */
+export const SCORE_TYPE_DEFS: [ScoreTypeName, StatKey, number][] = [
+  ['HP型', 'hp_', 1.0],
+  ['攻撃型', 'atk_', 1.0],
+  ['防御型', 'def_', 0.8],
+  ['熟知型', 'eleMas', 0.25],
+  ['チャージ型', 'enerRech_', 0.9],
+]
+
 /** サブステータスのキー一覧 */
 export const ALL_SUBSTAT_KEYS: StatKey[] = [
   'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',

@@ -7,10 +7,10 @@
 
 import { describe, it, expect } from 'vitest'
 import { calculateAllScores, calculateScores } from '@/lib/scoring'
-import type { Artifact } from '@/lib/types'
+import type { Artifact, MainStatKey } from '@/lib/types'
 
 /** テスト用聖遺物を生成する */
-function makeArtifact(mainStatKey: string, substats: Artifact['substats']): Artifact {
+function makeArtifact(mainStatKey: MainStatKey, substats: Artifact['substats']): Artifact {
   return {
     setKey: 'GladiatorsFinale',
     slotKey: 'sands',

@@ -86,7 +86,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
   const displayLabel = scoreType === '最良型' ? scoreLabel(entry.bestType) : scoreLabel(scoreType)
   const showCvSub = scoreType !== 'CV' && !(scoreType === '最良型' && mainScore === cvScore)
 
-  const effectiveStats = getEffectiveStats(scoreType, entry.bestType as ScoreTypeName)
+  const effectiveStats = getEffectiveStats(scoreType, entry.bestType)
 
   const [menuState, setMenuState] = useState<MenuState | null>(null)
   const [charMenuState, setCharMenuState] = useState<MenuState | null>(null)
