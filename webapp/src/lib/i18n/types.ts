@@ -155,3 +155,8 @@ export interface DisclaimerT {
   responsibility: { heading: string; p1: string; p2: string; p3: string }
   disclaimer: { heading: string; p1: string }
 }
+
+/** stats と mainStatExtra をマージした全ステータス名マップを返す */
+export function getAllStatNames(t: Translations): Record<string, string> {
+  return { ...t.stats, ...t.mainStatExtra }
+}

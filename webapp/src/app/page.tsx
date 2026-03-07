@@ -7,6 +7,7 @@ import ControlsBar from '@/components/ControlsBar'
 import type { GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
+import { getAllStatNames } from '@/lib/i18n/types'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
 
 const MAIN_STAT_ORDER: string[] = [
@@ -125,7 +126,7 @@ export default function HomePage() {
       })
   }, [allRanked, filters.filterSets, filters.filterSlot, filters.filterMainStat, filters.filterSubStats, filters.filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
 
-  const allMainStatNames: Record<string, string> = { ...t.stats, ...t.mainStatExtra }
+  const allMainStatNames = getAllStatNames(t)
 
   return (
     <main className="main-container">
