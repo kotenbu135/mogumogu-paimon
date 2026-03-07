@@ -17,8 +17,7 @@ export default function RootLayout({
     <html lang="ja">
       <head>
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
-        <meta name="referrer" content="no-referrer" />
+<meta name="referrer" content="no-referrer" />
       </head>
       <body>
         <LanguageProvider>
