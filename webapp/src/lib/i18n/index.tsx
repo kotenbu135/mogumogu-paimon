@@ -2,14 +2,14 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { Lang, Translations } from './types'
-import { ja } from './ja'
+import { en } from './en'
 
 const STORAGE_KEY = 'mogumogu-lang'
 
 async function loadTranslations(locale: Lang): Promise<Translations> {
-  if (locale === 'ja') return ja
-  const { en } = await import('./en')
-  return en
+  if (locale === 'en') return en
+  const { ja } = await import('./ja')
+  return ja
 }
 
 interface LanguageContextValue {
@@ -19,14 +19,14 @@ interface LanguageContextValue {
 }
 
 const LanguageContext = createContext<LanguageContextValue>({
-  t: ja,
-  lang: 'ja',
+  t: en,
+  lang: 'en',
   setLang: () => {},
 })
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('ja')
-  const [translations, setTranslations] = useState<Translations>(ja)
+  const [lang, setLangState] = useState<Lang>('en')
+  const [translations, setTranslations] = useState<Translations>(en)
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Lang | null
