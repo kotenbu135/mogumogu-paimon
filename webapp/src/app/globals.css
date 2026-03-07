@@ -12,11 +12,27 @@
   --text-sub: #b0a898;
   --border: #2e3050;
   --danger: #ef4444;
+
+  /* サーフェスレイヤー（深さ順: 0=最暗 → 3=最明） */
+  --surface-0: #0d0e1a;
+  --surface-1: #13142a;
+  --surface-2: #1a1b2e;
+  --surface-3: #22243a;
+
+  /* ボーダー2段階 */
+  --border-subtle: #1e2038;
+  --border-default: #2e3050;
+
+  /* ゴールドグラデーション */
+  --gold-gradient: linear-gradient(135deg, #c8a35a 0%, #e8c880 50%, #c8a35a 100%);
 }
 
 /* ── ベーススタイル ─────────────────────── */
 body {
   background-color: var(--bg-main);
+  /* 微かなドットグリッドで奥行き感を演出 */
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--text-main);
   font-family: var(--font-noto-sans-jp), 'Hiragino Kaku Gothic ProN', sans-serif;
   min-height: 100vh;
