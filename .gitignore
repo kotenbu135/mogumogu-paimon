@@ -41,3 +41,6 @@ next-env.d.ts
 /.issue-workflow/
 
 *.deb
+
+# スクリーンショット（UI壁打ち用・コミット不要）
+/docs/screenshot/*.png
