@@ -16,6 +16,8 @@ export default function AboutReconstructionPage() {
         <p className="content-text">{p.whatIs.p2}</p>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.types.heading}</h2>
         <p className="content-text">{p.types.p1}</p>
@@ -26,6 +28,8 @@ export default function AboutReconstructionPage() {
         </ul>
         <p className="content-text">{p.types.p2}</p>
       </section>
+
+      <hr className="section-divider" />
 
       <section className="content-section">
         <h2 className="section-title">{p.successRate.heading}</h2>
@@ -38,6 +42,8 @@ export default function AboutReconstructionPage() {
         <p className="content-text">{p.successRate.p2}</p>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.guarantee.heading}</h2>
         <p className="content-text">{p.guarantee.p1}</p>
@@ -47,6 +53,8 @@ export default function AboutReconstructionPage() {
           <li><strong>{p.guarantee.cvCirclet.split(' — ')[0]}</strong> — {p.guarantee.cvCirclet.split(' — ').slice(1).join(' — ')}</li>
         </ul>
       </section>
+
+      <hr className="section-divider" />
 
       <section className="content-section">
         <h2 className="section-title">{p.precision.heading}</h2>

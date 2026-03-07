@@ -17,6 +17,8 @@ export default function DisclaimerPage() {
         <p className="content-text">{p.responsibility.p3}</p>
       </section>
 
+      <hr className="section-divider" />
+
       <section className="content-section">
         <h2 className="section-title">{p.disclaimer.heading}</h2>
         <p className="content-text">{p.disclaimer.p1}</p>
