@@ -154,6 +154,10 @@ export const en: Translations = {
     filterClear: 'Clear Filters',
     filterBySet: 'Set',
     filterBySlot: 'Slot',
+    groupScore: 'Score',
+    groupFilter: 'Filters',
+    groupDisplay: 'Display',
+    advancedFilter: 'Advanced',
   },
 
   reconTypes: {
