@@ -552,6 +552,12 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ctrl-label-toggle:hover {
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 .ctrl-checkbox {
@@ -594,6 +600,11 @@ body {
   min-width: 7rem;
   text-align: left;
   appearance: auto;
+}
+
+.substat-dropdown-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 .substat-dropdown-btn:focus {

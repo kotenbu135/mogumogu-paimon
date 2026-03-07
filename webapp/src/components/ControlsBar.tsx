@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import type { ArtifactSlotKey, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import type { ArtifactFiltersHook } from '@/hooks/useArtifactFilters'
 import { useDropdownClose } from '@/hooks/useDropdownClose'
+import { useDropdownPosition } from '@/hooks/useDropdownPosition'
 import { hasActiveFilter } from '@/lib/filterUtils'
 import { ARTIFACT_SET_NAMES, MAIN_STAT_NAMES, STAT_NAMES, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import type { Translations } from '@/lib/i18n/types'
@@ -50,6 +51,9 @@ export default function ControlsBar({
   const subStatPanelRef = useRef<HTMLDivElement>(null)
   const setFilterBtnRef = useRef<HTMLButtonElement>(null)
   const setFilterPanelRef = useRef<HTMLDivElement>(null)
+
+  const subStatPos = useDropdownPosition(subStatBtnRef, subStatOpen)
+  const setFilterPos = useDropdownPosition(setFilterBtnRef, setFilterOpen)
 
   useDropdownClose([
     {
@@ -146,6 +150,8 @@ export default function ControlsBar({
                 ref={setFilterBtnRef}
                 type="button"
                 className={`substat-dropdown-btn${filters.filterSets.length > 0 ? ' ctrl-active' : ''}`}
+                aria-expanded={setFilterOpen}
+                aria-haspopup="listbox"
                 onClick={() => setSetFilterOpen((v) => !v)}
               >
                 {filters.filterSets.length > 0
@@ -157,8 +163,8 @@ export default function ControlsBar({
                   ref={setFilterPanelRef}
                   className="set-dropdown-panel"
                   style={{
-                    top: (setFilterBtnRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
-                    left: setFilterBtnRef.current?.getBoundingClientRect().left ?? 0,
+                    top: setFilterPos.top,
+                    left: setFilterPos.left,
                   }}
                 >
                   {setOptionGroups.map((group) => {
@@ -267,6 +273,8 @@ export default function ControlsBar({
                   ref={subStatBtnRef}
                   type="button"
                   className={`substat-dropdown-btn${filters.filterSubStats.length > 0 ? ' ctrl-active' : ''}`}
+                  aria-expanded={subStatOpen}
+                  aria-haspopup="listbox"
                   onClick={() => setSubStatOpen((v) => !v)}
                 >
                   {filters.filterSubStats.length > 0
@@ -278,8 +286,8 @@ export default function ControlsBar({
                     ref={subStatPanelRef}
                     className="substat-dropdown-panel"
                     style={{
-                      top: (subStatBtnRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
-                      left: subStatBtnRef.current?.getBoundingClientRect().left ?? 0,
+                      top: subStatPos.top,
+                      left: subStatPos.left,
                     }}
                   >
                     {availableSubStatKeys.map((key) => (
