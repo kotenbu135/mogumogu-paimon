@@ -374,4 +374,22 @@ describe('calculateReconstructionRate', () => {
     expect(rate!).toBeGreaterThanOrEqual(0)
     expect(rate!).toBeLessThanOrEqual(100)
   })
+
+  it('メインステ eleMas で攻撃型: オッズは0%を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'sands',
+      mainStatKey: 'eleMas',
+      substats: [
+        { key: 'atk', value: 58 },
+        { key: 'critRate_', value: 7.0 },
+        { key: 'def_', value: 10.9 },
+        { key: 'critDMG_', value: 5.4 },
+      ],
+      totalRolls: 9,
+    })
+    const rollCounts = [3, 1, 1, 0]
+    const rate = calculateReconstructionRate(art, rollCounts, '攻撃型', 'normal')
+    // メインステが eleMas なので攻撃型スコアは必ず0 → オッズも0%
+    expect(rate).toBe(0)
+  })
 })
