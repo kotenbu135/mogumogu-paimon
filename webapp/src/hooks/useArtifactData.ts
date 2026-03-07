@@ -14,7 +14,7 @@ async function buildRankedList(data: GoodFile): Promise<RankedArtifact[]> {
     })
 }
 
-/** 聖遺物データの読み込みと再構築成功率の計算を管理するフック */
+/** 聖遺物データの読み込みと再構築成功率のチャンク計算を管理するフック */
 export function useArtifactData(scoreType: ScoreTypeName, reconType: ReconstructionType) {
   const [allRanked, setAllRanked] = useState<RankedArtifact[] | null>(null)
   const [reconRates, setReconRates] = useState<Map<number, number>>(new Map())
@@ -29,15 +29,27 @@ export function useArtifactData(scoreType: ScoreTypeName, reconType: Reconstruct
       return
     }
     let cancelled = false
+    const CHUNK_SIZE = 50
     import('@/lib/reconstruction').then(({ calculateReconstructionRate }) => {
       if (cancelled) return
       const map = new Map<number, number>()
-      for (let i = 0; i < allRanked.length; i++) {
-        const e = allRanked[i]
-        const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
-        if (rate !== null) map.set(i, rate)
+      let idx = 0
+
+      function processChunk() {
+        if (cancelled) return
+        const end = Math.min(idx + CHUNK_SIZE, allRanked!.length)
+        for (; idx < end; idx++) {
+          const e = allRanked![idx]
+          const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
+          if (rate !== null) map.set(idx, rate)
+        }
+        setReconRates(new Map(map))
+        if (idx < allRanked!.length) {
+          setTimeout(processChunk, 0)
+        }
       }
-      setReconRates(map)
+
+      processChunk()
     })
     return () => { cancelled = true }
   }, [allRanked, scoreType, reconType])

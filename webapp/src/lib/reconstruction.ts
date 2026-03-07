@@ -79,11 +79,19 @@ export function multinomialProb(pattern: number[]): number {
   return (factorial(n) / denom) * Math.pow(1 / k, n)
 }
 
+/** enumeratePatterns の結果キャッシュ（boxes と total の組み合わせは限定的） */
+const patternCache = new Map<string, number[][]>()
+
 /**
  * boxes 個の箱に total 個を分配する全パターンを列挙
  * 戻り値: 各パターンは長さ boxes の配列で合計が total
+ * キャッシュにより同一引数での再計算を回避する
  */
 export function enumeratePatterns(boxes: number, total: number): number[][] {
+  const key = `${boxes}_${total}`
+  const cached = patternCache.get(key)
+  if (cached) return cached
+
   const results: number[][] = []
   const current = new Array(boxes).fill(0)
 
@@ -100,6 +108,7 @@ export function enumeratePatterns(boxes: number, total: number): number[][] {
   }
 
   generate(0, total)
+  patternCache.set(key, results)
   return results
 }
 
