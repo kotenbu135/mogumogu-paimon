@@ -102,10 +102,9 @@ export default function HomePage() {
           />
 
           <div className="card-grid">
-            {displayed.map(({ entry, reconRate, originalIndex }, i) => (
+            {displayed.map(({ entry, reconRate, originalIndex }) => (
               <ArtifactCard
                 key={originalIndex}
-                rank={i + 1}
                 entry={entry}
                 scoreType={scoreType}
                 reconRate={reconRate}

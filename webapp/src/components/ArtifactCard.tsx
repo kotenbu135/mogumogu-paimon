@@ -10,7 +10,6 @@ import { useTranslation } from '@/lib/i18n'
 import { getAllStatNames } from '@/lib/i18n/types'
 
 interface ArtifactCardProps {
-  rank: number
   entry: RankedArtifact
   scoreType: ScoreTypeName
   reconRate?: number | null
@@ -63,7 +62,7 @@ interface MenuState {
   y: number
 }
 
-export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
+export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
   const { t } = useTranslation()
@@ -142,9 +141,6 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
 
   return (
     <div className="artifact-card">
-      {/* ランク番号 */}
-      <div className="rank-badge">#{rank}</div>
-
       {/* 上部: 聖遺物画像 + セット情報 + キャラアイコン */}
       <div className="card-header">
         {/* 聖遺物画像（クリックでフィルタメニュー） */}
