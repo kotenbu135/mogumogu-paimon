@@ -1,0 +1,38 @@
+name: Claude Dependency Review
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  review:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Dependency Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            この Dependabot PR の依存関係更新をレビューしてください。
+
+            以下の観点でチェックし、PR コメントとして報告してください:
+            - 更新されたパッケージのバージョン差分（メジャー / マイナー / パッチ）
+            - 破壊的変更（BREAKING CHANGES）の有無
+            - セキュリティ修正が含まれているか
+            - このプロジェクトへの影響（package.json と既存コードの互換性）
+
+            安全と判断した場合は「安全な更新です」とコメントしてください。
+            懸念がある場合は具体的なリスクと対応案を示してください。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

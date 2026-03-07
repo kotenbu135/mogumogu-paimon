@@ -1,0 +1,46 @@
+name: Claude PR Description
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  describe:
+    # 既に説明文がある場合はスキップ
+    if: github.event.pull_request.body == '' || github.event.pull_request.body == null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude PR Description Generator
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            この PR の変更差分とコミット履歴を解析して、PR の説明文を生成してください。
+
+            以下のフォーマットで gh コマンドを使って PR の body を更新してください:
+
+            ## Summary
+            - 変更内容の要約（箇条書き）
+
+            ## Test plan
+            - テスト方法（箇条書き）
+
+            ## Related Issues
+            - 関連する Issue があればリンク
+
+            日本語で記述してください。
+          claude_args: >-
+            --allowedTools
+            "Bash(gh pr edit:*),Bash(git log:*),Bash(git diff:*)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

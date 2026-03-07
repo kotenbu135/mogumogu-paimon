@@ -1,0 +1,41 @@
+name: Claude Doc Sync Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  doc-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Doc Sync Check
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            この PR の変更が docs/spec/*.md の仕様書と整合しているかチェックしてください。
+
+            手順:
+            1. PR の差分を確認
+            2. 変更されたコードに関連する仕様書（docs/spec/*.md）を特定
+            3. 仕様書の記述と実装コードの整合性を確認
+
+            以下のケースを検出して PR コメントとして報告してください:
+            - 実装が変更されたが仕様書が更新されていない
+            - 仕様書に記載されている仕様が実装と一致しない
+            - 新しい機能が追加されたが仕様書に未記載
+
+            乖離がない場合は「仕様書と実装は整合しています」とコメントしてください。
+            乖離がある場合は具体的な箇所と修正提案を示してください。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
