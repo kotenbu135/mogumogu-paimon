@@ -41,3 +41,4 @@ next-env.d.ts
 /.issue-workflow/
 
 *.deb
+.claude/skills/skill-creator/scripts/__pycache__/
