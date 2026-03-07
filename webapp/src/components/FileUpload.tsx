@@ -13,6 +13,7 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
 
   function parseFile(file: File) {
@@ -26,17 +27,21 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
       setError(t.upload.errorSize)
       return
     }
+    setLoading(true)
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string)
         if (!validateGoodFile(json)) {
           setError(t.upload.errorFormat)
+          setLoading(false)
           return
         }
         onLoad(json)
+        // ロード後はコンポーネントが切り替わるのでリセット不要
       } catch {
         setError(t.upload.errorParse)
+        setLoading(false)
       }
     }
     reader.readAsText(file)
@@ -78,16 +83,25 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[800px]">
       <div
-        className={`upload-zone ${dragging ? 'dragging' : ''}`}
+        className={`upload-zone ${dragging ? 'dragging' : ''} ${loading ? 'loading' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !loading && inputRef.current?.click()}
       >
         {input}
-        <div className="upload-icon">📂</div>
-        <p className="upload-title">{t.upload.drop}</p>
-        <p className="upload-sub">{t.upload.click}</p>
+        {loading ? (
+          <>
+            <div className="upload-spinner" />
+            <p className="upload-title">読み込み中...</p>
+          </>
+        ) : (
+          <>
+            <div className="upload-icon">&#x1F48E;</div>
+            <p className="upload-title">{t.upload.drop}</p>
+            <p className="upload-sub">{t.upload.click}</p>
+          </>
+        )}
       </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}
     </div>
