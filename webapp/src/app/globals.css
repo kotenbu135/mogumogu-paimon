@@ -591,18 +591,21 @@ body {
 /* ── 聖遺物カード ──────────────────────── */
 .artifact-card {
   position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(26, 27, 46, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(46, 48, 80, 0.8);
   border-radius: 12px;
   padding: 1rem;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
   animation: card-drop-in 250ms ease-out both;
   animation-delay: var(--card-anim-delay, 0ms);
 }
 
 .artifact-card:hover {
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
+  background: rgba(34, 36, 58, 0.92);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(200, 163, 90, 0.22), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* ── スコアバー ─────────────────────────── */
@@ -733,6 +736,22 @@ body {
   color: var(--text-sub);
 }
 
+/* スコアランクバッジ（S/A/B/C） */
+.score-rank-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  margin-left: auto;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.rank-s { color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45); }
+.rank-a { color: #f97316; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.45); }
+.rank-b { color: #eab308; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.45); }
+.rank-c { color: var(--text-sub); background: rgba(156, 163, 175, 0.08); border: 1px solid rgba(156, 163, 175, 0.2); }
+
 /* ── サブステ一覧 ────────────────────────── */
 .substats {
   display: flex;
@@ -774,6 +793,26 @@ body {
 }
 .substat-effective .substat-rolls {
   color: #ca8a04;
+}
+
+/* ── サブステロールブロック ──────────────── */
+.substat-roll-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 0.3rem;
+}
+
+.roll-block {
+  width: 6px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(120, 125, 160, 0.45);
+  flex-shrink: 0;
+}
+
+.substat-effective .roll-block {
+  background: rgba(202, 138, 4, 0.75);
 }
 
 
@@ -940,26 +979,32 @@ body {
 }
 
 /* ── 再構築成功率 ────────────────────────── */
-.recon-rate {
+.recon-rate-wrap {
   display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.recon-rate-badge {
+  display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  margin-top: 0.5rem;
-  justify-content: flex-end;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
 }
 
 .recon-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   object-fit: contain;
 }
 
-.recon-rate-red { color: #ef4444; }
-.recon-rate-orange { color: #f97316; }
-.recon-rate-grey { color: #6b7280; }
+.recon-rate-red    { color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); }
+.recon-rate-orange { color: #f97316; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); }
+.recon-rate-grey   { color: #22c55e; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); }
 
 /* ── コンテキストメニュー ────────────────── */
 .context-menu {
