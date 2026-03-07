@@ -236,4 +236,26 @@ describe('estimateRollCounts - 境界系', () => {
       expect(Number.isInteger(r)).toBe(true)
     }
   })
+
+  it('フォールバック時に remainder > substats.length の場合、Math.min で上限を守る', () => {
+    // critRate_=2.7 と critDMG_=5.4 は共に raw≈0 → floorRolls=[0,0]
+    // upgradeTarget = 7-2 = 5, remainder=5 > frac.length=2
+    // Math.min(5,2)=2 → 各サブステに1ずつ加算 → [1,1]
+    const artifact = makeArtifact({
+      substats: [
+        { key: 'critRate_', value: 2.7 },
+        { key: 'critDMG_', value: 5.4 },
+      ],
+      totalRolls: 7,
+    })
+
+    const result = estimateRollCounts(artifact)
+
+    expect(result).toHaveLength(2)
+    expect(result).toEqual([1, 1])
+    for (const r of result) {
+      expect(r).toBeGreaterThanOrEqual(0)
+      expect(Number.isInteger(r)).toBe(true)
+    }
+  })
 })
