@@ -76,6 +76,18 @@ export default function HomePage() {
 
   const allMainStatNames = getAllStatNames(t)
 
+  // フィルター変更時にカードグリッドを再マウントしてスタガーアニメーションを再生
+  const gridAnimKey = [
+    filters.filterSlot,
+    JSON.stringify(filters.filterSets),
+    filters.filterMainStat,
+    JSON.stringify(filters.filterSubStats),
+    scoreType,
+    subStatSort,
+    reconSort,
+    reconType,
+  ].join('|')
+
   return (
     <main className="main-container">
       <h1 className="page-title">{t.siteTitle}</h1>
@@ -101,8 +113,8 @@ export default function HomePage() {
             allMainStatNames={allMainStatNames}
           />
 
-          <div className="card-grid">
-            {displayed.map(({ entry, reconRate, originalIndex }) => (
+          <div key={gridAnimKey} className="card-grid">
+            {displayed.map(({ entry, reconRate, originalIndex }, idx) => (
               <ArtifactCard
                 key={originalIndex}
                 entry={entry}
@@ -111,6 +123,7 @@ export default function HomePage() {
                 onFilterBySet={(setKey) => filters.setFilterSets([setKey])}
                 onFilterBySlot={filters.setFilterSlot}
                 equippedSetKeys={equippedSetsMap.get(entry.artifact.location) ?? []}
+                cardIndex={idx}
               />
             ))}
           </div>
