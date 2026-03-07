@@ -72,6 +72,7 @@ export const ja: Translations = {
     errorFormat: 'GOODフォーマットのJSONを選択してください',
     errorParse: 'JSONの解析に失敗しました',
     errorSize: 'ファイルサイズが大きすぎます（上限: 10MB）',
+    loading: '聖遺物データを読み込み中…',
   },
 
   controls: {

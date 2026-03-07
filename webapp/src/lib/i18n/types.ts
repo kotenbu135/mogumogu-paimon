@@ -32,6 +32,7 @@ export interface Translations {
     errorFormat: string
     errorParse: string
     errorSize: string
+    loading: string
   }
 
   controls: {

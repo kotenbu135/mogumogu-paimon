@@ -132,6 +132,7 @@ export const en: Translations = {
     errorFormat: 'Please select a GOOD format JSON file',
     errorParse: 'Failed to parse JSON',
     errorSize: 'File size is too large (limit: 10MB)',
+    loading: 'Loading artifact data…',
   },
 
   controls: {

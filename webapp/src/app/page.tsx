@@ -28,7 +28,7 @@ export default function HomePage() {
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
 
-  const { allRanked, reconRates, handleLoad } = useArtifactData(scoreType, reconType)
+  const { allRanked, reconRates, handleLoad, isLoading } = useArtifactData(scoreType, reconType)
 
   async function handleLoadWithReset(data: GoodFile) {
     await handleLoad(data)
@@ -81,7 +81,12 @@ export default function HomePage() {
       <h1 className="page-title">{t.siteTitle}</h1>
 
       {allRanked === null ? (
-        <HeroSection onLoad={handleLoadWithReset} t={t} scoreTypeOptions={SCORE_TYPE_OPTIONS} />
+        <>
+          <HeroSection onLoad={handleLoadWithReset} t={t} scoreTypeOptions={SCORE_TYPE_OPTIONS} />
+          {isLoading && (
+            <p className="text-center text-yellow-400 animate-pulse mt-4">{t.upload.loading}</p>
+          )}
+        </>
       ) : (
         <>
           <ControlsBar
