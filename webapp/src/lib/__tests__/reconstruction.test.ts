@@ -2,7 +2,7 @@
  * 再構築成功率計算のテスト
  */
 import { describe, it, expect } from 'vitest'
-import type { Artifact, ScoreTypeName, ReconstructionType } from '@/lib/types'
+import type { Artifact } from '@/lib/types'
 import {
   enumeratePatterns,
   multinomialProb,

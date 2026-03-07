@@ -164,7 +164,7 @@ export function estimateRollCounts(artifact: Artifact): number[] {
     return Math.max(0, s.value / avg - 1)
   })
   const floorRolls = raw.map((r) => Math.max(0, Math.floor(r)))
-  let remainder = upgradeTarget - floorRolls.reduce((a, b) => a + b, 0)
+  const remainder = upgradeTarget - floorRolls.reduce((a, b) => a + b, 0)
 
   if (remainder > 0) {
     const frac = raw

@@ -42,12 +42,10 @@ function formatSubstat(
   // 全ロール数 = 強化 + 1（初期分）で分解
   const totalRolls = upgradeRolls + 1
   const rolls = decomposeRolls(statKey, value, totalRolls)
-  let rollDetail = ''
-  if (rolls && rolls.length > 0) {
-    rollDetail = `(${upgradeRolls}) ${rolls.map((v) => String(v)).join(' + ')}`
-  } else {
-    rollDetail = `(${upgradeRolls})`
-  }
+  const rollDetail =
+    rolls && rolls.length > 0
+      ? `(${upgradeRolls}) ${rolls.map((v) => String(v)).join(' + ')}`
+      : `(${upgradeRolls})`
 
   return { label, valueStr, rollDetail }
 }

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { fireEvent } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import FileUpload from '@/components/FileUpload'
@@ -25,7 +25,7 @@ describe('FileUpload', () => {
     const zone = document.querySelector('.upload-zone') as HTMLElement
     const badFile = makeFile('malware.exe', 1024, 'binary', 'application/octet-stream')
     fireEvent.drop(zone, { dataTransfer: { files: [badFile] } })
-    expect(screen.getByText('GOODフォーマットのJSONを選択してください')).toBeTruthy()
+    expect(screen.getByText('Please select a GOOD format JSON file')).toBeTruthy()
   })
 
   it('非JSONファイルをドロップした場合はonLoadを呼ばない', () => {
@@ -42,7 +42,7 @@ describe('FileUpload', () => {
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     const file = makeFile('test.json', 1024, JSON.stringify({ format: 'GOOD', artifacts: [] }), '')
     fireEvent.change(input, { target: { files: [file] } })
-    expect(screen.queryByText('GOODフォーマットのJSONを選択してください')).toBeNull()
+    expect(screen.queryByText('Please select a GOOD format JSON file')).toBeNull()
   })
 
   it('ファイルサイズが10MB以下の場合はエラーなし', () => {
@@ -50,7 +50,7 @@ describe('FileUpload', () => {
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     const file = makeFile('test.json', 1024, JSON.stringify({ format: 'GOOD', artifacts: [] }))
     fireEvent.change(input, { target: { files: [file] } })
-    expect(screen.queryByText(/ファイルサイズが大きすぎます/)).toBeNull()
+    expect(screen.queryByText(/File size is too large/)).toBeNull()
   })
 
   it('ファイルサイズが10MBを超える場合はエラーメッセージを表示する', () => {
@@ -58,7 +58,7 @@ describe('FileUpload', () => {
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     const oversizedFile = makeFile('huge.json', 11 * 1024 * 1024)
     fireEvent.change(input, { target: { files: [oversizedFile] } })
-    expect(screen.getByText('ファイルサイズが大きすぎます（上限: 10MB）')).toBeTruthy()
+    expect(screen.getByText('File size is too large (limit: 10MB)')).toBeTruthy()
   })
 
   it('ファイルサイズが10MBを超える場合はonLoadを呼ばない', () => {
@@ -80,8 +80,7 @@ describe('FileUpload', () => {
       JSON.stringify({ format: 'GOOD', artifacts: 'not-an-array' }),
     )
     fireEvent.change(input, { target: { files: [badFile] } })
-    await new Promise((r) => setTimeout(r, 0))
-    expect(screen.getByText('GOODフォーマットのJSONを選択してください')).toBeTruthy()
+    await waitFor(() => expect(screen.getByText('Please select a GOOD format JSON file')).toBeTruthy())
     expect(onLoad).not.toHaveBeenCalled()
   })
 
@@ -110,8 +109,7 @@ describe('FileUpload', () => {
       }),
     )
     fireEvent.change(input, { target: { files: [badFile] } })
-    await new Promise((r) => setTimeout(r, 0))
-    expect(screen.getByText('GOODフォーマットのJSONを選択してください')).toBeTruthy()
+    await waitFor(() => expect(screen.getByText('Please select a GOOD format JSON file')).toBeTruthy())
     expect(onLoad).not.toHaveBeenCalled()
   })
 
@@ -140,8 +138,7 @@ describe('FileUpload', () => {
       }),
     )
     fireEvent.change(input, { target: { files: [badFile] } })
-    await new Promise((r) => setTimeout(r, 0))
-    expect(screen.getByText('GOODフォーマットのJSONを選択してください')).toBeTruthy()
+    await waitFor(() => expect(screen.getByText('Please select a GOOD format JSON file')).toBeTruthy())
     expect(onLoad).not.toHaveBeenCalled()
   })
 })
