@@ -13,7 +13,7 @@ const MAIN_STAT_ORDER: string[] = [
   'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
   'eleMas', 'enerRech_', 'heal_',
   'anemo_dmg_', 'geo_dmg_', 'electro_dmg_', 'dendro_dmg_',
-  'hydro_dmg_', 'pyro_dmg_', 'cryo_dmg_',
+  'hydro_dmg_', 'pyro_dmg_', 'cryo_dmg_', 'physical_dmg_',
   'atk', 'hp', 'def',
 ]
 
