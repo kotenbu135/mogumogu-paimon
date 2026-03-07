@@ -1,0 +1,41 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    # claude.yml のメンションベースレビューと重複しないよう自動レビュー専用
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude PR Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            この PR の差分をレビューしてください。
+            CLAUDE.md のルールに基づいて以下の観点でチェックし、PR コメントとして投稿してください:
+
+            - TypeScript の型安全性
+            - TDD 方針（新ロジックにテストがあるか）
+            - Conventional Commits 形式の遵守
+            - セキュリティ上の問題（OWASP Top 10）
+            - コードの品質・可読性
+
+            問題がなければ「LGTM」とだけコメントしてください。
+            問題がある場合は具体的な箇所と改善案を示してください。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
