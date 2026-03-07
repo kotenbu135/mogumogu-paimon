@@ -50,6 +50,22 @@ function formatSubstat(
   return { label, valueStr, rollDetail }
 }
 
+/** スコアのランク文字を返す */
+function scoreRank(score: number): string {
+  if (score >= 55) return 'S'
+  if (score >= 45) return 'A'
+  if (score >= 35) return 'B'
+  return 'C'
+}
+
+/** スコアランクバッジの CSS クラスを返す */
+function scoreRankClass(score: number): string {
+  if (score >= 55) return 'rank-s'
+  if (score >= 45) return 'rank-a'
+  if (score >= 35) return 'rank-b'
+  return 'rank-c'
+}
+
 /** スコアバーの色クラスを返す */
 function scoreBarColor(score: number): string {
   if (score >= 55) return 'score-bar-red'
@@ -224,6 +240,10 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
         {showCvSub && (
           <div className="cv-sub">CV {cvScore.toFixed(1)}</div>
         )}
+        {/* ランクバッジ（S/A/B/C） */}
+        <span className={`score-rank-badge ${scoreRankClass(mainScore)}`}>
+          {scoreRank(mainScore)}
+        </span>
       </div>
 
       {/* スコアバー（0から伸びるアニメーション） */}
@@ -238,13 +258,18 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
       <div className="substats">
         {substats.map((s, i) => {
           const upgradeRolls = rollCounts[i] ?? 0
-          const { label, valueStr, rollDetail } = formatSubstat(s.key, s.value, upgradeRolls, t.stats)
+          const { label, valueStr } = formatSubstat(s.key, s.value, upgradeRolls, t.stats)
           const isEffective = effectiveStats.has(s.key as StatKey)
+          const totalRolls = upgradeRolls + 1
           return (
             <div key={i} className={`substat-row${isEffective ? ' substat-effective' : ''}`}>
               <span className="substat-name">{label}</span>
               <span className="substat-value">{valueStr}</span>
-              <span className="substat-rolls">{rollDetail}</span>
+              <span className="substat-roll-bars">
+                {Array.from({ length: totalRolls }).map((_, j) => (
+                  <span key={j} className="roll-block" />
+                ))}
+              </span>
             </div>
           )
         })}
@@ -252,14 +277,16 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
 
       {/* 再構築成功率 */}
       {reconRate != null && (
-        <div className={`recon-rate ${reconColor(reconRate)}`}>
-          <img
-            src={`${bp}/icons/Item_Dust_of_Enlightenment.webp`}
-            alt="聖啓の塵"
-            className="recon-icon"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-          />
-          {Math.round(reconRate)}%
+        <div className="recon-rate-wrap">
+          <span className={`recon-rate-badge ${reconColor(reconRate)}`}>
+            <img
+              src={`${bp}/icons/Item_Dust_of_Enlightenment.webp`}
+              alt="聖啓の塵"
+              className="recon-icon"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+            {Math.round(reconRate)}%
+          </span>
         </div>
       )}
 
