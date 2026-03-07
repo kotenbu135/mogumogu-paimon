@@ -13,17 +13,6 @@ export const ALL_SUBSTAT_KEYS: StatKey[] = [
   'eleMas', 'enerRech_', 'atk', 'hp', 'def',
 ]
 
-/** 各スコアタイプの表示ラベルと計算式 */
-export const SCORE_TYPE_FORMULAS: Record<ScoreTypeName, { label: string; formula: string }> = {
-  CV: { label: 'CVスコア', formula: '会心率×2 + 会心ダメージ' },
-  HP型: { label: 'HP型', formula: 'CV + HP%×1.0' },
-  攻撃型: { label: '攻撃型', formula: 'CV + 攻撃力%×1.0' },
-  防御型: { label: '防御型', formula: 'CV + 防御力%×0.8' },
-  熟知型: { label: '熟知型', formula: 'CV + 元素熟知×0.25' },
-  チャージ型: { label: 'チャージ型', formula: 'CV + 元素チャージ×0.9' },
-  最良型: { label: '最良型', formula: '全タイプのうち最高値' },
-}
-
 export const ARTIFACT_SET_NAMES: Record<string, string> = {
   ADayCarvedFromRisingWinds: '風立ちの日',
   Adventurer: '冒険者',
