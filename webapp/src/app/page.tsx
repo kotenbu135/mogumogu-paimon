@@ -82,23 +82,36 @@ export default function HomePage() {
       return
     }
     let cancelled = false
+    const CHUNK_SIZE = 50
     import('@/lib/reconstruction').then(({ calculateReconstructionRate }) => {
       if (cancelled) return
       const map = new Map<number, number>()
-      for (let i = 0; i < allRanked.length; i++) {
-        const e = allRanked[i]
-        const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
-        if (rate !== null) map.set(i, rate)
+      let idx = 0
+
+      function processChunk() {
+        if (cancelled) return
+        const end = Math.min(idx + CHUNK_SIZE, allRanked!.length)
+        for (; idx < end; idx++) {
+          const e = allRanked![idx]
+          const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
+          if (rate !== null) map.set(idx, rate)
+        }
+        setReconRates(new Map(map))
+        if (idx < allRanked!.length) {
+          setTimeout(processChunk, 0)
+        }
       }
-      setReconRates(map)
+
+      processChunk()
     })
     return () => { cancelled = true }
   }, [allRanked, scoreType, reconType])
 
-  const displayed = useMemo(() => {
+  // フィルタのみ（reconRates に依存しないため、reconRates 更新時に再計算しない）
+  const filteredWithIndex = useMemo(() => {
     if (!allRanked) return []
     return allRanked
-      .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null, originalIndex: i }))
+      .map((e, i) => ({ entry: e, originalIndex: i }))
       .filter(({ entry: e }) => filters.filterSets.length === 0 || filters.filterSets.includes(e.artifact.setKey))
       .filter(({ entry: e }) => !filters.filterSlot || e.artifact.slotKey === filters.filterSlot)
       .filter(({ entry: e }) => !filters.filterMainStat || e.artifact.mainStatKey === filters.filterMainStat)
@@ -111,6 +124,12 @@ export default function HomePage() {
         const initialOp = e.artifact.totalRolls - Math.floor(e.artifact.level / 4)
         return initialOp === Number(filters.filterInitialOp)
       })
+  }, [allRanked, filters.filterSets, filters.filterSlot, filters.filterMainStat, filters.filterSubStats, filters.filterInitialOp])
+
+  // ソートのみ（reconRates 変更時はフィルタ処理をスキップして再ソートだけ実行）
+  const displayed = useMemo(() => {
+    return filteredWithIndex
+      .map(({ entry, originalIndex }) => ({ entry, reconRate: reconRates.get(originalIndex) ?? null, originalIndex }))
       .sort((a, b) => {
         if (reconSort) {
           const ra = a.reconRate ?? -1
@@ -124,7 +143,7 @@ export default function HomePage() {
         }
         return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
       })
-  }, [allRanked, filters.filterSets, filters.filterSlot, filters.filterMainStat, filters.filterSubStats, filters.filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
+  }, [filteredWithIndex, subStatSort, scoreType, reconRates, reconSort])
 
   const allMainStatNames = getAllStatNames(t)
 
