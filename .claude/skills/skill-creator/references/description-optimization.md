@@ -44,9 +44,27 @@ This step matters — bad eval queries produce bad descriptions.
 
 Tell the user: "This will take some time — I'll run it in the background and check in periodically."
 
+**事前準備（初回のみ）:** Python環境をセットアップする。
+
+```bash
+# skill-creator ディレクトリに移動してセットアップ
+cd .claude/skills/skill-creator
+bash setup.sh
+```
+
+**認証設定（いずれか1つ）:**
+```bash
+# API Keyを使う場合
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# サブスクプランのTOKENを使う場合
+export ANTHROPIC_AUTH_TOKEN=your-token
+```
+
 Save the eval set to the workspace, then run:
 
 ```bash
+cd .claude/skills/skill-creator
 python -m scripts.run_loop \
   --eval-set <path-to-trigger-eval.json> \
   --skill-path <path-to-skill> \

@@ -7,13 +7,34 @@ using Claude with extended thinking.
 
 import argparse
 import json
+import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
-import anthropic
+# anthropicが未インストールの場合は自動インストール
+try:
+    import anthropic
+except ImportError:
+    print("anthropic ライブラリをインストール中...", file=sys.stderr)
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "anthropic", "--quiet"])
+    import anthropic
 
 from scripts.utils import parse_skill_md
+
+
+def create_anthropic_client() -> anthropic.Anthropic:
+    """AnthropicクライアントをAPIキーまたはTOKENで初期化する。
+
+    環境変数の優先順位:
+    1. ANTHROPIC_AUTH_TOKEN (サブスクプランのTOKEN認証)
+    2. ANTHROPIC_API_KEY (APIキー認証)
+    """
+    auth_token = os.environ.get("ANTHROPIC_AUTH_TOKEN")
+    if auth_token:
+        return anthropic.Anthropic(auth_token=auth_token)
+    return anthropic.Anthropic()
 
 
 def improve_description(
@@ -216,7 +237,7 @@ def main():
         print(f"Current: {current_description}", file=sys.stderr)
         print(f"Score: {eval_results['summary']['passed']}/{eval_results['summary']['total']}", file=sys.stderr)
 
-    client = anthropic.Anthropic()
+    client = create_anthropic_client()
     new_description = improve_description(
         client=client,
         skill_name=name,

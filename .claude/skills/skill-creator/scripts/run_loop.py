@@ -9,16 +9,23 @@ overfitting.
 import argparse
 import json
 import random
+import subprocess
 import sys
 import tempfile
 import time
 import webbrowser
 from pathlib import Path
 
-import anthropic
+# anthropicが未インストールの場合は自動インストール
+try:
+    import anthropic
+except ImportError:
+    print("anthropic ライブラリをインストール中...", file=sys.stderr)
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "anthropic", "--quiet"])
+    import anthropic
 
 from scripts.generate_report import generate_html
-from scripts.improve_description import improve_description
+from scripts.improve_description import create_anthropic_client, improve_description
 from scripts.run_eval import find_project_root, run_eval
 from scripts.utils import parse_skill_md
 
@@ -75,7 +82,7 @@ def run_loop(
         train_set = eval_set
         test_set = []
 
-    client = anthropic.Anthropic()
+    client = create_anthropic_client()
     history = []
     exit_reason = "unknown"
 
