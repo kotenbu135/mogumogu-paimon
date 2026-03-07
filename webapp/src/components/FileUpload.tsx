@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import type { GoodFile } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n'
+import { validateGoodFile } from '@/lib/validateGoodFile'
 
 interface FileUploadProps {
   onLoad: (data: GoodFile) => void
@@ -16,15 +17,24 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
 
   function parseFile(file: File) {
     setError(null)
+    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+      setError(t.upload.errorFormat)
+      return
+    }
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      setError(t.upload.errorSize)
+      return
+    }
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string)
-        if (json.format !== 'GOOD') {
+        if (!validateGoodFile(json)) {
           setError(t.upload.errorFormat)
           return
         }
-        onLoad(json as GoodFile)
+        onLoad(json)
       } catch {
         setError(t.upload.errorParse)
       }

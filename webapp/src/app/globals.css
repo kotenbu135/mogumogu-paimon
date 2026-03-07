@@ -508,6 +508,11 @@ body {
   object-fit: contain;
 }
 
+.artifact-img-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.5rem;
+}
+
 .artifact-info {
   flex: 1;
   min-width: 0;

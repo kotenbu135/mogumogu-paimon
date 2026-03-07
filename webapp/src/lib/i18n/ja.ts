@@ -71,6 +71,7 @@ export const ja: Translations = {
     click: 'またはクリックしてJSONを選択',
     errorFormat: 'GOODフォーマットのJSONを選択してください',
     errorParse: 'JSONの解析に失敗しました',
+    errorSize: 'ファイルサイズが大きすぎます（上限: 10MB）',
   },
 
   controls: {
@@ -89,7 +90,7 @@ export const ja: Translations = {
     substatSort: 'サブステソート',
     byScore: 'スコア順',
     reconstruction: '再構築',
-    bySuccessRate: '成功率順',
+    byOdds: 'オッズ順',
     filterClear: 'フィルタをクリア',
     filterBySet: 'セット',
     filterBySlot: '部位',

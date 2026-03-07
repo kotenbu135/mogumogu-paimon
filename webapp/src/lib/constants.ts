@@ -2,16 +2,28 @@
 
 import type { ArtifactSlotKey, ScoreTypeName, StatKey } from './types'
 
-/** 各スコアタイプの表示ラベルと計算式 */
-export const SCORE_TYPE_FORMULAS: Record<ScoreTypeName, { label: string; formula: string }> = {
-  CV: { label: 'CVスコア', formula: '会心率×2 + 会心ダメージ' },
-  HP型: { label: 'HP型', formula: 'CV + HP%×1.0' },
-  攻撃型: { label: '攻撃型', formula: 'CV + 攻撃力%×1.0' },
-  防御型: { label: '防御型', formula: 'CV + 防御力%×0.8' },
-  熟知型: { label: '熟知型', formula: 'CV + 元素熟知×0.25' },
-  チャージ型: { label: 'チャージ型', formula: 'CV + 元素チャージ×0.9' },
-  最良型: { label: '最良型', formula: '全タイプのうち最高値' },
-}
+/**
+ * スコア種別の定義: [ScoreTypeName, サブステkey, 係数]
+ * scoring.ts・reconstruction.ts 両モジュールで参照する共通定数
+ */
+export const SCORE_TYPE_DEFS: [ScoreTypeName, StatKey, number][] = [
+  ['HP型', 'hp_', 1.0],
+  ['攻撃型', 'atk_', 1.0],
+  ['防御型', 'def_', 0.8],
+  ['熟知型', 'eleMas', 0.25],
+  ['チャージ型', 'enerRech_', 0.9],
+]
+
+/** スコアタイプの選択肢一覧 */
+export const SCORE_TYPE_OPTIONS: ScoreTypeName[] = [
+  'CV', '攻撃型', 'HP型', '防御型', '熟知型', 'チャージ型', '最良型',
+]
+
+/** サブステータスのキー一覧 */
+export const ALL_SUBSTAT_KEYS: StatKey[] = [
+  'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
+  'eleMas', 'enerRech_', 'atk', 'hp', 'def',
+]
 
 export const ARTIFACT_SET_NAMES: Record<string, string> = {
   ADayCarvedFromRisingWinds: '風立ちの日',
@@ -73,6 +85,125 @@ export const ARTIFACT_SET_NAMES: Record<string, string> = {
   ViridescentVenerer: '翠緑の影',
   VourukashasGlow: '花海甘露の光',
   WanderersTroupe: '大地を流浪する楽団',
+}
+
+/** キャラクター名の日本語マッピング（GOOD フォーマットキー → 表示名） */
+export const CHARACTER_NAMES: Record<string, string> = {
+  Aino: 'アイノ',
+  Albedo: 'アルベド',
+  Alhaitham: 'アルハイゼン',
+  Aloy: 'アーロイ',
+  Amber: 'アンバー',
+  AratakiItto: '荒瀧一斗',
+  Arlecchino: 'アルレッキーノ',
+  Baizhu: '白朮',
+  Barbara: 'バーバラ',
+  Beidou: '北斗',
+  Bennett: 'ベネット',
+  Candace: 'キャンデス',
+  Charlotte: 'シャルロット',
+  Chasca: 'チャスカ',
+  Chevreuse: 'シュヴルーズ',
+  Chiori: '千織',
+  Chongyun: '重雲',
+  Citlali: 'シトラリ',
+  Clorinde: 'クロリンド',
+  Collei: 'コレイ',
+  Columbina: 'コロンビーナ',
+  Cyno: 'サイノ',
+  Dahlia: 'ダリア',
+  Dehya: 'ディシア',
+  Diluc: 'ディルック',
+  Diona: 'ディオナ',
+  Dori: 'ドリー',
+  Durin: 'デュリン',
+  Emilie: 'エミリー',
+  Escoffier: 'エスコフィエ',
+  Eula: 'エウルア',
+  Faruzan: 'ファルザン',
+  Fischl: 'フィッシュル',
+  Flins: 'フリンス',
+  Freminet: 'フレミネ',
+  Furina: 'フリーナ',
+  Gaming: 'ガミング',
+  Ganyu: '甘雨',
+  Gorou: '五郎',
+  HuTao: '胡桃',
+  Iansan: 'イアンサン',
+  Ifa: 'イファ',
+  Illuga: 'イルガ',
+  Ineffa: 'イネファ',
+  Jahoda: 'ヤホダ',
+  Jean: 'ジン',
+  Kachina: 'カチナ',
+  KaedeharaKazuha: '楓原万葉',
+  Kaeya: 'カエヤ',
+  KamisatoAyaka: '神里綾華',
+  KamisatoAyato: '神里綾人',
+  Kaveh: 'カーヴェ',
+  Keqing: '刻晴',
+  Kinich: 'キニチ',
+  Kirara: 'きらら',
+  Klee: 'クレー',
+  KujouSara: '九条裟羅',
+  KukiShinobu: '久岐忍',
+  LanYan: '蘭砚',
+  Lauma: 'ラウマ',
+  Layla: 'レイラ',
+  Lisa: 'リサ',
+  Lynette: 'リネット',
+  Lyney: 'リネ',
+  Mavuika: 'マーヴィカ',
+  Mika: 'ミカ',
+  Mona: 'モナ',
+  Mualani: 'ムアラニ',
+  Nahida: 'ナヒーダ',
+  Navia: 'ナヴィア',
+  Nefer: 'ネフェル',
+  Neuvillette: 'ヌヴィレット',
+  Nilou: 'ニィロウ',
+  Ningguang: '凝光',
+  Noelle: 'ノエル',
+  Ororon: 'オロロン',
+  Qiqi: '七七',
+  RaidenShogun: '雷電将軍',
+  Razor: 'レザー',
+  Rosaria: 'ロサリア',
+  SangonomiyaKokomi: '珊瑚宮心海',
+  Sayu: '早柚',
+  Sethos: 'セトス',
+  Shenhe: '申鶴',
+  ShikanoinHeizou: '鹿野院平蔵',
+  Sigewinne: 'シグウィン',
+  Skirk: 'スカーク',
+  Somnia: 'ソムニア',
+  Sucrose: 'スクロース',
+  Tartaglia: 'タルタリヤ',
+  Thoma: 'トーマ',
+  Tighnari: 'ティナリ',
+  Traveler: '旅人',
+  TravelerF: '旅人（女）',
+  TravelerM: '旅人（男）',
+  Varesa: 'ヴァレーザ',
+  Varka: 'ヴァルカ',
+  Venti: 'ウェンティ',
+  Wanderer: '放浪者',
+  Wriothesley: 'リオスリ',
+  Xiangling: '香菱',
+  Xianyun: '閑雲',
+  Xiao: '魈',
+  Xilonen: 'シロネン',
+  Xingqiu: '行秋',
+  Xinyan: '辛焱',
+  YaeMiko: '八重神子',
+  Yanfei: '煙緋',
+  Yaoyao: '瑶瑶',
+  Yelan: '夜蘭',
+  Yoimiya: '宵宮',
+  YumemizukiMizuki: '夢見月みずき',
+  YunJin: '云堇',
+  Zhongli: '鍾離',
+  Zibai: '子白',
 }
 
 export const SLOT_NAMES: Record<ArtifactSlotKey, string> = {
@@ -189,6 +320,12 @@ export function groupSetOptions(
 
   return groups
 }
+
+/**
+ * スコアタイプに対応したメインステキーのセット。
+ * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
+ */
+export const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
 
 /** パーセント表記のサブステ */
 export const PERCENT_STATS = new Set<StatKey>([

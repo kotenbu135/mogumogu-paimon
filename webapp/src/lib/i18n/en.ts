@@ -131,6 +131,7 @@ export const en: Translations = {
     click: 'or click to select JSON',
     errorFormat: 'Please select a GOOD format JSON file',
     errorParse: 'Failed to parse JSON',
+    errorSize: 'File size is too large (limit: 10MB)',
   },
 
   controls: {
@@ -149,7 +150,7 @@ export const en: Translations = {
     substatSort: 'Substat Sort',
     byScore: 'By Score',
     reconstruction: 'Reconstruction',
-    bySuccessRate: 'By Success Rate',
+    byOdds: 'By Odds',
     filterClear: 'Clear Filters',
     filterBySet: 'Set',
     filterBySlot: 'Slot',

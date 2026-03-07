@@ -1,0 +1,58 @@
+name: CI Failure Notify
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  notify-on-failure:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: ブランチ名からIssue番号を抽出
+        id: get-issue
+        env:
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          # ブランチ命名規則: claude/issue-{番号}-* からIssue番号を取得
+          if [[ "$BRANCH" =~ claude/issue-([0-9]+)- ]]; then
+            echo "issue_number=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "Found issue number: ${BASH_REMATCH[1]}"
+          else
+            echo "issue_number=" >> $GITHUB_OUTPUT
+            echo "No issue number found in branch: $BRANCH"
+          fi
+
+      - name: IssueにCIエラーをコメント
+        if: steps.get-issue.outputs.issue_number != ''
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.get-issue.outputs.issue_number }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+        with:
+          script: |
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER);
+            const runUrl = process.env.RUN_URL;
+            const branch = process.env.BRANCH;
+            const commitSha = process.env.COMMIT_SHA.substring(0, 7);
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: [
+                '## ❌ CIが失敗しました',
+                '',
+                `コミット \`${commitSha}\` (ブランチ: \`${branch}\`) のCIが失敗しました。`,
+                '',
+                `[▶ ワークフロー実行ログを確認](${runUrl})`,
+                '',
+                '@claude CIが失敗しました。上記のログを確認して原因を特定・修正してください。',
+              ].join('\n'),
+            });

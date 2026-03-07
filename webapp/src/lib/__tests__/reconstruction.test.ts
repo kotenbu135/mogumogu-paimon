@@ -2,7 +2,7 @@
  * 再構築成功率計算のテスト
  */
 import { describe, it, expect } from 'vitest'
-import type { Artifact, ScoreTypeName, ReconstructionType } from '@/lib/types'
+import type { Artifact } from '@/lib/types'
 import {
   enumeratePatterns,
   multinomialProb,
@@ -207,6 +207,14 @@ describe('calculateReconstructionRate', () => {
     expect(calculateReconstructionRate(artLv16, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
   })
 
+  it('totalRolls > 12 の場合は null を返す（DoS 防止・バリデーション上限と統一）', () => {
+    const art = makeArtifact({ totalRolls: 13 })
+    expect(calculateReconstructionRate(art, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
+
+    const artExcessive = makeArtifact({ totalRolls: 1000 })
+    expect(calculateReconstructionRate(artExcessive, [250, 250, 250, 250], 'CV', 'normal')).toBeNull()
+  })
+
   it('保証サブステが揃わない場合は null', () => {
     const art = makeArtifact({
       substats: [
@@ -365,5 +373,39 @@ describe('calculateReconstructionRate', () => {
     expect(rate).not.toBeNull()
     expect(rate!).toBeGreaterThanOrEqual(0)
     expect(rate!).toBeLessThanOrEqual(100)
+  })
+
+  it('絶対再構築で enhTotal が少ない場合は null を返す（totalFilteredProb === 0）', () => {
+    // enhTotal=1 で absolute（閾値=4）の場合、どのパターンも idxA+idxB >= 4 を満たさない
+    const art = makeArtifact({
+      substats: [
+        { key: 'critRate_', value: 3.9 },
+        { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
+        { key: 'atk', value: 33 },
+      ],
+      totalRolls: 5, // substats.length=4 なので enhTotal=1
+    })
+    const rollCounts = [1, 0, 0, 0]
+    const rate = calculateReconstructionRate(art, rollCounts, 'CV', 'absolute')
+    expect(rate).toBeNull()
+  })
+
+  it('メインステ eleMas で攻撃型: オッズは0%を返す', () => {
+    const art = makeArtifact({
+      slotKey: 'sands',
+      mainStatKey: 'eleMas',
+      substats: [
+        { key: 'atk', value: 58 },
+        { key: 'critRate_', value: 7.0 },
+        { key: 'def_', value: 10.9 },
+        { key: 'critDMG_', value: 5.4 },
+      ],
+      totalRolls: 9,
+    })
+    const rollCounts = [3, 1, 1, 0]
+    const rate = calculateReconstructionRate(art, rollCounts, '攻撃型', 'normal')
+    // メインステが eleMas なので攻撃型スコアは必ず0 → オッズも0%
+    expect(rate).toBe(0)
   })
 })

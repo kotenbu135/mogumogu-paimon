@@ -136,13 +136,13 @@ GOOD形式（**G**enshin **O**ptimizer **O**bject **D**ata）は、原神（Gens
 
 **数値型ステータス：**
 - `hp`, `atk`, `def`
-- `enerRech_`, `elemMas`
+- `enerRech_`, `eleMas`
 
 **パーセント型ステータス（`_`で終わる）：**
 - `hp_`, `atk_`, `def_`
 - `critRate_`, `critDMG_`
 - `heal_` （ヒーリングボーナス）
-- `phys_dmg_` （物理ダメージボーナス）
+- `physical_dmg_` （物理ダメージボーナス）
 - 属性ダメージ: `pyro_dmg_`, `hydro_dmg_`, `electro_dmg_`, `cryo_dmg_`, `anemo_dmg_`, `geo_dmg_`, `dendro_dmg_`
 
 ### セットキーの例

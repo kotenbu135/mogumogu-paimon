@@ -1,13 +1,17 @@
+import type { Translations } from './i18n/types'
+
+export type NavLabelKey = keyof Translations['nav']
+
 export interface SidebarItem {
-  label: string
+  labelKey: NavLabelKey
   href: string
 }
 
 export const SIDEBAR_ITEMS: SidebarItem[] = [
-  { label: 'ホーム', href: '/' },
-  { label: 'スコアについて', href: '/about-score' },
-  { label: '再構築について', href: '/about-reconstruction' },
-  { label: '使い方', href: '/how-to-use' },
-  { label: 'よくある質問', href: '/faq' },
-  { label: '免責事項', href: '/disclaimer' },
+  { labelKey: 'home', href: '/' },
+  { labelKey: 'aboutScore', href: '/about-score' },
+  { labelKey: 'aboutReconstruction', href: '/about-reconstruction' },
+  { labelKey: 'howToUse', href: '/how-to-use' },
+  { labelKey: 'faq', href: '/faq' },
+  { labelKey: 'disclaimer', href: '/disclaimer' },
 ]

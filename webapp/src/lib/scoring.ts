@@ -11,7 +11,7 @@
  */
 
 import type { Artifact, ScoreResult, ScoreTypeName, StatKey } from './types'
-import { PERCENT_STATS } from './constants'
+import { PERCENT_STATS, TYPED_MAIN_STATS, SCORE_TYPE_DEFS } from './constants'
 
 // サブステの4段階ティア値（低/中/高/最高）
 const SUBSTAT_TIERS: Record<StatKey, number[]> = {
@@ -40,15 +40,6 @@ export const AVG_INCREMENT: Record<StatKey, number> = {
   critRate_: 3.3,
   critDMG_: 6.6,
 }
-
-// スコア種別の定義: [ScoreTypeName, サブステkey, 係数]
-const SCORE_TYPE_DEFS: [ScoreTypeName, StatKey, number][] = [
-  ['HP型', 'hp_', 1.0],
-  ['攻撃型', 'atk_', 1.0],
-  ['防御型', 'def_', 0.8],
-  ['熟知型', 'eleMas', 0.25],
-  ['チャージ型', 'enerRech_', 0.9],
-]
 
 /** 浮動小数点回避用スケール係数 */
 function getScale(key: StatKey): number {
@@ -164,7 +155,7 @@ export function estimateRollCounts(artifact: Artifact): number[] {
     return Math.max(0, s.value / avg - 1)
   })
   const floorRolls = raw.map((r) => Math.max(0, Math.floor(r)))
-  let remainder = upgradeTarget - floorRolls.reduce((a, b) => a + b, 0)
+  const remainder = upgradeTarget - floorRolls.reduce((a, b) => a + b, 0)
 
   if (remainder > 0) {
     const frac = raw
@@ -176,12 +167,6 @@ export function estimateRollCounts(artifact: Artifact): number[] {
   }
   return floorRolls
 }
-
-/**
- * スコアタイプに対応したメインステキーのセット。
- * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
- */
-const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
 
 /**
  * メインステとスコアタイプが一致しているか確認し、不一致ならスコアを 0 にする。

@@ -15,6 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+<meta name="referrer" content="no-referrer" />
+      </head>
       <body>
         <LanguageProvider>
           <div className="app-layout">

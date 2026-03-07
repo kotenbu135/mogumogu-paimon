@@ -1,0 +1,42 @@
+name: Claude Issue Labeler
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Issue Labeler
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          direct_prompt: |
+            この Issue のタイトルと本文を解析して、適切なラベルを付与してください。
+
+            使用可能なラベル:
+            - bug: バグ報告
+            - enhancement: 機能追加・改善
+            - documentation: ドキュメント関連
+            - refactor: リファクタリング
+            - test: テスト関連
+            - ci: CI/CD 関連
+            - dependencies: 依存関係の更新
+
+            gh コマンドを使ってラベルを付与してください。
+            該当するラベルが存在しない場合は先に作成してから付与してください。
+          claude_args: >-
+            --allowedTools
+            "Bash(gh issue edit:*),Bash(gh label create:*),Bash(gh label list:*)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

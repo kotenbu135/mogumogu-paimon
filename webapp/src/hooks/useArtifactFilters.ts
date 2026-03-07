@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ArtifactSlotKey, StatKey } from '@/lib/types'
 import {
   type ArtifactFilterState,
+  type InitialOpFilter,
   INITIAL_ARTIFACT_FILTER_STATE,
   resetArtifactFilters,
   setMainStatFilter,
@@ -10,12 +11,12 @@ import {
   toggleSetGroupFilter,
 } from '@/lib/artifactFilters'
 
-export type { ArtifactFilterState }
+export type { ArtifactFilterState, InitialOpFilter }
 
 export interface ArtifactFiltersHook extends ArtifactFilterState {
   setFilterSets: (sets: string[]) => void
   setFilterSlot: (slot: ArtifactSlotKey | '') => void
-  setFilterInitialOp: (op: '' | '3' | '4') => void
+  setFilterInitialOp: (op: InitialOpFilter) => void
   resetFilters: () => void
   applyMainStat: (value: string) => void
   toggleSubStat: (key: StatKey, checked: boolean) => void

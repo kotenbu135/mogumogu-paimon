@@ -119,7 +119,7 @@
 | `atk_` | ATK上昇% | はい | sands, goblet, circlet |
 | `def_` | DEF上昇% | はい | sands, goblet, circlet |
 | `enerRech_` | エネルギーチャージ% | はい | sands |
-| `elemMas` | 元素熟知（固定値） | いいえ | sands |
+| `eleMas` | 元素熟知（固定値） | いいえ | sands |
 | `pyro_dmg_` | 炎元素ダメージ% | はい | goblet |
 | `hydro_dmg_` | 水元素ダメージ% | はい | goblet |
 | `electro_dmg_` | 雷元素ダメージ% | はい | goblet |
@@ -127,7 +127,7 @@
 | `anemo_dmg_` | 風元素ダメージ% | はい | goblet |
 | `geo_dmg_` | 岩元素ダメージ% | はい | goblet |
 | `dendro_dmg_` | 草元素ダメージ% | はい | goblet |
-| `phys_dmg_` | 物理ダメージ% | はい | goblet |
+| `physical_dmg_` | 物理ダメージ% | はい | goblet |
 | `critRate_` | 会心率% | はい | circlet |
 | `critDMG_` | 会心ダメージ% | はい | circlet |
 | `heal_` | ヒーリング力% | はい | circlet |
@@ -202,7 +202,7 @@
 | `atk_` | ATK上昇% | はい | 4.08-4.66 |
 | `def_` | DEF上昇% | はい | 5.1-5.83 |
 | `enerRech_` | エネルギーチャージ% | はい | 4.53-5.18 |
-| `elemMas` | 元素熟知(固定値) | いいえ | 16-19 |
+| `eleMas` | 元素熟知(固定値) | いいえ | 16-19 |
 | `critRate_` | 会心率% | はい | 2.72-3.11 |
 | `critDMG_` | 会心ダメージ% | はい | 5.44-6.22 |
 
@@ -308,7 +308,7 @@
 - `hp`: HP補正値
 - `atk`: 与ダメージ補正値
 - `def`: 防御力補正値
-- `elemMas`: 元素熟知
+- `eleMas`: 元素熟知
 
 ### パーセントステータス（`_`で終わる）
 
@@ -325,7 +325,7 @@
 - `enerRech_`: エネルギーチャージ%
 
 #### ダメージボーナス系
-- `phys_dmg_`: 物理ダメージボーナス%
+- `physical_dmg_`: 物理ダメージボーナス%
 - `pyro_dmg_`: 炎元素ダメージボーナス%
 - `hydro_dmg_`: 水元素ダメージボーナス%
 - `electro_dmg_`: 雷元素ダメージボーナス%
@@ -377,7 +377,7 @@ substats.forEach(substat => {
 - mainStatKey は固定値のみ（`hp`, `atk`）
 
 #### sands
-- mainStatKey は `hp_`, `atk_`, `def_`, `enerRech_`, `elemMas` のいずれか
+- mainStatKey は `hp_`, `atk_`, `def_`, `enerRech_`, `eleMas` のいずれか
 
 #### goblet
 - 元素ダメージボーナス、物理ダメージ、または汎用ステータス
@@ -468,7 +468,7 @@ substats.forEach(substat => {
       "initialValue": 5.3
     },
     {
-      "key": "elemMas",
+      "key": "eleMas",
       "value": 19,
       "initialValue": 19
     },

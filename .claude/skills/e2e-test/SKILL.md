@@ -1,104 +1,132 @@
 ---
 name: e2e-test
-description: '指定した画面・コンポーネントの Playwright E2E テストシナリオを生成する。'
+description: '指定した画面・コンポーネントの Playwright E2E テストシナリオを生成するスキル。/e2e-test を実行してテスト自動生成を行う。新機能追加・バグ修正後のリグレッションテスト作成時にも使用する。'
 ---
 
-# E2E Test スキル
+# E2E テスト生成スキル
 
-指定した画面またはコンポーネントの Playwright E2E テストシナリオを生成し、`webapp/tests/e2e/` に配置します。
+指定した画面・コンポーネントの Playwright E2E テストシナリオを生成します。
 
-## 手順
+## プロジェクト設定（事前知識）
 
-### ステップ 1: 対象を特定する
+- **テストディレクトリ**: `webapp/e2e/`（`playwright.config.ts` の `testDir: './e2e'` に対応）
+- **baseURL**: `http://localhost:3000/mogumogu-paimon`（設定済み）→ テストでは `page.goto('/')` と書けばよい
+- **実行コマンド**: `cd webapp && npm run test:e2e`
+- **スナップショット更新**: `cd webapp && npm run test:e2e:update`
+- **ビューポート**: 3種類（900px・1280px・1920px）で並列実行される
 
-引数でページ・コンポーネントが指定されていない場合は AskUserQuestion で確認する。
+## 実行フロー
 
-確認事項:
-- 対象ページまたはコンポーネント名
-- テストしたい主要なユーザーインタラクション
+---
 
-### ステップ 2: Playwright 設定を確認する
+## ステップ 1: 対象の特定とコード読み込み
 
-`playwright.config.ts`（または `webapp/playwright.config.ts`）を読み込み、以下を確認する:
-- `baseURL` の設定（`process.env.BASE_PATH` = `/mogumogu-paimon` を考慮する）
-- テスト出力先ディレクトリ
-- ブラウザ設定
+対象ページ/コンポーネントが引数で指定されていない場合は `AskUserQuestion` でユーザーに確認する。
 
-設定ファイルが存在しない場合は以下の設定を提案する:
+確認する内容:
+- テスト対象ページ/コンポーネント（例: トップページ、ArtifactCard、ControlsBar）
+- テストしたい主な操作・シナリオ（例: フィルター操作、ファイルアップロード、スコア表示）
 
-```ts
-import { defineConfig } from '@playwright/test';
-
-export default defineConfig({
-  testDir: './tests/e2e',
-  use: {
-    baseURL: `http://localhost:3000${process.env.BASE_PATH ?? ''}`,
-  },
-});
-```
-
-### ステップ 3: 対象コードを読み込む
-
-Agent ツール（`context: fork`）を使って対象コードを分析する:
+対象が決まったら Agent ツールで以下を実行する（`context: fork`）:
 
 ```
-以下の対象コンポーネント・ページを読み込み、ユーザーインタラクションを分析してください。
+以下の情報を収集してください。
 
-対象: {{対象ページ/コンポーネントのパス}}
+1. 対象コンポーネント/ページのソースを読み込む:
+   - webapp/src/app/ 配下の対象ページ
+   - webapp/src/components/ 配下の対象コンポーネント
+2. 以下を分析・一覧化する:
+   - ユーザーインタラクション（クリック・入力・ドラッグ等）
+   - 表示される UI 要素（ボタン・カード・フィルター・スコア等）
+   - data-testid 属性の有無（なければ追加提案リストを作成）
+3. webapp/e2e/ 配下の既存テストファイルを確認し、重複を避ける
 
-分析観点:
-- ユーザーが操作できる UI 要素（ボタン・フィルター・入力欄等）
-- 表示される主要なデータ（スコア・聖遺物カード等）
-- data-testid 属性の有無（なければ追加が必要な要素を特定する）
-- 状態変化（フィルター適用後の表示変化等）
+完了後、以下を報告してください:
+- 対象ファイルパス一覧
+- 検出したインタラクション一覧
+- data-testid が不足している要素の一覧（なければ「なし」）
+- テストシナリオ案（箇条書き）
 ```
 
-### ステップ 4: E2E テストファイルを生成する
+---
 
-`webapp/tests/e2e/<対象名>.spec.ts` を生成する。
+## ステップ 2: E2E テストファイルの生成
 
-テスト生成のポイント:
-- `page.goto()` には `process.env.BASE_PATH` を考慮したパスを使用する
-- `data-testid` 属性でセレクターを指定する（なければ追加を提案する）
-- フィルター操作・スコア表示・聖遺物カード等の主要 UI を網羅する
-- 各テストは独立して実行可能にする（`beforeEach` でページ遷移する）
+ステップ 1 の分析結果をもとに `webapp/e2e/` に `*.spec.ts` を生成する。
 
-生成するテストの例:
+### テストファイル命名規則
 
-```ts
+```
+webapp/e2e/<対象コンポーネント名>.spec.ts
+```
+
+例: `artifact-card.spec.ts`, `controls-bar.spec.ts`, `home.spec.ts`
+
+### テストの書き方
+
+baseURL は playwright.config.ts で設定済みなので、`page.goto('/')` のみでよい。
+
+```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('聖遺物一覧ページ', () => {
+test.describe('対象コンポーネント名', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('聖遺物カードが表示される', async ({ page }) => {
-    await expect(page.getByTestId('artifact-card')).toBeVisible();
-  });
-
-  test('フィルターを適用すると結果が絞り込まれる', async ({ page }) => {
-    await page.getByTestId('filter-set').selectOption('花');
-    await expect(page.getByTestId('artifact-card')).toHaveCount(/* 期待値 */);
+  test('シナリオ名', async ({ page }) => {
+    // Arrange: 前提条件の設定
+    // Act: ユーザー操作
+    // Assert: 期待する結果の確認
   });
 });
 ```
 
-### ステップ 5: テストを実行して確認する
+### data-testid の活用
+
+```typescript
+// data-testid が付与されている場合（優先）
+await page.getByTestId('filter-button').click();
+
+// なければロールやテキストで代替
+await page.getByRole('button', { name: 'フィルター' }).click();
+```
+
+### 主要シナリオ（このプロジェクト固有）
+
+- フィルター操作: 部位・セット・ステータスのフィルタリングが正常に動作するか
+- スコア表示: 聖遺物カードにスコアと色分けが正しく表示されるか
+- 聖遺物カード: カード一覧が表示され、各情報が正しくレンダリングされるか
+- ファイルアップロード: GOOD 形式ファイルをアップロードして聖遺物が表示されるか
+
+---
+
+## ステップ 3: data-testid の追加と実行確認
+
+### data-testid が不足している場合
+
+ステップ 1 で不足が検出された場合、対象コンポーネントに `data-testid` 属性を追加する。
+
+```typescript
+// 例: ArtifactCard コンポーネント
+<div data-testid="artifact-card">
+  <span data-testid="artifact-score">{score}</span>
+  <span data-testid="artifact-set-name">{setName}</span>
+</div>
+```
+
+### テスト実行確認
 
 ```bash
 cd webapp && npm run test:e2e
 ```
 
-`test:e2e` スクリプトが `package.json` に存在しない場合は以下を追加するよう提案する:
+---
 
-```json
-"test:e2e": "playwright test"
-```
+## 完了後の報告
 
-## 注意事項
-
-- E2E テストは `webapp/tests/e2e/` に配置すること
-- `basePath` (`/mogumogu-paimon`) を考慮した URL 設定を行うこと
-- `data-testid` 属性が不足している場合は対象コンポーネントへの追加を提案すること
-- Playwright が未インストールの場合は `npm install -D @playwright/test && npx playwright install` を提案する
+以下を報告すること:
+- 生成したテストファイルのパス
+- テストケース一覧（シナリオ名）
+- 追加した `data-testid` 属性の一覧（あれば）
+- テスト実行結果（または未実行の場合はその理由）
