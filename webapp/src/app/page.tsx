@@ -28,7 +28,7 @@ export default function HomePage() {
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
 
-  const { allRanked, reconRates, handleLoad } = useArtifactData(scoreType, reconType)
+  const { allRanked, handleLoad } = useArtifactData()
 
   async function handleLoadWithReset(data: GoodFile) {
     await handleLoad(data)
@@ -67,11 +67,11 @@ export default function HomePage() {
 
   const displayed = useDisplayedArtifacts({
     allRanked,
-    reconRates,
     filters,
     subStatSort,
     scoreType,
     reconSort,
+    reconType,
   })
 
   const allMainStatNames = getAllStatNames(t)
