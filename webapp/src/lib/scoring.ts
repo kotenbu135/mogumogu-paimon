@@ -11,7 +11,7 @@
  */
 
 import type { Artifact, ScoreResult, ScoreTypeName, StatKey } from './types'
-import { PERCENT_STATS, TYPED_MAIN_STATS } from './constants'
+import { PERCENT_STATS, TYPED_MAIN_STATS, SCORE_TYPE_DEFS } from './constants'
 
 // サブステの4段階ティア値（低/中/高/最高）
 const SUBSTAT_TIERS: Record<StatKey, number[]> = {
@@ -40,15 +40,6 @@ export const AVG_INCREMENT: Record<StatKey, number> = {
   critRate_: 3.3,
   critDMG_: 6.6,
 }
-
-// スコア種別の定義: [ScoreTypeName, サブステkey, 係数]
-const SCORE_TYPE_DEFS: [ScoreTypeName, StatKey, number][] = [
-  ['HP型', 'hp_', 1.0],
-  ['攻撃型', 'atk_', 1.0],
-  ['防御型', 'def_', 0.8],
-  ['熟知型', 'eleMas', 0.25],
-  ['チャージ型', 'enerRech_', 0.9],
-]
 
 /** 浮動小数点回避用スケール係数 */
 function getScale(key: StatKey): number {
