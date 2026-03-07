@@ -7,6 +7,7 @@ import { decomposeRolls, getEffectiveStats } from '@/lib/scoring'
 import { getContextMenuItems, getCharContextMenuItems } from '@/lib/contextMenu'
 import ContextMenu from './ContextMenu'
 import { useTranslation } from '@/lib/i18n'
+import { getAllStatNames } from '@/lib/i18n/types'
 
 interface ArtifactCardProps {
   rank: number
@@ -69,7 +70,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
   const { t } = useTranslation()
 
-  const allStatLabels: Record<string, string> = { ...t.stats, ...t.mainStatExtra }
+  const allStatLabels = getAllStatNames(t)
   const setName = t.artifactSetNames[setKey] ?? ARTIFACT_SET_NAMES[setKey] ?? setKey
   const slotName = t.slots[slotKey] ?? SLOT_NAMES[slotKey] ?? slotKey
   const mainStatName = allStatLabels[mainStatKey] ?? MAIN_STAT_NAMES[mainStatKey] ?? mainStatKey
