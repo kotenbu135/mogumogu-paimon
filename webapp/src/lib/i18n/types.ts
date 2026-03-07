@@ -54,6 +54,10 @@ export interface Translations {
     filterClear: string
     filterBySet: string
     filterBySlot: string
+    groupScore: string
+    groupFilter: string
+    groupDisplay: string
+    advancedFilter: string
   }
 
   reconTypes: Record<'normal' | 'advanced' | 'absolute', string>

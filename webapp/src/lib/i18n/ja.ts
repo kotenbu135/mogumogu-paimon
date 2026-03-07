@@ -94,6 +94,10 @@ export const ja: Translations = {
     filterClear: 'フィルタをクリア',
     filterBySet: 'セット',
     filterBySlot: '部位',
+    groupScore: 'スコア設定',
+    groupFilter: 'フィルター',
+    groupDisplay: '表示設定',
+    advancedFilter: '詳細フィルター',
   },
 
   reconTypes: {
