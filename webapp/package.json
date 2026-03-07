@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test:e2e": "playwright test",
-    "test:e2e:update": "playwright test --update-snapshots"
+    "test:e2e:update": "playwright test --update-snapshots",
+    "screenshot": "playwright test --config=playwright.screenshot.config.ts"
   },
   "dependencies": {
     "next": "16.1.6",
