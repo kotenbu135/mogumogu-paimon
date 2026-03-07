@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest'
 import { ja } from '@/lib/i18n/ja'
 import { en } from '@/lib/i18n/en'
+import { ARTIFACT_SET_NAMES } from '@/lib/constants'
 
 /**
  * オブジェクトのリーフキーを再帰的に収集する。
@@ -134,5 +135,36 @@ describe('i18n - scoreFormulas キーの一致', () => {
 describe('i18n - reconTypes キーの一致', () => {
   it('reconTypes の全キーが en と ja で一致する', () => {
     expect(Object.keys(en.reconTypes).sort()).toEqual(Object.keys(ja.reconTypes).sort())
+  })
+})
+
+describe('artifactSetNames と ARTIFACT_SET_NAMES の整合性', () => {
+  const constantsSetKeys = Object.keys(ARTIFACT_SET_NAMES).sort()
+  const enSetKeys = Object.keys(en.artifactSetNames).sort()
+
+  it('en.artifactSetNames が ARTIFACT_SET_NAMES の全キーを網羅している', () => {
+    const missing = constantsSetKeys.filter((k) => !(k in en.artifactSetNames))
+    expect(missing, `en.ts に未定義のセット名: ${missing.join(', ')}`).toHaveLength(0)
+  })
+
+  it('en.artifactSetNames に ARTIFACT_SET_NAMES 外のキーが存在しない', () => {
+    const extra = enSetKeys.filter((k) => !(k in ARTIFACT_SET_NAMES))
+    expect(extra, `ARTIFACT_SET_NAMES に存在しない en.ts のセット名: ${extra.join(', ')}`).toHaveLength(0)
+  })
+
+  it('en.artifactSetNames の全エントリが空文字でない', () => {
+    for (const [key, value] of Object.entries(en.artifactSetNames)) {
+      expect(value, `en.artifactSetNames["${key}"] が空`).toBeTruthy()
+    }
+  })
+
+  it('ARTIFACT_SET_NAMES の全エントリが空文字でない', () => {
+    for (const [key, value] of Object.entries(ARTIFACT_SET_NAMES)) {
+      expect(value, `ARTIFACT_SET_NAMES["${key}"] が空`).toBeTruthy()
+    }
+  })
+
+  it('ja.artifactSetNames は空（ARTIFACT_SET_NAMES をフォールバックとして使用する設計）', () => {
+    expect(Object.keys(ja.artifactSetNames)).toHaveLength(0)
   })
 })
