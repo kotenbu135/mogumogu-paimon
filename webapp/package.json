@@ -25,6 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.0.18",
+    "jsdom": "^26.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.18"
