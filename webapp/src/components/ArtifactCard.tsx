@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { RankedArtifact, ScoreTypeName, ArtifactSlotKey, StatKey } from '@/lib/types'
-import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, getMainStatValue } from '@/lib/constants'
+import { ARTIFACT_SET_NAMES, SLOT_NAMES, STAT_NAMES, PERCENT_STATS, MAIN_STAT_NAMES, CHARACTER_NAMES, getMainStatValue } from '@/lib/constants'
 import { decomposeRolls, getEffectiveStats } from '@/lib/scoring'
 import { getContextMenuItems, getCharContextMenuItems } from '@/lib/contextMenu'
 import ContextMenu from './ContextMenu'
@@ -78,6 +78,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
   const isSafeKey = (s: string) => /^[a-zA-Z0-9_-]+$/.test(s)
   const artifactImgSrc = isSafeKey(setKey) && isSafeKey(slotKey) ? `${bp}/artifacts/${setKey}/${slotKey}.png` : null
   const charImgSrc = location && isSafeKey(location) ? `${bp}/chars/${location}.png` : null
+  const charName = (location && CHARACTER_NAMES[location]) ?? location
 
   const mainScore = allScores[scoreType]
   // 最良型選択時はそのカードの最良タイプ名を表示ラベルとして使う
@@ -106,6 +107,24 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
     setCharMenuState({ x: e.clientX, y: e.clientY })
   }
 
+  function handleImageKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (!canFilter) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      const rect = e.currentTarget.getBoundingClientRect()
+      setMenuState({ x: rect.left, y: rect.bottom })
+    }
+  }
+
+  function handleCharKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (!canCharFilter) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      const rect = e.currentTarget.getBoundingClientRect()
+      setCharMenuState({ x: rect.left, y: rect.bottom })
+    }
+  }
+
   const contextLabels = {
     setPrefix: t.card.filterSet,
     slotPrefix: t.card.filterSlot,
@@ -132,9 +151,13 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
         <div
           className={`artifact-img-wrap${canFilter ? ' artifact-img-clickable' : ''}`}
           onClick={handleImageClick}
+          onKeyDown={handleImageKeyDown}
           title={canFilter ? t.card.clickToFilter : undefined}
+          role={canFilter ? 'button' : undefined}
+          tabIndex={canFilter ? 0 : undefined}
+          aria-label={canFilter ? t.card.clickToFilter : undefined}
         >
-          {artifactImgSrc && (
+          {artifactImgSrc ? (
             <img
               src={artifactImgSrc}
               alt={`${setName} ${slotName}`}
@@ -143,6 +166,8 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
                 (e.target as HTMLImageElement).style.display = 'none'
               }}
             />
+          ) : (
+            <span className="artifact-img-placeholder" aria-hidden="true">?</span>
           )}
         </div>
 
@@ -160,11 +185,15 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           <div
             className={`char-wrap${canCharFilter ? ' char-wrap-clickable' : ''}`}
             onClick={handleCharClick}
+            onKeyDown={handleCharKeyDown}
             title={canCharFilter ? t.card.clickToFilterEquipped : undefined}
+            role={canCharFilter ? 'button' : undefined}
+            tabIndex={canCharFilter ? 0 : undefined}
+            aria-label={canCharFilter ? `${charName} - ${t.card.clickToFilterEquipped}` : undefined}
           >
             <img
               src={charImgSrc}
-              alt={location}
+              alt={charName}
               className="char-img"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none'
