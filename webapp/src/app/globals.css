@@ -18,7 +18,7 @@
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
-  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-family: var(--font-noto-sans-jp), 'Hiragino Kaku Gothic ProN', sans-serif;
   min-height: 100vh;
 }
 
@@ -128,10 +128,10 @@ body {
 .page-title {
   text-align: center;
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--gold);
   margin-bottom: 2rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 /* ── サイドメニューページコンテンツ ────────── */
@@ -146,6 +146,7 @@ body {
   margin-bottom: 0.75rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--border);
+  letter-spacing: 0.04em;
 }
 
 .subsection-title {
@@ -568,9 +569,10 @@ body {
 /* メインスコア（選択型 — 大きく） */
 .main-score {
   font-size: 1.8rem;
-  font-weight: bold;
+  font-weight: 700;
   letter-spacing: 0.03em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .score-label {
