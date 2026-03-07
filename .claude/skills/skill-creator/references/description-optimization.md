@@ -1,50 +1,50 @@
-# Description Optimization
+# 説明文の最適化
 
-The `description` field in SKILL.md frontmatter is the primary mechanism determining whether Claude invokes a skill. Optimize it after the skill itself is in good shape — not before.
+SKILL.mdフロントマターの`description`フィールドは、Claudeがスキルを呼び出すかどうかを決定する主要なメカニズム。スキル自体が良好な状態になった後に最適化する — それ以前は不可。
 
-## How skill triggering works
+## スキルトリガーの仕組み
 
-Skills appear in Claude's `available_skills` list with name + description. Claude consults a skill only when it can't easily handle the task alone — simple one-step queries ("read this PDF") may not trigger even with a perfect description. Your eval queries need to be complex enough that Claude would genuinely benefit from consulting a skill.
+スキルはClaudeの`available_skills`リストにname + descriptionで表示される。Claudeは一人でタスクを簡単に処理できない場合にのみスキルを参照する — シンプルな一ステップのクエリ（「このPDFを読んで」）は完璧な説明文があってもトリガーされない可能性がある。evalクエリはClaudeがスキルを参照することで本当に恩恵を受けるほど複雑でなければならない。
 
-## Step 1: Generate trigger eval queries
+## ステップ1: トリガーevalクエリを生成する
 
-Create 20 queries — a mix of should-trigger and should-not-trigger. Save as JSON:
+20件のクエリを作成する — トリガーすべきとすべきでないものを混在させる。JSONとして保存する:
 
 ```json
 [
-  {"query": "the user prompt", "should_trigger": true},
-  {"query": "another prompt", "should_trigger": false}
+  {"query": "ユーザープロンプト", "should_trigger": true},
+  {"query": "別のプロンプト", "should_trigger": false}
 ]
 ```
 
-Queries must be realistic and specific. Include file paths, company names, personal context, abbreviations, typos, casual speech. Mix lengths. Focus on edge cases — the user will review them.
+クエリは現実的で具体的でなければならない。ファイルパス、会社名、個人的な文脈、略語、タイポ、カジュアルな話し方を含める。長さを混在させる。エッジケースに注目する — ユーザーが確認する。
 
-**Should-trigger (8-10):** Different phrasings of the same intent (formal and casual). Include cases where the user doesn't name the skill explicitly but clearly needs it. Include uncommon use cases and cases where this skill competes with another.
+**トリガーすべき（8〜10件）:** 同じ意図の異なる言い回し（フォーマルとカジュアル）。ユーザーがスキルを明示的に指定しないが明らかに必要とするケースを含める。あまり一般的でない使用例や、このスキルが別のスキルと競合するケースも含める。
 
-**Should-not-trigger (8-10):** Near-misses — queries sharing keywords with the skill but actually needing something different. Adjacent domains, ambiguous phrasing, same concepts in a context where another tool wins. Don't make these obviously irrelevant — that doesn't test anything.
+**トリガーすべきでない（8〜10件）:** ニアミス — スキルとキーワードを共有するが実際には別のものが必要なクエリ。隣接するドメイン、曖昧な言い回し、別のツールが勝つコンテキストの同じ概念。明らかに無関係なものにしない — それは何もテストしない。
 
-**Bad:** `"Format this data"`, `"Extract text from PDF"`, `"Create a chart"`
+**悪い例:** `"このデータをフォーマットして"`、`"PDFからテキストを抽出して"`、`"グラフを作成して"`
 
-**Good:** `"ok so my boss just sent me this xlsx file (its in my downloads, called something like 'Q4 sales final FINAL v2.xlsx') and she wants me to add a column that shows the profit margin as a percentage. The revenue is in column C and costs are in column D i think"`
+**良い例:** `"上司がxlsxファイルを送ってきた（ダウンロードフォルダに'Q4 sales final FINAL v2.xlsx'みたいな名前で）、利益率をパーセントで表示する列を追加したいって。収益は列Cで、コストはたぶん列Dだと思う"`
 
-## Step 2: Review with user
+## ステップ2: ユーザーと確認する
 
-1. Read the template from `assets/eval_review.html`
-2. Replace placeholders:
-   - `__EVAL_DATA_PLACEHOLDER__` → the JSON array (no quotes — it's a JS variable assignment)
-   - `__SKILL_NAME_PLACEHOLDER__` → skill name
-   - `__SKILL_DESCRIPTION_PLACEHOLDER__` → current description
-3. Write to `/tmp/eval_review_<skill-name>.html` and open: `open /tmp/eval_review_<skill-name>.html`
-4. User edits queries, toggles should-trigger, adds/removes entries, clicks "Export Eval Set"
-5. Check `~/Downloads/` for `eval_set.json` (grab the most recent if there are duplicates)
+1. `assets/eval_review.html`からテンプレートを読む
+2. プレースホルダーを置き換える:
+   - `__EVAL_DATA_PLACEHOLDER__` → JSON配列（引用符なし — JS変数の代入）
+   - `__SKILL_NAME_PLACEHOLDER__` → スキル名
+   - `__SKILL_DESCRIPTION_PLACEHOLDER__` → 現在の説明文
+3. `/tmp/eval_review_<skill-name>.html`に書き込んで開く: `open /tmp/eval_review_<skill-name>.html`
+4. ユーザーがクエリを編集し、トリガーを切り替え、エントリを追加・削除し、「Eval Setをエクスポート」をクリックする
+5. `~/Downloads/`で`eval_set.json`を確認する（複数ある場合は最新を取得）
 
-This step matters — bad eval queries produce bad descriptions.
+このステップは重要 — 悪いevalクエリは悪い説明文を生む。
 
-## Step 3: Run the optimization loop
+## ステップ3: 最適化ループを実行する
 
-Tell the user: "This will take some time — I'll run it in the background and check in periodically."
+ユーザーに伝える: 「これには時間がかかります — バックグラウンドで実行して定期的に状況をお知らせします。」
 
-Save the eval set to the workspace, then run:
+eval setをワークスペースに保存してから実行する:
 
 ```bash
 python -m scripts.run_loop \
@@ -55,12 +55,12 @@ python -m scripts.run_loop \
   --verbose
 ```
 
-Use the model ID from your system prompt — the triggering test should match what the user actually experiences.
+システムプロンプトのモデルIDを使用する — トリガーテストはユーザーが実際に体験するものと一致すべき。
 
-The loop automatically: splits 60% train / 40% held-out test, evaluates the current description (3 runs per query for reliability), uses extended thinking to propose improvements based on failures, re-evaluates, iterates up to 5 times. Returns `best_description` selected by test score (not train score, to avoid overfitting).
+ループは自動的に: 60%トレーニング / 40%ホールドアウトテストに分割、現在の説明文を評価（信頼性のためにクエリごとに3回実行）、失敗に基づいて拡張思考で改善を提案、再評価、最大5回イテレーション。過適合を避けるためにトレーニングスコアではなくテストスコアで選ばれた`best_description`を返す。
 
-Periodically tail the output to give the user progress updates.
+ユーザーに進捗更新を伝えるために定期的に出力をtailする。
 
-## Step 4: Apply the result
+## ステップ4: 結果を適用する
 
-Take `best_description` from the JSON output. Update SKILL.md frontmatter. Show the user before/after and report the scores.
+JSON出力から`best_description`を取得する。SKILL.mdフロントマターを更新する。前後を比較してスコアを報告する。
