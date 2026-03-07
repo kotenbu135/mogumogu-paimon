@@ -11,6 +11,7 @@
 
 import type { Artifact, ReconstructionType, ScoreTypeName, StatKey } from './types'
 import { AVG_INCREMENT } from './scoring'
+import { TYPED_MAIN_STATS } from './constants'
 
 /** 再構築種別ごとの保証閾値（選択2サブステへの合計ロール数） */
 const GUARANTEE_THRESHOLDS: Record<ReconstructionType, number> = {
@@ -129,12 +130,6 @@ export function getGuaranteedIndices(
   }
   return null
 }
-
-/**
- * スコアタイプに対応したメインステキーのセット（scoring.ts と同定義）。
- * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
- */
-const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
 
 /** サブステ値マップから指定スコアタイプのスコアを計算 */
 function calcScore(

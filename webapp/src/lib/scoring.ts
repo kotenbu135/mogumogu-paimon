@@ -11,7 +11,7 @@
  */
 
 import type { Artifact, ScoreResult, ScoreTypeName, StatKey } from './types'
-import { PERCENT_STATS } from './constants'
+import { PERCENT_STATS, TYPED_MAIN_STATS } from './constants'
 
 // サブステの4段階ティア値（低/中/高/最高）
 const SUBSTAT_TIERS: Record<StatKey, number[]> = {
@@ -176,12 +176,6 @@ export function estimateRollCounts(artifact: Artifact): number[] {
   }
   return floorRolls
 }
-
-/**
- * スコアタイプに対応したメインステキーのセット。
- * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
- */
-const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
 
 /**
  * メインステとスコアタイプが一致しているか確認し、不一致ならスコアを 0 にする。
