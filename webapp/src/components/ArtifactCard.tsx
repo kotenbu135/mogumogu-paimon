@@ -16,6 +16,7 @@ interface ArtifactCardProps {
   onFilterBySet?: (setKey: string) => void
   onFilterBySlot?: (slotKey: ArtifactSlotKey) => void
   equippedSetKeys?: string[]
+  cardIndex?: number
 }
 
 /** メインスコアの値に応じた色クラスを返す */
@@ -49,6 +50,14 @@ function formatSubstat(
   return { label, valueStr, rollDetail }
 }
 
+/** スコアバーの色クラスを返す */
+function scoreBarColor(score: number): string {
+  if (score >= 55) return 'score-bar-red'
+  if (score >= 45) return 'score-bar-orange'
+  if (score >= 35) return 'score-bar-yellow'
+  return 'score-bar-default'
+}
+
 /** 再構築成功率の色クラスを返す */
 function reconColor(rate: number): string {
   if (rate >= 70) return 'recon-rate-red'
@@ -62,7 +71,7 @@ interface MenuState {
   y: number
 }
 
-export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys }: ArtifactCardProps) {
+export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySet, onFilterBySlot, equippedSetKeys, cardIndex }: ArtifactCardProps) {
   const { artifact, cvScore, allScores, rollCounts } = entry
   const { setKey, slotKey, level, rarity, location, substats, mainStatKey } = artifact
   const { t } = useTranslation()
@@ -139,8 +148,14 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
     ? getCharContextMenuItems(equippedSetKeys!, onFilterBySet!, { setPrefix: t.card.filterSet, setNames: t.artifactSetNames })
     : []
 
+  const animDelay = cardIndex !== undefined ? `${Math.min(cardIndex, 20) * 40}ms` : '0ms'
+  const scorePct = `${Math.min((mainScore / 60) * 100, 100).toFixed(1)}%`
+
   return (
-    <div className="artifact-card">
+    <div
+      className="artifact-card"
+      style={{ '--card-anim-delay': animDelay } as React.CSSProperties}
+    >
       {/* 上部: 聖遺物画像 + セット情報 + キャラアイコン */}
       <div className="card-header">
         {/* 聖遺物画像（クリックでフィルタメニュー） */}
@@ -209,6 +224,14 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
         {showCvSub && (
           <div className="cv-sub">CV {cvScore.toFixed(1)}</div>
         )}
+      </div>
+
+      {/* スコアバー（0から伸びるアニメーション） */}
+      <div className="score-bar-wrap">
+        <div
+          className={`score-bar ${scoreBarColor(mainScore)}`}
+          style={{ '--score-pct': scorePct } as React.CSSProperties}
+        />
       </div>
 
       {/* サブステ一覧 */}

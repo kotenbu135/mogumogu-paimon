@@ -76,6 +76,25 @@ body {
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
   border-left: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ホバー時に左からスライドインするグロー */
+.sidebar-link::before {
+  content: '';
+  position: absolute;
+  left: -100%;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(200, 163, 90, 0.12));
+  transition: left 0.25s ease;
+  pointer-events: none;
+}
+
+.sidebar-link:hover::before {
+  left: 0;
 }
 
 .sidebar-link:hover {
@@ -132,6 +151,7 @@ body {
   max-width: 1600px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
+  animation: page-fade-in 150ms ease-out;
 }
 
 /* サイドメニューページ（スコアについて等）のコンテンツ */
@@ -139,6 +159,7 @@ body {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
+  animation: page-fade-in 150ms ease-out;
 }
 
 .page-title {
@@ -511,12 +532,36 @@ body {
   border-radius: 12px;
   padding: 1rem;
   transition: background 0.2s, transform 0.2s;
+  animation: card-drop-in 250ms ease-out both;
+  animation-delay: var(--card-anim-delay, 0ms);
 }
 
 .artifact-card:hover {
   background: var(--bg-card-hover);
   transform: translateY(-2px);
 }
+
+/* ── スコアバー ─────────────────────────── */
+.score-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.score-bar {
+  height: 100%;
+  border-radius: 2px;
+  animation: score-bar-grow 400ms ease-out both;
+  animation-delay: var(--card-anim-delay, 0ms);
+  width: var(--score-pct, 0%);
+}
+
+.score-bar-red    { background: #ef4444; }
+.score-bar-orange { background: #f97316; }
+.score-bar-yellow { background: #eab308; }
+.score-bar-default { background: var(--text-sub); }
 
 
 /* ── カードヘッダー ─────────────────────── */
@@ -667,6 +712,22 @@ body {
   color: #ca8a04;
 }
 
+
+/* ── アニメーション共通キーフレーム ────── */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-drop-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes score-bar-grow {
+  from { width: 0; }
+  to   { width: var(--score-pct, 0%); }
+}
 
 /* ── ファイルアップロードゾーン ─────────── */
 @keyframes gold-glow {
