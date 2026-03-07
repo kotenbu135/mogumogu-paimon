@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import ArtifactCard from '@/components/ArtifactCard'
 import HeroSection from '@/components/HeroSection'
 import ControlsBar from '@/components/ControlsBar'
-import type { GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
+import type { GoodFile, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
 import { getAllStatNames } from '@/lib/i18n/types'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
+import { useArtifactData } from '@/hooks/useArtifactData'
+import { useDisplayedArtifacts } from '@/hooks/useDisplayedArtifacts'
 
 const MAIN_STAT_ORDER: string[] = [
   'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
@@ -18,30 +20,18 @@ const MAIN_STAT_ORDER: string[] = [
   'atk', 'hp', 'def',
 ]
 
-/** GOODファイルを読み込んで★5聖遺物をランク付けする */
-async function buildRankedList(data: GoodFile): Promise<RankedArtifact[]> {
-  const { calculateScores, calculateAllScores, estimateRollCounts } = await import('@/lib/scoring')
-  return data.artifacts
-    .filter((a) => a.rarity === 5)
-    .map((artifact) => {
-      const { cvScore, bestScore, bestType } = calculateScores(artifact)
-      const allScores = calculateAllScores(artifact)
-      const rollCounts = estimateRollCounts(artifact)
-      return { artifact, cvScore, bestScore, bestType, allScores, rollCounts }
-    })
-}
-
 export default function HomePage() {
   const { t } = useTranslation()
   const filters = useArtifactFilters()
-  const [allRanked, setAllRanked] = useState<RankedArtifact[] | null>(null)
   const [scoreType, setScoreType] = useState<ScoreTypeName>('攻撃型')
   const [subStatSort, setSubStatSort] = useState<StatKey | ''>('')
   const [reconType, setReconType] = useState<ReconstructionType>('normal')
   const [reconSort, setReconSort] = useState(false)
 
-  async function handleLoad(data: GoodFile) {
-    setAllRanked(await buildRankedList(data))
+  const { allRanked, reconRates, handleLoad } = useArtifactData(scoreType, reconType)
+
+  async function handleLoadWithReset(data: GoodFile) {
+    await handleLoad(data)
     filters.resetFilters()
   }
 
@@ -75,56 +65,14 @@ export default function HomePage() {
     return map
   }, [allRanked])
 
-  const [reconRates, setReconRates] = useState<Map<number, number>>(new Map())
-  useEffect(() => {
-    if (!allRanked) {
-      setReconRates(new Map())
-      return
-    }
-    let cancelled = false
-    import('@/lib/reconstruction').then(({ calculateReconstructionRate }) => {
-      if (cancelled) return
-      const map = new Map<number, number>()
-      for (let i = 0; i < allRanked.length; i++) {
-        const e = allRanked[i]
-        const rate = calculateReconstructionRate(e.artifact, e.rollCounts, scoreType, reconType)
-        if (rate !== null) map.set(i, rate)
-      }
-      setReconRates(map)
-    })
-    return () => { cancelled = true }
-  }, [allRanked, scoreType, reconType])
-
-  const displayed = useMemo(() => {
-    if (!allRanked) return []
-    return allRanked
-      .map((e, i) => ({ entry: e, reconRate: reconRates.get(i) ?? null, originalIndex: i }))
-      .filter(({ entry: e }) => filters.filterSets.length === 0 || filters.filterSets.includes(e.artifact.setKey))
-      .filter(({ entry: e }) => !filters.filterSlot || e.artifact.slotKey === filters.filterSlot)
-      .filter(({ entry: e }) => !filters.filterMainStat || e.artifact.mainStatKey === filters.filterMainStat)
-      .filter(({ entry: e }) =>
-        filters.filterSubStats.length === 0 ||
-        filters.filterSubStats.every((k) => e.artifact.substats.some((s) => s.key === k)),
-      )
-      .filter(({ entry: e }) => {
-        if (!filters.filterInitialOp) return true
-        const initialOp = e.artifact.totalRolls - Math.floor(e.artifact.level / 4)
-        return initialOp === Number(filters.filterInitialOp)
-      })
-      .sort((a, b) => {
-        if (reconSort) {
-          const ra = a.reconRate ?? -1
-          const rb = b.reconRate ?? -1
-          if (ra !== rb) return rb - ra
-        }
-        if (subStatSort) {
-          const va = a.entry.artifact.substats.find((s) => s.key === subStatSort)?.value ?? -Infinity
-          const vb = b.entry.artifact.substats.find((s) => s.key === subStatSort)?.value ?? -Infinity
-          if (va !== vb) return vb - va
-        }
-        return b.entry.allScores[scoreType] - a.entry.allScores[scoreType]
-      })
-  }, [allRanked, filters.filterSets, filters.filterSlot, filters.filterMainStat, filters.filterSubStats, filters.filterInitialOp, subStatSort, scoreType, reconRates, reconSort])
+  const displayed = useDisplayedArtifacts({
+    allRanked,
+    reconRates,
+    filters,
+    subStatSort,
+    scoreType,
+    reconSort,
+  })
 
   const allMainStatNames = getAllStatNames(t)
 
@@ -133,7 +81,7 @@ export default function HomePage() {
       <h1 className="page-title">{t.siteTitle}</h1>
 
       {allRanked === null ? (
-        <HeroSection onLoad={handleLoad} t={t} scoreTypeOptions={SCORE_TYPE_OPTIONS} />
+        <HeroSection onLoad={handleLoadWithReset} t={t} scoreTypeOptions={SCORE_TYPE_OPTIONS} />
       ) : (
         <>
           <ControlsBar

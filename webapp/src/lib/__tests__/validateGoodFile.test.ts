@@ -160,6 +160,11 @@ describe('validateGoodFile', () => {
       expect(validateGoodFile({ format: 'GOOD', artifacts: [artifact] })).toBe(true)
     })
 
+    it('totalRolls が 13 の場合を拒否する（上限 12 を超えている）', () => {
+      const artifact = { ...validArtifact, totalRolls: 13 }
+      expect(validateGoodFile({ format: 'GOOD', artifacts: [artifact] })).toBe(false)
+    })
+
     it('totalRolls が 0 の場合は受け入れる', () => {
       const artifact = { ...validArtifact, totalRolls: 0 }
       expect(validateGoodFile({ format: 'GOOD', artifacts: [artifact] })).toBe(true)

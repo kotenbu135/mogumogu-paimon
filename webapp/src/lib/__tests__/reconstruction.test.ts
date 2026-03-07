@@ -207,8 +207,8 @@ describe('calculateReconstructionRate', () => {
     expect(calculateReconstructionRate(artLv16, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
   })
 
-  it('totalRolls > 20 の場合は null を返す（DoS 防止）', () => {
-    const art = makeArtifact({ totalRolls: 21 })
+  it('totalRolls > 12 の場合は null を返す（DoS 防止・バリデーション上限と統一）', () => {
+    const art = makeArtifact({ totalRolls: 13 })
     expect(calculateReconstructionRate(art, [2, 1, 1, 1], 'CV', 'normal')).toBeNull()
 
     const artExcessive = makeArtifact({ totalRolls: 1000 })
@@ -373,6 +373,22 @@ describe('calculateReconstructionRate', () => {
     expect(rate).not.toBeNull()
     expect(rate!).toBeGreaterThanOrEqual(0)
     expect(rate!).toBeLessThanOrEqual(100)
+  })
+
+  it('絶対再構築で enhTotal が少ない場合は null を返す（totalFilteredProb === 0）', () => {
+    // enhTotal=1 で absolute（閾値=4）の場合、どのパターンも idxA+idxB >= 4 を満たさない
+    const art = makeArtifact({
+      substats: [
+        { key: 'critRate_', value: 3.9 },
+        { key: 'critDMG_', value: 7.8 },
+        { key: 'hp_', value: 4.7 },
+        { key: 'atk', value: 33 },
+      ],
+      totalRolls: 5, // substats.length=4 なので enhTotal=1
+    })
+    const rollCounts = [1, 0, 0, 0]
+    const rate = calculateReconstructionRate(art, rollCounts, 'CV', 'absolute')
+    expect(rate).toBeNull()
   })
 
   it('メインステ eleMas で攻撃型: オッズは0%を返す', () => {

@@ -1,12 +1,15 @@
 import type { ArtifactSlotKey, StatKey } from '@/lib/types'
 
+/** 初期サブステ数フィルタ値（空文字=絞り込みなし、'3'=3OP、'4'=4OP） */
+export type InitialOpFilter = '' | '3' | '4'
+
 /** フィルタ状態 */
 export interface ArtifactFilterState {
   filterSets: string[]
   filterSlot: ArtifactSlotKey | ''
   filterMainStat: string
   filterSubStats: StatKey[]
-  filterInitialOp: '' | '3' | '4'
+  filterInitialOp: InitialOpFilter
 }
 
 export const INITIAL_ARTIFACT_FILTER_STATE: ArtifactFilterState = {
