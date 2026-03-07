@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from 'react'
 import ArtifactCard from '@/components/ArtifactCard'
 import HeroSection from '@/components/HeroSection'
 import ControlsBar from '@/components/ControlsBar'
-import type { GoodFile, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
+import type { GoodFile, MainStatKey, RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
 import { useTranslation } from '@/lib/i18n'
 import { getAllStatNames } from '@/lib/i18n/types'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
 
-const MAIN_STAT_ORDER: string[] = [
+const MAIN_STAT_ORDER: MainStatKey[] = [
   'critRate_', 'critDMG_', 'atk_', 'hp_', 'def_',
   'eleMas', 'enerRech_', 'heal_',
   'anemo_dmg_', 'geo_dmg_', 'electro_dmg_', 'dendro_dmg_',

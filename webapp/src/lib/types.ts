@@ -17,6 +17,19 @@ export type StatKey =
   | 'critRate_'
   | 'critDMG_'
 
+/** メインステータスキー（サブステ外のキーも含む） */
+export type MainStatKey =
+  | StatKey
+  | 'heal_'
+  | 'anemo_dmg_'
+  | 'cryo_dmg_'
+  | 'dendro_dmg_'
+  | 'electro_dmg_'
+  | 'geo_dmg_'
+  | 'hydro_dmg_'
+  | 'pyro_dmg_'
+  | 'physical_dmg_'
+
 /** スコアタイプ名 */
 export type ScoreTypeName = 'CV' | 'HP型' | '攻撃型' | '防御型' | '熟知型' | 'チャージ型' | '最良型'
 
@@ -31,7 +44,7 @@ export interface Artifact {
   slotKey: ArtifactSlotKey
   level: number
   rarity: number
-  mainStatKey: string
+  mainStatKey: MainStatKey
   location: string
   lock: boolean
   substats: Substat[]
@@ -48,7 +61,7 @@ export interface GoodFile {
 export interface ScoreResult {
   cvScore: number
   bestScore: number
-  bestType: string
+  bestType: ScoreTypeName
 }
 
 /** ランキング表示用の聖遺物エントリ */
@@ -56,7 +69,7 @@ export interface RankedArtifact {
   artifact: Artifact
   cvScore: number
   bestScore: number
-  bestType: string
+  bestType: ScoreTypeName
   /** 全スコアタイプのスコア */
   allScores: Record<ScoreTypeName, number>
   /** 強化ロール数（初期ロールを除く）— substats と同じ順 */

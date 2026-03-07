@@ -9,9 +9,9 @@
  *   4. 現在スコアを上回るパターンの正規化確率を合計
  */
 
-import type { Artifact, ReconstructionType, ScoreTypeName, StatKey } from './types'
+import type { Artifact, MainStatKey, ReconstructionType, ScoreTypeName, StatKey } from './types'
 import { AVG_INCREMENT } from './scoring'
-import { TYPED_MAIN_STATS } from './constants'
+import { SCORE_TYPE_DEFS, TYPED_MAIN_STATS } from './constants'
 
 /** 再構築種別ごとの保証閾値（選択2サブステへの合計ロール数） */
 const GUARANTEE_THRESHOLDS: Record<ReconstructionType, number> = {
@@ -19,15 +19,6 @@ const GUARANTEE_THRESHOLDS: Record<ReconstructionType, number> = {
   advanced: 3,
   absolute: 4,
 }
-
-/** スコア種別ごとの追加ステ: [StatKey, 係数] */
-const SCORE_EXTRA: [ScoreTypeName, StatKey, number][] = [
-  ['HP型', 'hp_', 1.0],
-  ['攻撃型', 'atk_', 1.0],
-  ['防御型', 'def_', 0.8],
-  ['熟知型', 'eleMas', 0.25],
-  ['チャージ型', 'enerRech_', 0.9],
-]
 
 /**
  * スコアタイプと聖遺物に応じた保証サブステ候補ペアを返す
@@ -59,11 +50,11 @@ function getGuaranteedPairs(
 
   // 最良型は全固有ステを候補に
   if (scoreType === '最良型') {
-    return SCORE_EXTRA.map(([, key]) => [remainingCrit, key])
+    return SCORE_TYPE_DEFS.map(([, key]) => [remainingCrit, key])
   }
 
   // その他: スコアタイプ固有ステとペア
-  const extra = SCORE_EXTRA.find(([name]) => name === scoreType)
+  const extra = SCORE_TYPE_DEFS.find(([name]) => name === scoreType)
   if (!extra) return []
   return [[remainingCrit, extra[1]]]
 }
@@ -135,7 +126,7 @@ export function getGuaranteedIndices(
 function calcScore(
   subMap: Partial<Record<StatKey, number>>,
   scoreType: ScoreTypeName,
-  mainStatKey: string,
+  mainStatKey: MainStatKey,
 ): number {
   const cv = (subMap['critRate_'] ?? 0) * 2 + (subMap['critDMG_'] ?? 0)
 
@@ -143,7 +134,7 @@ function calcScore(
 
   if (scoreType === '最良型') {
     let best = cv
-    for (const [, key, coeff] of SCORE_EXTRA) {
+    for (const [, key, coeff] of SCORE_TYPE_DEFS) {
       if (TYPED_MAIN_STATS.has(mainStatKey) && mainStatKey !== key) continue
       const s = cv + (subMap[key] ?? 0) * coeff
       if (s > best) best = s
@@ -151,7 +142,7 @@ function calcScore(
     return best
   }
 
-  const extra = SCORE_EXTRA.find(([name]) => name === scoreType)
+  const extra = SCORE_TYPE_DEFS.find(([name]) => name === scoreType)
   if (!extra) return cv
   if (TYPED_MAIN_STATS.has(mainStatKey) && mainStatKey !== extra[1]) return 0
   return cv + (subMap[extra[1]] ?? 0) * extra[2]
@@ -211,7 +202,7 @@ function calcRateForPair(
   reconType: ReconstructionType,
   idxA: number,
   idxB: number,
-  mainStatKey: string,
+  mainStatKey: MainStatKey,
 ): number | null {
   const threshold = GUARANTEE_THRESHOLDS[reconType]
 
