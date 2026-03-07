@@ -134,7 +134,7 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
           onClick={handleImageClick}
           title={canFilter ? t.card.clickToFilter : undefined}
         >
-          {artifactImgSrc && (
+          {artifactImgSrc ? (
             <img
               src={artifactImgSrc}
               alt={`${setName} ${slotName}`}
@@ -143,6 +143,8 @@ export default function ArtifactCard({ rank, entry, scoreType, reconRate, onFilt
                 (e.target as HTMLImageElement).style.display = 'none'
               }}
             />
+          ) : (
+            <span className="artifact-img-placeholder" aria-hidden="true">?</span>
           )}
         </div>
 

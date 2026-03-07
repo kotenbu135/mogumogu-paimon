@@ -175,8 +175,8 @@ export function calculateReconstructionRate(
   // ★5 Lv.20 以外は対象外
   if (artifact.rarity !== 5 || artifact.level !== 20) return null
 
-  // totalRolls 上限チェック（DoS 防止: enumeratePatterns の計算量爆発を防ぐ）
-  if (artifact.totalRolls > 20) return null
+  // totalRolls 上限チェック（DoS 防止: バリデーション上限と統一）
+  if (artifact.totalRolls > 12) return null
 
   const { substats } = artifact
   if (substats.length !== 4) return null
