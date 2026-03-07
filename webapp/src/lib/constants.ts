@@ -201,6 +201,12 @@ export function groupSetOptions(
   return groups
 }
 
+/**
+ * スコアタイプに対応したメインステキーのセット。
+ * メインステがこのセットに含まれる場合、対応しない型のスコアを 0 にする。
+ */
+export const TYPED_MAIN_STATS = new Set<string>(['hp_', 'atk_', 'def_', 'eleMas', 'enerRech_'])
+
 /** パーセント表記のサブステ */
 export const PERCENT_STATS = new Set<StatKey>([
   'hp_',
