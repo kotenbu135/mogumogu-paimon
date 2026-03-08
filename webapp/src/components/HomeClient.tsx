@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import ArtifactCard from '@/components/ArtifactCard'
 import HeroSection from '@/components/HeroSection'
+import VirtualArtifactGrid from '@/components/VirtualArtifactGrid'
 import ControlsBar from '@/components/ControlsBar'
 import type { GoodFile, MainStatKey, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/constants'
@@ -111,20 +111,14 @@ export default function HomeClient() {
             allMainStatNames={allMainStatNames}
           />
 
-          <div key={gridAnimKey} className="card-grid">
-            {displayed.map(({ entry, reconRate, originalIndex }, idx) => (
-              <ArtifactCard
-                key={originalIndex}
-                entry={entry}
-                scoreType={scoreType}
-                reconRate={reconRate}
-                onFilterBySet={(setKey) => filters.setFilterSets([setKey])}
-                onFilterBySlot={filters.setFilterSlot}
-                equippedSetKeys={equippedSetsMap.get(entry.artifact.location) ?? []}
-                cardIndex={idx}
-              />
-            ))}
-          </div>
+          <VirtualArtifactGrid
+            key={gridAnimKey}
+            displayed={displayed}
+            scoreType={scoreType}
+            equippedSetsMap={equippedSetsMap}
+            onFilterBySet={(setKey) => filters.setFilterSets([setKey])}
+            onFilterBySlot={filters.setFilterSlot}
+          />
         </>
       )}
     </>
