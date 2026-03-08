@@ -3,6 +3,9 @@ module.exports = {
     collect: {
       url: ["https://kotenbu135.github.io/mogumogu-paimon/"],
       numberOfRuns: 3,
+      settings: {
+        preset: "desktop",
+      },
     },
     assert: {
       assertions: {
