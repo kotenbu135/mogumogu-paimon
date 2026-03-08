@@ -2,19 +2,21 @@
  * 画像コピースクリプト
  *
  * libs/gen/ から必要な画像ファイルを webapp/public/ へコピーする。
+ * sharp が利用可能な場合は WebP 形式に変換して出力する。
  *
  * 聖遺物画像:
  *   libs/gen/artifacts/[SetKey]/index.ts を解析してスロット→ファイル名マッピングを取得し、
- *   webapp/public/artifacts/[SetKey]/[slotKey].png としてコピー（リネーム）。
+ *   webapp/public/artifacts/[SetKey]/[slotKey].webp として変換・保存（リネーム）。
  *
  * キャラアイコン:
  *   libs/gen/chars/[CharKey]/UI_AvatarIcon_[CharKey].png を
- *   webapp/public/chars/[CharKey].png としてコピー。
+ *   webapp/public/chars/[CharKey].webp として変換・保存。
  */
 
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import sharp from 'sharp'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WEBAPP_DIR = path.resolve(__dirname, '..')
@@ -26,11 +28,11 @@ const PUBLIC_CHARS = path.join(WEBAPP_DIR, 'public', 'chars')
 const IMPORT_RE = /^import\s+(flower|plume|sands|goblet|circlet)\s+from\s+'\.\/([^']+)'/gm
 
 /**
- * 聖遺物画像のコピー
+ * 聖遺物画像のコピー（WebP変換）
  * index.ts を解析してスロット名→ファイル名マッピングを取得し、
- * [slotKey].png にリネームしてコピーする
+ * [slotKey].webp に変換してコピーする
  */
-function copyArtifactImages() {
+async function copyArtifactImages() {
   const artifactsDir = path.join(LIBS_DIR, 'artifacts')
   const sets = fs.readdirSync(artifactsDir).filter(
     (name) => fs.statSync(path.join(artifactsDir, name)).isDirectory()
@@ -53,24 +55,24 @@ function copyArtifactImages() {
       const slotKey = match[1]   // flower / plume / sands / goblet / circlet
       const srcFile = match[2]   // UI_RelicIcon_XXXXX_N.png
       const srcPath = path.join(setDir, srcFile)
-      const destPath = path.join(destDir, `${slotKey}.png`)
+      const destPath = path.join(destDir, `${slotKey}.webp`)
 
       if (fs.existsSync(srcPath)) {
-        fs.copyFileSync(srcPath, destPath)
+        await sharp(srcPath).webp({ quality: 85 }).toFile(destPath)
         copiedCount++
       } else {
         console.warn(`[warn] 見つからない: ${srcPath}`)
       }
     }
   }
-  console.log(`聖遺物画像: ${copiedCount} ファイルをコピーしました`)
+  console.log(`聖遺物画像: ${copiedCount} ファイルをWebP変換しました`)
 }
 
 /**
- * キャラアイコンのコピー
- * UI_AvatarIcon_[CharKey].png を探して [CharKey].png としてコピーする
+ * キャラアイコンのコピー（WebP変換）
+ * UI_AvatarIcon_[CharKey].png を探して [CharKey].webp として変換・保存する
  */
-function copyCharIcons() {
+async function copyCharIcons() {
   const charsDir = path.join(LIBS_DIR, 'chars')
   const chars = fs.readdirSync(charsDir).filter(
     (name) => fs.statSync(path.join(charsDir, name)).isDirectory()
@@ -91,14 +93,14 @@ function copyCharIcons() {
     }
 
     const srcPath = path.join(charDir, iconFile)
-    const destPath = path.join(PUBLIC_CHARS, `${charKey}.png`)
-    fs.copyFileSync(srcPath, destPath)
+    const destPath = path.join(PUBLIC_CHARS, `${charKey}.webp`)
+    await sharp(srcPath).webp({ quality: 85 }).toFile(destPath)
     copiedCount++
   }
-  console.log(`キャラアイコン: ${copiedCount} ファイルをコピーしました`)
+  console.log(`キャラアイコン: ${copiedCount} ファイルをWebP変換しました`)
 }
 
-console.log('画像コピー開始...')
-copyArtifactImages()
-copyCharIcons()
+console.log('画像コピー・WebP変換開始...')
+await copyArtifactImages()
+await copyCharIcons()
 console.log('完了')

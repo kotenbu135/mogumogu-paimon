@@ -100,8 +100,8 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
 
   const bp = process.env.BASE_PATH ?? ''
   const isSafeKey = (s: string) => /^[a-zA-Z0-9_-]+$/.test(s)
-  const artifactImgSrc = isSafeKey(setKey) && isSafeKey(slotKey) ? `${bp}/artifacts/${setKey}/${slotKey}.png` : null
-  const charImgSrc = location && isSafeKey(location) ? `${bp}/chars/${location}.png` : null
+  const artifactImgSrc = isSafeKey(setKey) && isSafeKey(slotKey) ? `${bp}/artifacts/${setKey}/${slotKey}.webp` : null
+  const charImgSrc = location && isSafeKey(location) ? `${bp}/chars/${location}.webp` : null
   const charName = (location && CHARACTER_NAMES[location]) ?? location
 
   const mainScore = allScores[scoreType]
