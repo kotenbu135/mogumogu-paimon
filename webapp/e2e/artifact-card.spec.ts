@@ -1,11 +1,12 @@
 import path from 'path'
 import { test, expect } from '@playwright/test'
 
+const BASE = '/mogumogu-paimon'
 const FIXTURE_PATH = path.join(__dirname, 'fixtures', 'test-good.json')
 
 test.describe('聖遺物カード', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
     await page.locator('input[type="file"]').setInputFiles(FIXTURE_PATH)
     await page.waitForSelector('.controls-bar', { state: 'visible' })
   })

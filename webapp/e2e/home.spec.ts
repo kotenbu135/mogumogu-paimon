@@ -1,11 +1,12 @@
 import path from 'path'
 import { test, expect } from '@playwright/test'
 
+const BASE = '/mogumogu-paimon'
 const FIXTURE_PATH = path.join(__dirname, 'fixtures', 'test-good.json')
 
 test.describe('ホームページ — 初期状態（ファイルアップロード前）', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
     await page.waitForLoadState('domcontentloaded')
   })
 
@@ -44,7 +45,7 @@ test.describe('ホームページ — 初期状態（ファイルアップロー
 
 test.describe('ホームページ — ファイルアップロード後', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
     const fileInput = page.locator('input[type="file"]')
     await fileInput.setInputFiles(FIXTURE_PATH)
     await page.waitForSelector('.controls-bar', { state: 'visible' })
@@ -67,7 +68,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   test('部位フィルタで flower を選択するとカードが絞り込まれる', async ({ page }) => {
     const allCount = await page.locator('.artifact-card').count()
 
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     const filteredCount = await page.locator('.artifact-card').count()
@@ -76,7 +77,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   })
 
   test('部位フィルタをリセットするとチップが消える', async ({ page }) => {
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     // フィルタチップが現れる
@@ -88,7 +89,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   })
 
   test('フィルタチップの × ボタンで絞り込みが解除される', async ({ page }) => {
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     // チップの × をクリック

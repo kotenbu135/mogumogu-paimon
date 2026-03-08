@@ -1,11 +1,12 @@
 import path from 'path'
 import { test, expect } from '@playwright/test'
 
+const BASE = '/mogumogu-paimon'
 const FIXTURE_PATH = path.join(__dirname, 'fixtures', 'test-good.json')
 
 test.describe('コントロールバー レイアウトテスト', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
 
     // ファイルアップロードでコントロールバーを表示する
     const fileInput = page.locator('input[type="file"]')

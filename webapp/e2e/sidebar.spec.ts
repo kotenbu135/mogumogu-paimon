@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test'
 
+const BASE = '/mogumogu-paimon'
+
 test.describe('サイドバー — ナビゲーション', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
     await page.waitForLoadState('domcontentloaded')
   })
 
@@ -60,8 +62,12 @@ test.describe('サイドバー — ナビゲーション', () => {
 
 test.describe('サイドバー — 言語切替', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto(`${BASE}/`)
     await page.waitForLoadState('domcontentloaded')
+    // Next.js dev overlay がボタンのクリックを妨害するため除去
+    await page.evaluate(() => {
+      document.querySelectorAll('nextjs-portal').forEach((el) => el.remove())
+    })
   })
 
   test('言語切替ボタンが EN と JA の2つ表示される', async ({ page }) => {
