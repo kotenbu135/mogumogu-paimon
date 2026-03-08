@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Button } from '@heroui/react'
 import { SIDEBAR_ITEMS } from '@/lib/sidebarItems'
 import { useTranslation } from '@/lib/i18n'
 
@@ -28,22 +29,26 @@ export default function Sidebar() {
         })}
       </ul>
       <div className="lang-toggle">
-        <button
+        <Button
           type="button"
+          variant="bordered"
+          size="sm"
           className={`lang-btn${lang === 'ja' ? ' lang-btn-active' : ''}`}
-          onClick={() => setLang('ja')}
+          onPress={() => setLang('ja')}
           aria-pressed={lang === 'ja'}
         >
           JA
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="bordered"
+          size="sm"
           className={`lang-btn${lang === 'en' ? ' lang-btn-active' : ''}`}
-          onClick={() => setLang('en')}
+          onPress={() => setLang('en')}
           aria-pressed={lang === 'en'}
         >
           EN
-        </button>
+        </Button>
       </div>
     </nav>
   )
