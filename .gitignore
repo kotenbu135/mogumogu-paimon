@@ -42,3 +42,6 @@ next-env.d.ts
 
 *.deb
 .claude/skills/skill-creator/scripts/__pycache__/
+
+# lighthouse ci
+.lighthouseci/
