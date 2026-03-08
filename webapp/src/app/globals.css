@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight" layer(base);
 
 /* ── カラー変数 ─────────────────────────── */
 :root {
@@ -1219,6 +1219,27 @@ body {
 .recon-rate-red    { color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); }
 .recon-rate-orange { color: #f97316; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); }
 .recon-rate-grey   { color: #22c55e; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); }
+
+/* ── ユーティリティ代替クラス ────────────── */
+/* Tailwindユーティリティクラスの代替（CSS最適化のため） */
+.upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.upload-error {
+  font-size: 0.875rem;
+  color: #f87171;
+}
+
+.content-text-note {
+  font-size: 0.875rem;
+  opacity: 0.75;
+}
 
 /* ── コンテキストメニュー ────────────────── */
 .context-menu {

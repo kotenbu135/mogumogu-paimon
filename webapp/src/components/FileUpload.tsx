@@ -70,18 +70,8 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
     setDragging(false)
   }
 
-  const input = (
-    <input
-      ref={inputRef}
-      type="file"
-      accept=".json"
-      className="hidden"
-      onChange={handleChange}
-    />
-  )
-
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-[800px]">
+    <div className="upload-wrapper">
       <div
         className={`upload-zone ${dragging ? 'dragging' : ''} ${loading ? 'loading' : ''}`}
         onDrop={handleDrop}
@@ -89,7 +79,13 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
         onDragLeave={handleDragLeave}
         onClick={() => !loading && inputRef.current?.click()}
       >
-        {input}
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleChange}
+        />
         {loading ? (
           <>
             <div className="upload-spinner" />
@@ -103,7 +99,7 @@ export default function FileUpload({ onLoad }: FileUploadProps) {
           </>
         )}
       </div>
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="upload-error">{error}</p>}
     </div>
   )
 }
