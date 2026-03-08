@@ -156,24 +156,37 @@ body {
 
 /* サイドメニューページ（スコアについて等）のコンテンツ */
 .page-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  padding: 1.25rem 1rem 2rem;
   animation: page-fade-in 150ms ease-out;
 }
 
 .page-title {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--gold);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   letter-spacing: 0.06em;
+}
+
+/* 2カラムページレイアウト（about-score・about-reconstruction用） */
+.page-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.page-col {
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── サイドメニューページコンテンツ ────────── */
 .content-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .section-title {
@@ -334,7 +347,7 @@ body {
   height: 1px;
   border: none;
   background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   opacity: 0.5;
 }
 
