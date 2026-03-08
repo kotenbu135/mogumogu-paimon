@@ -104,8 +104,10 @@ test.describe('EN: アップロード後', () => {
   })
 
   test('05_en_substat-dropdown', async ({ page }) => {
-    // サブステフィルタボタンはコントロールバー内の2番目の substat-dropdown-btn
-    await page.locator('.controls-bar .substat-dropdown-btn').nth(1).click()
+    // 詳細フィルターパネルを開いてからサブステフィルタボタンをクリック
+    await page.locator('.ctrl-advanced-btn').click()
+    await page.waitForSelector('.ctrl-advanced-panel', { state: 'visible' })
+    await page.locator('.ctrl-advanced-panel .substat-dropdown-btn').click()
     await page.waitForSelector('.substat-dropdown-panel', { state: 'visible' })
     await shot(page, '05_en_substat-dropdown.png')
   })
@@ -186,7 +188,10 @@ test.describe('JA: 日本語', () => {
     })
 
     test('16_ja_substat-dropdown', async ({ page }) => {
-      await page.locator('.controls-bar .substat-dropdown-btn').nth(1).click()
+      // 詳細フィルターパネルを開いてからサブステフィルタボタンをクリック
+      await page.locator('.ctrl-advanced-btn').click()
+      await page.waitForSelector('.ctrl-advanced-panel', { state: 'visible' })
+      await page.locator('.ctrl-advanced-panel .substat-dropdown-btn').click()
       await page.waitForSelector('.substat-dropdown-panel', { state: 'visible' })
       await shot(page, '16_ja_substat-dropdown.png')
     })
