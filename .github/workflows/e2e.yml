@@ -1,0 +1,58 @@
+name: E2E Tests & Screenshots
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'webapp/**'
+
+permissions:
+  contents: write
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 25
+          cache: npm
+          cache-dependency-path: webapp/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: webapp
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: webapp
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        working-directory: webapp
+
+      - name: Capture screenshots
+        run: npm run screenshot
+        working-directory: webapp
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: webapp/playwright-report/
+          retention-days: 14
+
+      - name: Commit & push screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshot/
+          git diff --cached --quiet && echo "No screenshot changes" && exit 0
+          git commit -m "ci(screenshot): update screenshots [skip ci]"
+          git push
