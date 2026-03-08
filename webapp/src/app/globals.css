@@ -452,7 +452,7 @@ body {
   align-items: center;
   gap: 0.3rem;
   white-space: nowrap;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.1s;
 }
 
 .ctrl-advanced-btn:hover {
@@ -463,6 +463,15 @@ body {
 .ctrl-advanced-btn.ctrl-advanced-open {
   color: var(--gold);
   border-color: var(--gold);
+}
+
+.ctrl-advanced-btn:active {
+  transform: scale(0.97);
+}
+
+.ctrl-advanced-btn:focus-visible {
+  outline: 2px solid rgba(200, 163, 90, 0.5);
+  outline-offset: 2px;
 }
 
 .ctrl-advanced-arrow {
@@ -493,13 +502,23 @@ body {
   font-size: 0.75rem;
   color: var(--gold-light);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
   white-space: nowrap;
 }
 
 .ctrl-filter-chip:hover {
   background: color-mix(in srgb, var(--gold) 25%, transparent);
   border-color: var(--gold);
+}
+
+.ctrl-filter-chip:active {
+  transform: scale(0.94);
+  background: color-mix(in srgb, var(--gold) 32%, transparent);
+}
+
+.ctrl-filter-chip:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .ctrl-chip-close {
@@ -552,11 +571,25 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 6px;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
 
 .ctrl-label-toggle:hover {
   color: var(--gold);
+  border-color: var(--gold);
+}
+
+.ctrl-label-toggle:has(input:checked) {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
+.ctrl-label-toggle:active {
+  transform: scale(0.97);
+}
+
+.ctrl-label-toggle:focus-within {
+  box-shadow: 0 0 0 2px rgba(200, 163, 90, 0.3);
   border-color: var(--gold);
 }
 
@@ -565,6 +598,16 @@ body {
   cursor: pointer;
   width: 14px;
   height: 14px;
+  transition: transform 0.1s;
+}
+
+.ctrl-checkbox:hover {
+  transform: scale(1.2);
+}
+
+.ctrl-checkbox:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .ctrl-select {
@@ -578,9 +621,20 @@ body {
   min-width: 7rem;
   outline: none;
   appearance: auto;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.ctrl-select:hover {
+  border-color: color-mix(in srgb, var(--gold) 55%, var(--border));
+  background: var(--bg-card-hover);
 }
 
 .ctrl-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(200, 163, 90, 0.2);
+}
+
+.ctrl-select:active {
   border-color: var(--gold);
 }
 
@@ -600,16 +654,29 @@ body {
   min-width: 7rem;
   text-align: left;
   appearance: auto;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .substat-dropdown-btn:hover {
   color: var(--gold);
   border-color: var(--gold);
+  background: var(--bg-card-hover);
 }
 
 .substat-dropdown-btn:focus {
   border-color: var(--gold);
   outline: none;
+  box-shadow: 0 0 0 2px rgba(200, 163, 90, 0.2);
+}
+
+.substat-dropdown-btn:active {
+  transform: scale(0.97);
+  background: var(--bg-card-hover);
+}
+
+.substat-dropdown-btn:focus-visible {
+  outline: 2px solid rgba(200, 163, 90, 0.5);
+  outline-offset: 2px;
 }
 
 .substat-dropdown-panel {
@@ -636,10 +703,12 @@ body {
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
+  transition: background 0.12s, color 0.12s;
 }
 
 .substat-dropdown-item:hover {
   background: var(--bg-card-hover);
+  color: var(--text-main);
 }
 
 /* ── セットフィルタドロップダウン ──────────── */
@@ -669,6 +738,12 @@ body {
   padding: 0.4rem 0.4rem 0.15rem;
   cursor: pointer;
   user-select: none;
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+
+.set-group-header:hover {
+  background: var(--bg-card-hover);
 }
 
 .set-group-header:not(:first-child) {
@@ -690,7 +765,7 @@ body {
   font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.1s;
 }
 
 .ctrl-reupload:hover {
@@ -706,6 +781,17 @@ body {
 .ctrl-clear:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.ctrl-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.ctrl-btn:focus-visible {
+  outline: 2px solid rgba(200, 163, 90, 0.5);
+  outline-offset: 2px;
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 
