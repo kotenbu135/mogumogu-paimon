@@ -165,6 +165,8 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
     : []
 
   const animDelay = cardIndex !== undefined ? `${Math.min(cardIndex, 20) * 40}ms` : '0ms'
+  // 先頭4枚はファーストビューとして eager ロード、それ以外は lazy ロード
+  const imgLoading: 'eager' | 'lazy' = cardIndex !== undefined && cardIndex < 4 ? 'eager' : 'lazy'
   const scorePct = `${Math.min((mainScore / 60) * 100, 100).toFixed(1)}%`
 
   return (
@@ -189,6 +191,7 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
               src={artifactImgSrc}
               alt={`${setName} ${slotName}`}
               className="artifact-img"
+              loading={imgLoading}
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none'
               }}
@@ -222,6 +225,7 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
               src={charImgSrc}
               alt={charName}
               className="char-img"
+              loading={imgLoading}
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none'
               }}
@@ -283,6 +287,7 @@ export default function ArtifactCard({ entry, scoreType, reconRate, onFilterBySe
               src={`${bp}/icons/Item_Dust_of_Enlightenment.webp`}
               alt="聖啓の塵"
               className="recon-icon"
+              loading={imgLoading}
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
             {Math.round(reconRate)}%
