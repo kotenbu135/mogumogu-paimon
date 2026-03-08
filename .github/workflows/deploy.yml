@@ -70,8 +70,8 @@ jobs:
       - name: Copy report to docs/lighthouse
         run: |
           mkdir -p docs/lighthouse
-          cp .lighthouseci/lhr-*.html docs/lighthouse/report.html
-          cp .lighthouseci/lhr-*.json docs/lighthouse/report.json
+          cp "$(ls -t .lighthouseci/lhr-*.html | head -1)" docs/lighthouse/report.html
+          cp "$(ls -t .lighthouseci/lhr-*.json | head -1)" docs/lighthouse/report.json
 
       - name: Commit and push Lighthouse report
         run: |
