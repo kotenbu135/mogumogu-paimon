@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RankedArtifact, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import type { ArtifactFilterState } from '@/lib/artifactFilters'
 
-interface DisplayedEntry {
+export interface DisplayedEntry {
   entry: RankedArtifact
   reconRate: number | null
   originalIndex: number
