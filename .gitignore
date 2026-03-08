@@ -45,3 +45,4 @@ next-env.d.ts
 
 # lighthouse ci
 .lighthouseci/
+.lighthouseci-with-data/

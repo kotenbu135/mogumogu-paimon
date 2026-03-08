@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import HeroSection from '@/components/HeroSection'
 import VirtualArtifactGrid from '@/components/VirtualArtifactGrid'
 import ControlsBar from '@/components/ControlsBar'
@@ -9,7 +9,7 @@ import { groupSetOptions, SCORE_TYPE_OPTIONS, ALL_SUBSTAT_KEYS } from '@/lib/con
 import { useTranslation } from '@/lib/i18n'
 import { getAllStatNames } from '@/lib/i18n/types'
 import { useArtifactFilters } from '@/hooks/useArtifactFilters'
-import { useArtifactData } from '@/hooks/useArtifactData'
+import { useArtifactData, loadFromStorage } from '@/hooks/useArtifactData'
 import { useDisplayedArtifacts } from '@/hooks/useDisplayedArtifacts'
 
 const MAIN_STAT_ORDER: MainStatKey[] = [
@@ -29,6 +29,14 @@ export default function HomeClient() {
   const [reconSort, setReconSort] = useState(false)
 
   const { allRanked, handleLoad } = useArtifactData()
+
+  // マウント時に localStorage からデータを自動復元
+  useEffect(() => {
+    const stored = loadFromStorage()
+    if (stored) {
+      handleLoad(stored)
+    }
+  }, [])
 
   async function handleLoadWithReset(data: GoodFile) {
     await handleLoad(data)
