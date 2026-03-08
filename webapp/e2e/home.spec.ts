@@ -67,7 +67,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   test('部位フィルタで flower を選択するとカードが絞り込まれる', async ({ page }) => {
     const allCount = await page.locator('.artifact-card').count()
 
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     const filteredCount = await page.locator('.artifact-card').count()
@@ -76,7 +76,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   })
 
   test('部位フィルタをリセットするとチップが消える', async ({ page }) => {
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     // フィルタチップが現れる
@@ -88,7 +88,7 @@ test.describe('ホームページ — ファイルアップロード後', () => 
   })
 
   test('フィルタチップの × ボタンで絞り込みが解除される', async ({ page }) => {
-    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(0)
+    const slotSelect = page.locator('.controls-bar .ctrl-select').nth(1)
     await slotSelect.selectOption('flower')
 
     // チップの × をクリック

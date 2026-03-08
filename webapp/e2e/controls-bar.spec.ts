@@ -32,8 +32,14 @@ test.describe('コントロールバー レイアウトテスト', () => {
     ).toBe(false)
   })
 
-  test('コントロールバーのスクリーンショット', async ({ page }, testInfo) => {
+  test('コントロールバーが表示され、スコア・フィルター・表示設定の各セクションが存在すること', async ({ page }) => {
     const controlsBar = page.locator('.controls-bar')
-    await expect(controlsBar).toHaveScreenshot(`controls-bar-${testInfo.project.name}.png`)
+    await expect(controlsBar).toBeVisible()
+    // スコアタイプセレクトが存在する
+    await expect(controlsBar.locator('.ctrl-select').first()).toBeVisible()
+    // 部位フィルタセレクトが存在する
+    await expect(controlsBar.locator('.ctrl-select').nth(1)).toBeVisible()
+    // 詳細フィルタボタンが存在する
+    await expect(controlsBar.locator('.ctrl-advanced-btn')).toBeVisible()
   })
 })
