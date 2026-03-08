@@ -72,7 +72,7 @@ export default function AboutScorePage() {
             ))}
           </tbody>
         </table>
-        <p className="content-text text-sm opacity-75">{p.mainStatFilter.note}</p>
+        <p className="content-text content-text-note">{p.mainStatFilter.note}</p>
       </section>
     </div>
   )
