@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Button, Select, SelectItem, Checkbox } from '@heroui/react'
 import type { ArtifactSlotKey, ReconstructionType, ScoreTypeName, StatKey } from '@/lib/types'
 import type { ArtifactFiltersHook } from '@/hooks/useArtifactFilters'
 import { useDropdownClose } from '@/hooks/useDropdownClose'
@@ -125,16 +126,22 @@ export default function ControlsBar({
           <div className="ctrl-section-label">{t.controls.groupScore}</div>
           <div className="ctrl-section-body">
             <div className="ctrl-group">
-              <label className="ctrl-label">{t.controls.scoreType}</label>
-              <select
-                className="ctrl-select"
-                value={scoreType}
-                onChange={(e) => setScoreType(e.target.value as ScoreTypeName)}
+              <Select
+                label={t.controls.scoreType}
+                selectedKeys={new Set([scoreType])}
+                onSelectionChange={(keys) => {
+                  if (keys !== 'all') {
+                    const key = [...keys][0]
+                    if (key !== undefined) setScoreType(String(key) as ScoreTypeName)
+                  }
+                }}
+                size="sm"
+                variant="bordered"
               >
                 {SCORE_TYPE_OPTIONS.map((type) => (
-                  <option key={type} value={type}>{t.scoreFormulas[type].label}</option>
+                  <SelectItem key={type}>{t.scoreFormulas[type].label}</SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
         </div>
@@ -146,18 +153,20 @@ export default function ControlsBar({
             {/* セットフィルタ */}
             <div className="ctrl-group">
               <label className="ctrl-label">{t.controls.set}</label>
-              <button
+              <Button
                 ref={setFilterBtnRef}
                 type="button"
+                variant="bordered"
+                size="sm"
                 className={`substat-dropdown-btn${filters.filterSets.length > 0 ? ' ctrl-active' : ''}`}
                 aria-expanded={setFilterOpen}
                 aria-haspopup="listbox"
-                onClick={() => setSetFilterOpen((v) => !v)}
+                onPress={() => setSetFilterOpen((v) => !v)}
               >
                 {filters.filterSets.length > 0
                   ? `${t.controls.set}(${filters.filterSets.length})`
                   : t.controls.set}
-              </button>
+              </Button>
               {setFilterOpen && createPortal(
                 <div
                   ref={setFilterPanelRef}
@@ -173,28 +182,25 @@ export default function ControlsBar({
                     const groupLabel = t.setGroupLabels[group.label] ?? group.label
                     return (
                       <div key={group.label}>
-                        <label className="set-group-header">
-                          <input
-                            type="checkbox"
-                            className="ctrl-checkbox"
-                            checked={allSelected}
-                            ref={(el) => {
-                              if (el) el.indeterminate = someSelected && !allSelected
-                            }}
-                            onChange={() => filters.toggleSetGroup(group.keys, allSelected)}
-                          />
+                        <Checkbox
+                          classNames={{ base: 'set-group-header max-w-full w-full', wrapper: 'mr-1' }}
+                          isSelected={allSelected}
+                          isIndeterminate={someSelected && !allSelected}
+                          onValueChange={() => filters.toggleSetGroup(group.keys, allSelected)}
+                          size="sm"
+                        >
                           {groupLabel}
-                        </label>
+                        </Checkbox>
                         {group.keys.map((key) => (
-                          <label key={key} className="substat-dropdown-item set-item">
-                            <input
-                              type="checkbox"
-                              className="ctrl-checkbox"
-                              checked={filters.filterSets.includes(key)}
-                              onChange={(e) => filters.toggleSet(key, e.target.checked)}
-                            />
+                          <Checkbox
+                            key={key}
+                            classNames={{ base: 'substat-dropdown-item set-item max-w-full w-full', wrapper: 'mr-1' }}
+                            isSelected={filters.filterSets.includes(key)}
+                            onValueChange={(checked) => filters.toggleSet(key, checked)}
+                            size="sm"
+                          >
                             {t.artifactSetNames[key] ?? ARTIFACT_SET_NAMES[key] ?? key}
-                          </label>
+                          </Checkbox>
                         ))}
                       </div>
                     )
@@ -206,46 +212,64 @@ export default function ControlsBar({
 
             {/* 部位フィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">{t.controls.slot}</label>
-              <select
-                className={`ctrl-select${filters.filterSlot ? ' ctrl-active' : ''}`}
-                value={filters.filterSlot}
-                onChange={(e) => filters.setFilterSlot(e.target.value as ArtifactSlotKey | '')}
+              <Select
+                label={t.controls.slot}
+                selectedKeys={new Set([filters.filterSlot])}
+                onSelectionChange={(keys) => {
+                  if (keys !== 'all') {
+                    const key = [...keys][0]
+                    filters.setFilterSlot((key !== undefined ? String(key) : '') as ArtifactSlotKey | '')
+                  }
+                }}
+                size="sm"
+                variant="bordered"
+                classNames={{ trigger: filters.filterSlot ? 'ctrl-active' : '' }}
               >
                 {SLOT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <SelectItem key={opt.value}>{opt.label}</SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
 
             {/* メインステフィルタ */}
             <div className="ctrl-group">
-              <label className="ctrl-label">{t.controls.mainStat}</label>
-              <select
-                className={`ctrl-select${filters.filterMainStat ? ' ctrl-active' : ''}`}
-                value={filters.filterMainStat}
-                onChange={(e) => filters.applyMainStat(e.target.value)}
+              <Select
+                label={t.controls.mainStat}
+                selectedKeys={new Set([filters.filterMainStat])}
+                onSelectionChange={(keys) => {
+                  if (keys !== 'all') {
+                    const key = [...keys][0]
+                    filters.applyMainStat(key !== undefined ? String(key) : '')
+                  }
+                }}
+                size="sm"
+                variant="bordered"
+                classNames={{ trigger: filters.filterMainStat ? 'ctrl-active' : '' }}
+                items={[
+                  { key: '', label: t.controls.allMainStats },
+                  ...mainStatOptions.map((key) => ({
+                    key,
+                    label: allMainStatNames[key] ?? MAIN_STAT_NAMES[key] ?? key,
+                  })),
+                ]}
               >
-                <option value="">{t.controls.allMainStats}</option>
-                {mainStatOptions.map((key) => (
-                  <option key={key} value={key}>
-                    {allMainStatNames[key] ?? MAIN_STAT_NAMES[key] ?? key}
-                  </option>
-                ))}
-              </select>
+                {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
+              </Select>
             </div>
 
             {/* 詳細フィルタートグル */}
             <div className="ctrl-group">
               <div className="ctrl-label">&nbsp;</div>
-              <button
+              <Button
                 type="button"
+                variant="bordered"
+                size="sm"
                 className={`ctrl-advanced-btn${advancedOpen ? ' ctrl-advanced-open' : ''}${(filters.filterInitialOp || filters.filterSubStats.length > 0) ? ' ctrl-active' : ''}`}
-                onClick={() => setAdvancedOpen((v) => !v)}
+                onPress={() => setAdvancedOpen((v) => !v)}
               >
                 {t.controls.advancedFilter}
                 <span className="ctrl-advanced-arrow">{advancedOpen ? '▲' : '▼'}</span>
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -254,33 +278,42 @@ export default function ControlsBar({
             <div className="ctrl-advanced-panel">
               {/* 初期OPフィルタ */}
               <div className="ctrl-group">
-                <label className="ctrl-label">{t.controls.initialOp}</label>
-                <select
-                  className={`ctrl-select${filters.filterInitialOp ? ' ctrl-active' : ''}`}
-                  value={filters.filterInitialOp}
-                  onChange={(e) => filters.setFilterInitialOp(e.target.value as '' | '3' | '4')}
+                <Select
+                  label={t.controls.initialOp}
+                  selectedKeys={new Set([filters.filterInitialOp])}
+                  onSelectionChange={(keys) => {
+                    if (keys !== 'all') {
+                      const key = [...keys][0]
+                      filters.setFilterInitialOp((key !== undefined ? String(key) : '') as '' | '3' | '4')
+                    }
+                  }}
+                  size="sm"
+                  variant="bordered"
+                  classNames={{ trigger: filters.filterInitialOp ? 'ctrl-active' : '' }}
                 >
-                  <option value="">{t.controls.allOps}</option>
-                  <option value="3">{t.controls.op3}</option>
-                  <option value="4">{t.controls.op4}</option>
-                </select>
+                  <SelectItem key="">{t.controls.allOps}</SelectItem>
+                  <SelectItem key="3">{t.controls.op3}</SelectItem>
+                  <SelectItem key="4">{t.controls.op4}</SelectItem>
+                </Select>
               </div>
 
               {/* サブステフィルタ */}
               <div className="ctrl-group">
                 <label className="ctrl-label">{t.controls.substatFilter}</label>
-                <button
+                <Button
                   ref={subStatBtnRef}
                   type="button"
+                  variant="bordered"
+                  size="sm"
                   className={`substat-dropdown-btn${filters.filterSubStats.length > 0 ? ' ctrl-active' : ''}`}
                   aria-expanded={subStatOpen}
                   aria-haspopup="listbox"
-                  onClick={() => setSubStatOpen((v) => !v)}
+                  onPress={() => setSubStatOpen((v) => !v)}
                 >
                   {filters.filterSubStats.length > 0
                     ? `${t.controls.substatBtn}(${filters.filterSubStats.length})`
                     : t.controls.substatBtn}
-                </button>
+                </Button>
                 {subStatOpen && createPortal(
                   <div
                     ref={subStatPanelRef}
@@ -291,15 +324,15 @@ export default function ControlsBar({
                     }}
                   >
                     {availableSubStatKeys.map((key) => (
-                      <label key={key} className="substat-dropdown-item">
-                        <input
-                          type="checkbox"
-                          className="ctrl-checkbox"
-                          checked={filters.filterSubStats.includes(key)}
-                          onChange={(e) => filters.toggleSubStat(key, e.target.checked)}
-                        />
+                      <Checkbox
+                        key={key}
+                        classNames={{ base: 'substat-dropdown-item max-w-full w-full', wrapper: 'mr-1' }}
+                        isSelected={filters.filterSubStats.includes(key)}
+                        onValueChange={(checked) => filters.toggleSubStat(key, checked)}
+                        size="sm"
+                      >
                         {t.stats[key] ?? STAT_NAMES[key]}
-                      </label>
+                      </Checkbox>
                     ))}
                   </div>,
                   document.body,
@@ -315,47 +348,60 @@ export default function ControlsBar({
           <div className="ctrl-section-body">
             {/* サブステソート */}
             <div className="ctrl-group">
-              <label className="ctrl-label">{t.controls.substatSort}</label>
-              <select
-                className="ctrl-select"
-                value={subStatSort}
-                onChange={(e) => setSubStatSort(e.target.value as StatKey | '')}
+              <Select
+                label={t.controls.substatSort}
+                selectedKeys={new Set([subStatSort])}
+                onSelectionChange={(keys) => {
+                  if (keys !== 'all') {
+                    const key = [...keys][0]
+                    setSubStatSort((key !== undefined ? String(key) : '') as StatKey | '')
+                  }
+                }}
+                size="sm"
+                variant="bordered"
+                items={[
+                  { key: '', label: t.controls.byScore },
+                  ...ALL_SUBSTAT_KEYS.map((key) => ({
+                    key,
+                    label: t.stats[key] ?? STAT_NAMES[key],
+                  })),
+                ]}
               >
-                <option value="">{t.controls.byScore}</option>
-                {ALL_SUBSTAT_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {t.stats[key] ?? STAT_NAMES[key]}
-                  </option>
-                ))}
-              </select>
+                {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
+              </Select>
             </div>
 
             {/* 再構築種別 */}
             <div className="ctrl-group">
-              <label className="ctrl-label">{t.controls.reconstruction}</label>
-              <select
-                className="ctrl-select"
-                value={reconType}
-                onChange={(e) => setReconType(e.target.value as ReconstructionType)}
+              <Select
+                label={t.controls.reconstruction}
+                selectedKeys={new Set([reconType])}
+                onSelectionChange={(keys) => {
+                  if (keys !== 'all') {
+                    const key = [...keys][0]
+                    if (key !== undefined) setReconType(String(key) as ReconstructionType)
+                  }
+                }}
+                size="sm"
+                variant="bordered"
               >
                 {RECON_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <SelectItem key={opt.value}>{opt.label}</SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
 
             {/* 再構築成功率ソート */}
             <div className="ctrl-group">
               <div className="ctrl-label">&nbsp;</div>
-              <label className="ctrl-label-toggle">
-                <input
-                  type="checkbox"
-                  className="ctrl-checkbox"
-                  checked={reconSort}
-                  onChange={(e) => setReconSort(e.target.checked)}
-                />
+              <Checkbox
+                classNames={{ base: 'ctrl-label-toggle' }}
+                isSelected={reconSort}
+                onValueChange={setReconSort}
+                size="sm"
+              >
                 {t.controls.byOdds}
-              </label>
+              </Checkbox>
             </div>
           </div>
         </div>
@@ -375,13 +421,15 @@ export default function ControlsBar({
               <span className="ctrl-chip-close" aria-hidden="true">×</span>
             </button>
           ))}
-          <button
+          <Button
             type="button"
+            variant="bordered"
+            size="sm"
             className="ctrl-btn ctrl-clear"
-            onClick={filters.resetFilters}
+            onPress={filters.resetFilters}
           >
             {t.controls.filterClear}
-          </button>
+          </Button>
         </div>
       )}
     </div>
