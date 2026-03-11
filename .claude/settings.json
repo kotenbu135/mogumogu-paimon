@@ -24,8 +24,35 @@
       "Bash(git fetch*)",
       "Bash(git stash*)",
       "Bash(git merge*)",
-      "Bash(git rebase*)"
+      "Bash(git rebase*)",
+      "Bash(git tag*)",
+      "Bash(git flow*)",
+      "Bash(gh pr*)",
+      "Bash(gh issue*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git rebase -i*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)"
     ]
+  },
+  "env": {
+    "GIT_FLOW_MAIN_BRANCH": "main",
+    "GIT_FLOW_DEVELOP_BRANCH": "develop",
+    "GIT_FLOW_PREFIX_FEATURE": "feature/",
+    "GIT_FLOW_PREFIX_RELEASE": "release/",
+    "GIT_FLOW_PREFIX_HOTFIX": "hotfix/",
+    "GIT_FLOW_VERSION_TAG_PREFIX": "v"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/rpg_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"1 0 Novice\" > \"$CACHE\"; fi; read LEVEL XP CLASS < \"$CACHE\"; XP=$((XP + 3)); if [ $XP -ge $((LEVEL * 100)) ]; then LEVEL=$((LEVEL + 1)); XP=0; [ $LEVEL -eq 5 ] && CLASS=\"Wizard\"; [ $LEVEL -eq 10 ] && CLASS=\"Archmage\"; fi; echo \"$LEVEL $XP $CLASS\" > \"$CACHE\"; MANA=$([ -f \"package.json\" ] && echo \"🔵\" || echo \"⚪\"); HP=$(git status --porcelain 2>/dev/null | wc -l | awk \"{\\$1=\\$1}1\"); HP=$((10 - HP)); echo \"[$MODEL] ⚔️ $CLASS Lv.$LEVEL | HP:$HP/10 $MANA | 📁 ${DIR##*/} | XP:$XP/$((LEVEL * 100))\"'"
   },
   "hooks": {
     "PreToolUse": [
@@ -34,7 +61,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"\nimport json, sys, re\ntry:\n    data = json.load(sys.stdin)\n    cmd = data.get('command', '')\n    if 'git commit' in cmd:\n        msg_match = re.search(r'-m\\s+[\\\"\\']([^\\\"\\']+)[\\\"\\']', cmd)\n        if msg_match:\n            msg = msg_match.group(1)\n            pattern = r'^(feat|fix|docs|style|refactor|test|chore|ci|perf|revert)(\\([a-z][a-z0-9-]*\\))?: .{1,72}$'\n            if not re.match(pattern, msg):\n                print(f'ERROR: Commit message does not follow Conventional Commits format.', file=sys.stderr)\n                print(f'Expected: type(scope): description', file=sys.stderr)\n                print(f'Got: {msg}', file=sys.stderr)\n                sys.exit(1)\nexcept Exception:\n    pass\n\""
+            "command": "python3 -c \"\nimport json, sys, re\ntry:\n    data = json.load(sys.stdin)\n    cmd = data.get('command', '')\n    if 'git commit' in cmd:\n        msg_match = re.search(r'-m\\s+[\\\"\\']([^\\\"\\']+)[\\\"\\']', cmd)\n        if msg_match:\n            msg = msg_match.group(1)\n            pattern = r'^(feat|fix|docs|style|refactor|test|chore|ci|perf|revert)(\\([a-z][a-z0-9-]*\\))?: .{1,72}$'\n            if not re.match(pattern, msg):\n                print(f'ERROR: Commit message does not follow Conventional Commits format.', file=sys.stderr)\n                print(f'Expected: type(scope): description', file=sys.stderr)\n                print(f'Got: {msg}', file=sys.stderr)\n                sys.exit(1)\n    if 'git checkout -b' in cmd:\n        branch_match = re.search(r'git checkout -b\\s+(\\S+)', cmd)\n        if branch_match:\n            branch = branch_match.group(1)\n            if branch not in ('main', 'develop'):\n                if not re.match(r'^(feature|release|hotfix)/', branch):\n                    print(f'ERROR: Invalid Git Flow branch name: {branch}', file=sys.stderr)\n                    print(f'Expected: feature/<name>, release/v<x.y.z>, hotfix/<name>', file=sys.stderr)\n                    sys.exit(1)\n                if branch.startswith('release/') and not re.match(r'^release/v\\d+\\.\\d+\\.\\d+', branch):\n                    print(f'ERROR: Invalid release version: {branch}', file=sys.stderr)\n                    print(f'Expected: release/vMAJOR.MINOR.PATCH', file=sys.stderr)\n                    sys.exit(1)\n    if re.search(r'git push.*(origin\\s+(main|develop)|--force|-f)', cmd):\n        current = ''\n        import subprocess\n        try:\n            current = subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()\n        except Exception:\n            pass\n        if current in ('main', 'develop') or re.search(r'origin\\s+(main|develop)', cmd):\n            print(f'ERROR: Direct push to main/develop is not allowed!', file=sys.stderr)\n            print(f'Use feature branches and pull requests.', file=sys.stderr)\n            sys.exit(1)\nexcept Exception:\n    pass\n\""
           }
         ]
       },
@@ -44,6 +71,27 @@
           {
             "type": "command",
             "command": "python3 -c \"\nimport json, sys, os, re\ntry:\n    data = json.load(sys.stdin)\n    path = data.get('file_path', '')\n    if re.search(r'webapp/src/(?!.*__tests__).*\\.tsx?$', path):\n        base = re.sub(r'webapp/src/', 'webapp/src/lib/__tests__/', path)\n        base = re.sub(r'\\.(tsx?)$', '.test.\\\\1', base)\n        alt = re.sub(r'webapp/src/(.+?)\\.(tsx?)$', r'webapp/src/lib/__tests__/\\1.test.\\2', path)\n        if not os.path.exists(path.replace('/src/', '/src/lib/__tests__/').replace('.ts', '.test.ts').replace('.tsx', '.test.tsx')):\n            dir_name = os.path.dirname(path)\n            test_dir = os.path.join(os.path.dirname(os.path.dirname(path)), 'lib', '__tests__')\n            base_name = os.path.basename(path)\n            test_name = re.sub(r'\\.(tsx?)$', r'.test.\\1', base_name)\n            test_path = os.path.join(test_dir, test_name)\n            if 'lib/' in path and not os.path.exists(test_path):\n                print(f'WARNING: No test file found for {os.path.basename(path)}.', file=sys.stderr)\n                print(f'TDD required: create {test_path} first.', file=sys.stderr)\nexcept Exception:\n    pass\n\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tdd-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tdd-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-gate.sh"
           }
         ]
       }
@@ -75,7 +123,32 @@
             "command": "python3 -c \"\nimport json, sys, os, subprocess, re\ntry:\n    data = json.load(sys.stdin)\n    path = data.get('file_path', '')\n    if re.search(r'webapp/src/.*\\.(tsx?|js)$', path):\n        result = subprocess.run(\n            ['npm', 'test', '--', '--run'],\n            cwd=os.path.join(os.path.dirname(path).split('webapp')[0], 'webapp'),\n            capture_output=True, text=True, timeout=60\n        )\n        if result.returncode != 0:\n            print('Tests failed after changes:', file=sys.stderr)\n            print(result.stdout[-2000:], file=sys.stderr)\nexcept Exception:\n    pass\n\""
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); FILE_PATH=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); SUCCESS=$(echo \"$input\" | jq -r \".tool_response.success // false\"); if [ \"$SUCCESS\" = \"true\" ] && [[ \"$FILE_PATH\" =~ \\.(js|jsx|ts|tsx)$ ]] && [[ \\! \"$FILE_PATH\" =~ node_modules ]]; then echo \"Next.js Code Quality Enforcer: Reviewing $FILE_PATH...\"; if [ -f \"$FILE_PATH\" ]; then if [[ \"$FILE_PATH\" =~ app/.* ]]; then if [[ \"$FILE_PATH\" =~ page\\.(js|jsx|ts|tsx)$ ]] && \\! grep -q \"export default function\" \"$FILE_PATH\" 2>/dev/null && \\! grep -q \"export default async function\" \"$FILE_PATH\" 2>/dev/null; then echo \"Page component must export default function\" >&2; fi; if grep -q \"use client\" \"$FILE_PATH\" 2>/dev/null; then if \\! grep -E \"(useState|useEffect|onClick|onChange|onSubmit)\" \"$FILE_PATH\" 2>/dev/null; then echo \"Client component without interactivity - consider Server Component\"; fi; else if grep -E \"(useState|useEffect|onClick|onChange|onSubmit)\" \"$FILE_PATH\" 2>/dev/null; then echo \"Interactive features in Server Component - add use client directive\" >&2; fi; fi; fi; if grep -q \"<img\" \"$FILE_PATH\" 2>/dev/null && \\! grep -q \"next/image\" \"$FILE_PATH\" 2>/dev/null; then echo \"Consider using next/image for better performance\"; fi; if grep -q \"<a href=\" \"$FILE_PATH\" 2>/dev/null && \\! grep -q \"next/link\" \"$FILE_PATH\" 2>/dev/null; then echo \"Consider using next/link for internal navigation\"; fi; fi; fi'",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/scope-guard.sh"
+          }
+        ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "playwright@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true
   }
 }

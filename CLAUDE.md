@@ -17,7 +17,25 @@ npm test
 npm run build        # out/ に出力
 ```
 
+### E2E テスト（`webapp/` で実行）
+```bash
+npm run test:e2e            # Playwright E2E テスト
+npm run test:e2e:update     # スナップショット更新
+npm run screenshot          # スクリーンショット撮影
+```
+
 コミット前に必須: `cd webapp && npm run lint -- --fix && npm run typecheck && npm test`
+
+## ディレクトリ構造
+```
+webapp/src/
+├── app/           # Next.js App Router ページ
+├── components/    # UI コンポーネント（ArtifactCard, FileUpload 等）
+├── hooks/         # カスタムフック（データ取得・フィルタ・表示制御）
+├── lib/           # ビジネスロジック（スコア計算・バリデーション・定数）
+│   └── __tests__/ # Vitest テスト
+└── test-setup.ts  # テスト共通セットアップ
+```
 
 ## 重要な設定
 - 静的エクスポート: `output: "export"` + `basePath: "/mogumogu-paimon"` — `webapp/next.config.ts`
@@ -27,6 +45,12 @@ npm run build        # out/ に出力
 - ブランチ: `<type>/<issue-number>-<description>`
 - コミット: Conventional Commits 形式（英語・命令形・小文字・ピリオドなし）
 - 詳細: `.claude/git-conventions.md`
+
+## CI/CD
+- GitHub Actions: `.github/workflows/` に設定
+- PR 作成時: lint・typecheck・test・E2E が自動実行
+- `main` マージ時: GitHub Pages へ自動デプロイ
+- prebuild で画像の WebP 変換が自動実行される
 
 ## テスト方針
 - `webapp/src/lib/__tests__/` に配置（Vitest）
