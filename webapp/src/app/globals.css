@@ -362,11 +362,6 @@ body {
   z-index: 0;
 }
 
-.hero-section > * {
-  position: relative;
-  z-index: 1;
-}
-
 /* ── ヒーロー装飾: ゴールドボーダー ────── */
 .hero-border-top {
   position: absolute;
@@ -470,6 +465,53 @@ body {
   transform: rotate(45deg);
   opacity: 0.6;
   box-shadow: 0 0 8px rgba(200, 163, 90, 0.3);
+}
+
+/* ── ヒーロー装飾: フェードインアニメーション ── */
+@keyframes heroFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 装飾要素（子1-6: ボーダー＋コーナー）はアニメーション対象外 */
+.hero-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* コンテンツ要素（子7以降）にのみフェードインを適用 */
+.hero-section > :nth-child(n+7) {
+  animation: heroFadeInUp 500ms ease-out both;
+}
+
+.hero-section > :nth-child(7)  { animation-delay: 0ms; }
+.hero-section > :nth-child(8)  { animation-delay: 50ms; }
+.hero-section > :nth-child(9)  { animation-delay: 100ms; }
+.hero-section > :nth-child(10) { animation-delay: 150ms; }
+.hero-section > :nth-child(11) { animation-delay: 200ms; }
+.hero-section > :nth-child(12) { animation-delay: 250ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-section > :nth-child(n+7) {
+    animation: none;
+  }
+}
+
+/* ── ヒーロー装飾: レスポンシブ ──────── */
+@media (max-width: 768px) {
+  .hero-corner {
+    display: none;
+  }
+
+  .hero-eyebrow {
+    letter-spacing: 3px;
+  }
 }
 
 .hero-img {
