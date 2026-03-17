@@ -1166,18 +1166,19 @@ body {
   width: 100%;
   max-width: 800px;
   padding: 3rem 2rem;
-  border: 2px dashed var(--border);
+  border: 2px dashed rgba(200, 163, 90, 0.2);
   border-radius: 16px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
   background: var(--bg-card);
+  backdrop-filter: blur(6px);
 }
 
 .upload-zone:hover {
-  border-color: var(--gold);
+  border-color: rgba(200, 163, 90, 0.4);
   background: var(--bg-card-hover);
-  box-shadow: 0 0 10px rgba(200, 163, 90, 0.15);
+  box-shadow: 0 0 30px rgba(200, 163, 90, 0.08);
 }
 
 .upload-zone.dragging {
@@ -1240,13 +1241,13 @@ body {
 }
 
 .score-formula-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(26, 27, 46, 0.7);
+  border: 1px solid rgba(200, 163, 90, 0.12);
   border-radius: 10px;
   padding: 0.75rem 1rem;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -1255,6 +1256,7 @@ body {
 .score-formula-card:hover {
   border-color: var(--gold);
   background: var(--bg-card-hover);
+  transform: translateY(-2px);
 }
 
 .score-formula-card-active {
