@@ -14,6 +14,15 @@ test.describe('ホームページ — 初期状態（ファイルアップロー
     await expect(page.locator('.hero-section')).toBeVisible()
   })
 
+  test('ヒーロー装飾要素が表示される', async ({ page }) => {
+    await expect(page.locator('.hero-border-top')).toBeAttached()
+    await expect(page.locator('.hero-eyebrow')).toBeVisible()
+    await expect(page.locator('.hero-eyebrow')).toHaveText('✦ Artifact Score ✦')
+    await expect(page.locator('.hero-title')).toBeVisible()
+    await expect(page.locator('.hero-title')).toHaveText('もぐもぐパイモン')
+    await expect(page.locator('.hero-divider')).toBeVisible()
+  })
+
   test('アップロードゾーンが表示される', async ({ page }) => {
     await expect(page.locator('.upload-zone')).toBeVisible()
     await expect(page.locator('input[type="file"]')).toBeAttached()
