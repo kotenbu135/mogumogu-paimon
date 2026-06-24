@@ -551,4 +551,6 @@ VermillionHereafter               // 辰砂往生録
 ViridescentVenerer                // 翠緑の影
 VourukashasGlow                   // 花海甘露の光
 WanderersTroupe                   // 大地を流浪する楽団
+CelestialGift                     // 天からの贈り物
+DisenchantmentInDeepShadow       // 影に沈む幻
 ```

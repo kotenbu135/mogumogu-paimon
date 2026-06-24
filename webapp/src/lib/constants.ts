@@ -85,6 +85,8 @@ export const ARTIFACT_SET_NAMES: Record<string, string> = {
   ViridescentVenerer: '翠緑の影',
   VourukashasGlow: '花海甘露の光',
   WanderersTroupe: '大地を流浪する楽団',
+  CelestialGift: '天からの贈り物',
+  DisenchantmentInDeepShadow: '影に沈む幻',
 }
 
 /** キャラクター名の日本語マッピング（GOOD フォーマットキー → 表示名） */
@@ -236,6 +238,7 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
       'NightOfTheSkysUnveiling',
       'FinaleOfTheDeepGalleries',
       'ObsidianCodex',
+      'DisenchantmentInDeepShadow',
       'LongNightsOath',
       'FragmentOfHarmonicWhimsy',
       'MarechausseeHunter',
@@ -259,6 +262,7 @@ export const ARTIFACT_SET_GROUPS: { label: string; keys: string[] }[] = [
       'MaidenBeloved',
       'NoblesseOblige',
       'OceanHuedClam',
+      'CelestialGift',
       'ScrollOfTheHeroOfCinderCity',
       'SilkenMoonsSerenade',
       'SongOfDaysPast',

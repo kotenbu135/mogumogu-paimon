@@ -124,6 +124,8 @@ export const en: Translations = {
     ViridescentVenerer: 'Viridescent Venerer',
     VourukashasGlow: "Vourukasha's Glow",
     WanderersTroupe: "Wanderer's Troupe",
+    CelestialGift: 'Celestial Gift',
+    DisenchantmentInDeepShadow: 'Disenchantment in Deep Shadow',
   },
 
   upload: {
