@@ -514,6 +514,7 @@ GildedDreams                      // 金メッキの夢
 GladiatorsFinale                  // 剣闘士のフィナーレ
 GoldenTroupe                      // 黄金の劇団
 HeartOfDepth                      // 沈淪の心
+HeartOfTheFurnace                 // 炉炎溶錬の心
 HuskOfOpulentDreams               // 華館夢醒形骸記
 Instructor                        // 教官
 Lavawalker                        // 烈火を渡る賢者
@@ -535,6 +536,7 @@ PrayersForWisdom                  // 雷祭りの人
 PrayersToSpringtime               // 氷祭りの人
 ResolutionOfSojourner             // 旅人の心
 RetracingBolide                   // 逆飛びの流星
+ScarletProof                      // 紅血の証
 Scholar                           // 学者
 ScrollOfTheHeroOfCinderCity       // 灰燼の都に立つ英雄の絵巻
 ShimenawasReminiscence            // 追憶のしめ縄
